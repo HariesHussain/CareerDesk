@@ -107,6 +107,36 @@ def login_required(f):
                         logger.error("Failed to update role in opp_profiles for %s: %s", user_id, err)
                         profile["role"] = "admin"
 
+            # Check if user or email is banned
+            if profile.get("is_banned"):
+                logger.warning("Rejected banned user %s (%s)", user_id, user_email)
+                return jsonify({
+                    "error": "Your account has been suspended by the platform administrator.",
+                    "is_banned": True,
+                    "reason": profile.get("banned_reason") or "Violation of platform policies."
+                }), 403
+
+            if user_email:
+                banned_email_check = (
+                    supabase.table("opp_banned_emails")
+                    .select("*")
+                    .eq("email", user_email)
+                    .execute()
+                )
+                if banned_email_check.data:
+                    logger.warning("Rejected banned email %s", user_email)
+                    return jsonify({
+                        "error": "This Google account has been permanently suspended by the platform administrator.",
+                        "is_banned": True,
+                        "reason": banned_email_check.data[0].get("reason") or "Violation of platform policies."
+                    }), 403
+
+            # Update last_seen_at for active user analytics (best effort)
+            try:
+                supabase.table("opp_profiles").update({"last_seen_at": "now()"}).eq("id", user_id).execute()
+            except Exception:
+                pass
+
             # Attach to request context
             g.user_id = user_id
             g.current_user = profile

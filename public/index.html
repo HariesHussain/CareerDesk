@@ -33,6 +33,9 @@
 </head>
 <body>
 
+  <!-- ── Global Broadcast Announcement Banner (Managed by Admin) ──────────── -->
+  <div id="globalAnnouncementBanner" class="site-announcement-container" style="display: none;"></div>
+
   <!-- ── Skip to Main Content (WCAG 2.2 AA) ────────────────────────────── -->
   <a href="#mainContent" class="skip-link">Skip to main content</a>
 
@@ -116,7 +119,12 @@
           </button>
         </div>
 
-        <!-- Authenticated State: User Profile Dropdown -->
+        <!-- Authenticated State: Admin Console Button & User Profile Dropdown -->
+        <button id="btnNavbarAdminConsole" class="btn-navbar-admin" style="display: none;" title="Open Enterprise Admin Console">
+          <span style="font-size: 1rem; line-height: 1;">👑</span>
+          <span class="admin-btn-text">Admin Console</span>
+        </button>
+
         <div id="userProfileMenu" class="user-profile-menu" style="display: none;" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-label="User account menu">
           <img id="navUserAvatar" class="user-avatar" src="" alt="Profile avatar">
           <div class="user-info">
@@ -129,6 +137,11 @@
 
           <!-- Dropdown Menu -->
           <div id="userDropdown" class="user-dropdown" role="menu">
+            <a href="#" id="btnDropdownAdminConsole" class="dropdown-item dropdown-item-admin" style="display: none;" role="menuitem">
+              <span style="font-size: 1.1rem; line-height: 1;">👑</span>
+              <strong>Admin Console</strong>
+              <span class="admin-badge badge-role-admin" style="margin-left: auto;">PRO</span>
+            </a>
             <a href="#" id="btnOpenProfileModal" class="dropdown-item" role="menuitem">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -840,14 +853,385 @@
       </div>
     </div>
 
-    <!-- View 5: Admin Moderation -->
-    <div id="adminView" class="view-panel">
-      <div class="section-header-row">
-        <h2 class="section-title">Admin Moderation Queue</h2>
-        <p class="section-subtitle">Review and verify community-submitted opportunities before publishing.</p>
+    <!-- View 5: Enterprise Admin Console -->
+    <div id="adminView" class="view-panel" style="display: none;">
+      <!-- Admin Subheader Bar -->
+      <div class="admin-console-header">
+        <div class="admin-header-left">
+          <div class="admin-brand-badge">
+            <span class="admin-crown-badge">👑</span>
+            <div>
+              <h2 class="admin-header-title">Enterprise Admin Console</h2>
+              <div class="admin-header-subtitle">
+                <span class="admin-status-dot"></span>
+                <span>Active Session: <strong id="adminCurrentEmail">admin</strong> (Platform Super Administrator)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-header-actions">
+          <button id="btnAdminTriggerSyncTop" class="btn-admin-primary" title="Trigger instant Brabble listings ingestion">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Trigger Live Sync
+          </button>
+          <button id="btnExitAdminConsole" class="btn-outline-subtle btn-admin-exit" title="Return to Student Opportunity Explorer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Student View
+          </button>
+        </div>
       </div>
-      <div id="adminSubmissionsList">
-        <!-- Injected via app.js -->
+
+      <!-- Admin Navigation Tabs -->
+      <div class="admin-nav-bar" role="tablist">
+        <button class="admin-nav-tab active" data-tab="overview" role="tab">
+          <span class="tab-icon">📊</span> Overview &amp; KPIs
+        </button>
+        <button class="admin-nav-tab" data-tab="users" role="tab">
+          <span class="tab-icon">👥</span> User Governance
+        </button>
+        <button class="admin-nav-tab" data-tab="blacklist" role="tab">
+          <span class="tab-icon">🚫</span> Blocked Gmails
+        </button>
+        <button class="admin-nav-tab" data-tab="submissions" role="tab">
+          <span class="tab-icon">📝</span> Submissions Queue
+          <span id="adminSubmissionsTabBadge" class="admin-badge-count" style="display: none;">0</span>
+        </button>
+        <button class="admin-nav-tab" data-tab="sync" role="tab">
+          <span class="tab-icon">🔄</span> Ingestion Engine
+        </button>
+        <button class="admin-nav-tab" data-tab="announcement" role="tab">
+          <span class="tab-icon">📢</span> Broadcast Banner
+        </button>
+        <button class="admin-nav-tab" data-tab="audit" role="tab">
+          <span class="tab-icon">🛡️</span> Audit Logs
+        </button>
+      </div>
+
+      <!-- ── Panel 1: Overview & Metrics ── -->
+      <div id="adminPanel_overview" class="admin-tab-panel">
+        <div class="admin-kpi-grid">
+          <!-- Card 1: Total Users -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-header">
+              <span class="admin-kpi-title">Total Registered Users</span>
+              <span class="admin-kpi-icon" style="background: rgba(0, 139, 220, 0.1); color: var(--brand-primary);">👥</span>
+            </div>
+            <div class="admin-kpi-val" id="kpiTotalUsers">0</div>
+            <div class="admin-kpi-meta">
+              <span class="badge-growth" id="kpiActive24h">0 active in 24h</span>
+              <span style="color: var(--text-muted); font-size: 0.78rem;">Students: <strong id="kpiStudentsCount">0</strong> · Admins: <strong id="kpiAdminsCount">0</strong></span>
+            </div>
+          </div>
+
+          <!-- Card 2: Colleges -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-header">
+              <span class="admin-kpi-title">Colleges &amp; Universities</span>
+              <span class="admin-kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">🏛️</span>
+            </div>
+            <div class="admin-kpi-val" id="kpiUniqueColleges">0</div>
+            <div class="admin-kpi-meta">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Institutions across India represented</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Catalog Opportunities -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-header">
+              <span class="admin-kpi-title">Verified Opportunities</span>
+              <span class="admin-kpi-icon" style="background: rgba(124, 58, 237, 0.1); color: #7C3AED;">🏆</span>
+            </div>
+            <div class="admin-kpi-val" id="kpiTotalOpps">914+</div>
+            <div class="admin-kpi-meta">
+              <span style="color: #10B981; font-weight: 600; font-size: 0.8rem;">100% Live Brabble Ingestion</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Student Engagement -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-header">
+              <span class="admin-kpi-title">Student Engagement</span>
+              <span class="admin-kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">⚡</span>
+            </div>
+            <div class="admin-kpi-val"><span id="kpiTotalApps">0</span> <span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">apps</span></div>
+            <div class="admin-kpi-meta">
+              <span style="color: var(--text-muted); font-size: 0.8rem;"><strong id="kpiTotalBookmarks">0</strong> total student bookmarks</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Moderation & Bans -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-header">
+              <span class="admin-kpi-title">Banned / Blocked Gmails</span>
+              <span class="admin-kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">🚫</span>
+            </div>
+            <div class="admin-kpi-val" id="kpiBannedUsers">0</div>
+            <div class="admin-kpi-meta">
+              <span style="color: #EF4444; font-size: 0.8rem;"><strong id="kpiBannedEmails">0</strong> permanently blacklisted emails</span>
+            </div>
+          </div>
+
+          <!-- Card 6: Ingestion Sync Health -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-header">
+              <span class="admin-kpi-title">Brabble Engine Status</span>
+              <span class="admin-kpi-icon" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">🔄</span>
+            </div>
+            <div style="margin-bottom: 4px;">
+              <span class="admin-badge badge-success" id="kpiLastSyncStatus">Healthy</span>
+            </div>
+            <div class="admin-kpi-meta">
+              <span id="kpiLastSyncTime" style="color: var(--text-muted); font-size: 0.78rem;">Syncing daily via cron</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions & System Controls -->
+        <div class="admin-quick-shortcuts">
+          <div class="admin-shortcut-card" onclick="window.adminConsole.switchTab('users')">
+            <span class="shortcut-emoji">👥</span>
+            <div>
+              <strong>Manage Users</strong>
+              <p>View registered accounts, ban abusers, and elevate roles.</p>
+            </div>
+          </div>
+          <div class="admin-shortcut-card" onclick="window.adminConsole.switchTab('submissions')">
+            <span class="shortcut-emoji">📝</span>
+            <div>
+              <strong>Moderate Events (<span id="kpiPendingSubmissions">0</span>)</strong>
+              <p>Approve student tech fest and hackathon listings.</p>
+            </div>
+          </div>
+          <div class="admin-shortcut-card" onclick="window.adminConsole.triggerSync()">
+            <span class="shortcut-emoji">⚡</span>
+            <div>
+              <strong>Force Catalog Sync</strong>
+              <p>Pull latest hackathons &amp; contests from Brabble.</p>
+            </div>
+          </div>
+          <div class="admin-shortcut-card" onclick="window.adminConsole.switchTab('announcement')">
+            <span class="shortcut-emoji">📢</span>
+            <div>
+              <strong>Broadcast Announcement</strong>
+              <p>Display emergency maintenance or featured event banner.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Panel 2: User Governance Directory ── -->
+      <div id="adminPanel_users" class="admin-tab-panel" style="display: none;">
+        <div class="admin-table-toolbar">
+          <div class="admin-search-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="adminUserSearch" class="admin-search-input" placeholder="Search by name, email, or college...">
+          </div>
+
+          <div class="admin-filters-group">
+            <select id="adminUserRoleFilter" class="form-select admin-select-compact">
+              <option value="all">All Roles</option>
+              <option value="student">Students</option>
+              <option value="admin">Administrators</option>
+            </select>
+
+            <select id="adminUserStatusFilter" class="form-select admin-select-compact">
+              <option value="all">All Status</option>
+              <option value="active">Active Only</option>
+              <option value="banned">Banned Only</option>
+            </select>
+
+            <button id="btnRefreshUsers" class="btn-outline-subtle" title="Refresh list">
+              🔄 Refresh
+            </button>
+
+            <span id="adminUsersCountBadge" class="admin-pill-badge">0 users</span>
+          </div>
+        </div>
+
+        <div class="admin-table-responsive">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Academic Details</th>
+                <th>Registered</th>
+                <th>Last Active</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersTableBody">
+              <!-- Injected via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Panel 3: Banned Emails Blacklist ── -->
+      <div id="adminPanel_blacklist" class="admin-tab-panel" style="display: none;">
+        <div class="admin-panel-intro">
+          <div>
+            <h3 style="font-weight: 700; margin-bottom: 4px;">Permanent Gmail Blacklist</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">These Google accounts are permanently prohibited from authenticating into CareerDesk. Even upon re-attempting Google OAuth, access is blocked at the gateway.</p>
+          </div>
+          <span id="adminBlacklistCountBadge" class="admin-pill-badge" style="background: #FEE2E2; color: #DC2626;">0 blocked</span>
+        </div>
+
+        <div class="admin-table-responsive">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>Blacklisted Gmail</th>
+                <th>Reason</th>
+                <th>Banned By</th>
+                <th>Date Blacklisted</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminBlacklistTableBody">
+              <!-- Injected via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Panel 4: Submissions Moderation ── -->
+      <div id="adminPanel_submissions" class="admin-tab-panel" style="display: none;">
+        <div class="admin-panel-intro">
+          <div>
+            <h3 style="font-weight: 700; margin-bottom: 4px;">Community Event Submissions Review</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Review college tech fests, hackathons, and contests submitted by campus leads. Approved events are instantly published live.</p>
+          </div>
+          <span id="adminSubmissionsCountBadge" class="admin-pill-badge">0 pending</span>
+        </div>
+
+        <div id="adminSubmissionsList" class="admin-submissions-grid">
+          <!-- Injected via admin.js -->
+        </div>
+      </div>
+
+      <!-- ── Panel 5: Ingestion Engine (Brabble) ── -->
+      <div id="adminPanel_sync" class="admin-tab-panel" style="display: none;">
+        <div class="admin-sync-hero-card">
+          <div class="sync-hero-content">
+            <span class="sync-engine-badge">⚡ Automated Ingestion Engine</span>
+            <h3 style="font-weight: 700; margin-bottom: 6px;">Live Brabble Listings Sync</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 600px; line-height: 1.5;">
+              Ingests live hackathons, coding contests, and student competitions directly from Brabble API into CareerDesk. Automatically normalizes deadlines, prize structures, and filters.
+            </p>
+          </div>
+          <button id="btnTriggerBrabbleSync" class="btn-apply-action" style="padding: 12px 24px; font-size: 0.95rem;">
+            Trigger Live Sync Now
+          </button>
+        </div>
+
+        <h4 style="font-weight: 700; margin: 24px 0 12px 0;">Recent Ingestion Run History</h4>
+        <div class="admin-table-responsive">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>Execution Time</th>
+                <th>Status</th>
+                <th>Fetched</th>
+                <th>Inserted</th>
+                <th>Updated</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody id="adminSyncLogsTableBody">
+              <!-- Injected via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Panel 6: Broadcast Banner ── -->
+      <div id="adminPanel_announcement" class="admin-tab-panel" style="display: none;">
+        <div class="admin-panel-intro">
+          <div>
+            <h3 style="font-weight: 700; margin-bottom: 4px;">Global Site-Wide Broadcast Banner</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Publish a high-visibility announcement banner displayed at the very top of CareerDesk for all students and visitors.</p>
+          </div>
+        </div>
+
+        <div class="admin-announcement-grid">
+          <form id="adminAnnouncementForm" class="admin-card-box">
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="custom-checkbox-row">
+                <input type="checkbox" id="adminAnnouncementActive">
+                <span class="custom-checkbox-visual"></span>
+                <strong>Enable Site-Wide Broadcast Banner</strong>
+              </label>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" for="adminAnnouncementMsg">Banner Message <span class="required-star">*</span></label>
+              <textarea id="adminAnnouncementMsg" class="form-textarea" rows="2" placeholder="e.g. 🎉 Smart India Hackathon 2026 submissions are live! Register before Oct 31." required maxlength="300"></textarea>
+            </div>
+
+            <div class="form-row-2col" style="margin-bottom: 16px;">
+              <div class="form-group">
+                <label class="form-label" for="adminAnnouncementType">Banner Theme / Style</label>
+                <select id="adminAnnouncementType" class="form-select">
+                  <option value="info">Info (Blue)</option>
+                  <option value="success">Success / Celebration (Green)</option>
+                  <option value="warning">Warning / Notice (Amber)</option>
+                  <option value="danger">Urgent / Alert (Red)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAnnouncementLabel">Action Button Text</label>
+                <input type="text" id="adminAnnouncementLabel" class="form-input" placeholder="e.g. View Hackathon">
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label class="form-label" for="adminAnnouncementUrl">Action Button Target URL</label>
+              <input type="url" id="adminAnnouncementUrl" class="form-input" placeholder="https://careerdesk.in/#exploreView">
+            </div>
+
+            <button type="submit" id="btnSaveAnnouncement" class="btn-apply-action" style="padding: 10px 24px;">
+              Save &amp; Update Banner
+            </button>
+          </form>
+
+          <div class="admin-card-box">
+            <h4 style="font-weight: 700; margin-bottom: 12px;">Live Preview</h4>
+            <div id="adminAnnouncementPreviewBox" class="admin-preview-wrapper">
+              <!-- Live preview injected -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Panel 7: Audit Logs ── -->
+      <div id="adminPanel_audit" class="admin-tab-panel" style="display: none;">
+        <div class="admin-panel-intro">
+          <div>
+            <h3 style="font-weight: 700; margin-bottom: 4px;">Administrative Security &amp; Compliance Audit Trail</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Immutable log of all administrative actions (bans, account purges, role promotions, and sync triggers).</p>
+          </div>
+        </div>
+
+        <div class="admin-table-responsive">
+          <table class="admin-data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Admin Email</th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="adminAuditLogsTableBody">
+              <!-- Injected via admin.js -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </main>
@@ -933,6 +1317,56 @@
           </div>
         </div>
       </form>
+  </div>
+
+  <!-- ── Admin Ban Confirmation Modal ────────────────────────────────────── -->
+  <div id="adminBanModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="banModalTitle">
+    <div class="modal-box" style="max-width: 500px; padding: 24px;">
+      <h3 id="banModalTitle" style="font-size: 1.25rem; font-weight: 700; color: #EF4444; margin-bottom: 8px;">
+        🚫 Suspend User &amp; Blacklist Gmail
+      </h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.4;">
+        You are suspending <strong id="banModalUserName">User</strong> (<span id="banModalUserEmail" style="color: var(--text-primary); font-weight: 600;"></span>). This will lock their session and permanently block this Gmail from logging in again.
+      </p>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label class="form-label" for="banModalReason">Reason for Suspension</label>
+        <textarea id="banModalReason" class="form-textarea" rows="3" placeholder="Enter reason for moderation records..."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" id="btnCancelBanUser" class="btn-outline-subtle">Cancel</button>
+        <button type="button" id="btnConfirmBanUser" class="btn-profile-danger" style="background: #EF4444; color: #FFFFFF; border-color: #EF4444; padding: 8px 18px;">
+          Confirm Ban &amp; Block
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Admin Hard Delete User Modal ────────────────────────────────────── -->
+  <div id="adminDeleteUserModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal-box" style="max-width: 500px; padding: 24px;">
+      <h3 id="deleteModalTitle" style="font-size: 1.25rem; font-weight: 700; color: #EF4444; margin-bottom: 8px;">
+        🗑️ Permanently Delete User Account
+      </h3>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.4;">
+        Are you sure you want to completely purge <strong id="deleteModalUserName">User</strong> (<span id="deleteModalUserEmail" style="color: var(--text-primary); font-weight: 600;"></span>)? All bookmarks, applications, and profile records will be permanently erased.
+      </p>
+
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label class="custom-checkbox-row">
+          <input type="checkbox" id="deleteModalBlacklistCheck" checked>
+          <span class="custom-checkbox-visual"></span>
+          <span style="font-size: 0.88rem; font-weight: 500;">Also permanently blacklist this Gmail from ever signing in again</span>
+        </label>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" id="btnCancelDeleteUser" class="btn-outline-subtle">Cancel</button>
+        <button type="button" id="btnConfirmDeleteUser" class="btn-profile-danger" style="background: #DC2626; color: #FFFFFF; border-color: #DC2626; padding: 8px 18px;">
+          Permanently Delete
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1113,6 +1547,7 @@
   <script src="/js/config.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

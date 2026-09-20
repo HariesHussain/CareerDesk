@@ -74,6 +74,12 @@ class AuthManager {
       if (res.ok) {
         const data = await res.json();
         this.profile = data.user;
+      } else if (res.status === 403) {
+        const data = await res.json().catch(() => ({}));
+        if (data.is_banned) {
+          window.dispatchEvent(new CustomEvent("account_banned", { detail: data }));
+          await this.signOut();
+        }
       }
     } catch (err) {
       console.warn("Could not fetch backend profile:", err);

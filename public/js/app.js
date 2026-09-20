@@ -31,6 +31,11 @@ class OpportunityApp {
     this.setupAuthSync();
     this.setupScrollAnimations();
     
+    if (window.adminConsole) {
+      window.adminConsole.init();
+    }
+    await this.checkGlobalAnnouncement();
+
     // Lazy-load: only eagerly fetch opportunities if user is already authenticated into workspace
     if (window.authManager && window.authManager.isAuthenticated()) {
       await this.loadExploreData();
@@ -341,6 +346,37 @@ class OpportunityApp {
         await this.handleOpportunitySubmission(new FormData(submitForm));
       });
     }
+
+    // Enterprise Admin Console Navigation Triggers
+    const btnNavbarAdmin = document.getElementById("btnNavbarAdminConsole");
+    if (btnNavbarAdmin) {
+      btnNavbarAdmin.addEventListener("click", () => {
+        if (window.adminConsole) {
+          window.adminConsole.openConsole();
+        }
+      });
+    }
+
+    const btnDropdownAdmin = document.getElementById("btnDropdownAdminConsole");
+    if (btnDropdownAdmin) {
+      btnDropdownAdmin.addEventListener("click", (e) => {
+        e.preventDefault();
+        const userDropdown = document.getElementById("userDropdown");
+        if (userDropdown) userDropdown.classList.remove("show");
+        if (window.adminConsole) {
+          window.adminConsole.openConsole();
+        }
+      });
+    }
+
+    // Global Account Suspension / Banned Alert Event
+    window.addEventListener("account_banned", (e) => {
+      const reason = e.detail?.error || "Your account has been suspended by an administrator.";
+      alert(`⚠️ Account Suspended:\n\n${reason}\n\nYour session has been terminated and this email is restricted from logging in.`);
+      if (window.authManager) {
+        window.authManager.signOut();
+      }
+    });
   }
 
   // ── Cookie & Storage Notice ───────────────────────────────────────────────
@@ -387,8 +423,21 @@ class OpportunityApp {
           if (avatarEl) avatarEl.src = user.avatar_url || defaultAvatarSvg;
           if (roleEl) roleEl.textContent = user.role || "student";
         }
+        const isAdmin = user.role === "admin";
         if (adminTab) {
-          adminTab.style.display = (user.role === "admin") ? "inline-flex" : "none";
+          adminTab.style.display = isAdmin ? "inline-flex" : "none";
+        }
+        const btnNavbarAdmin = document.getElementById("btnNavbarAdminConsole");
+        if (btnNavbarAdmin) {
+          btnNavbarAdmin.style.display = isAdmin ? "inline-flex" : "none";
+        }
+        const btnDropdownAdmin = document.getElementById("btnDropdownAdminConsole");
+        if (btnDropdownAdmin) {
+          btnDropdownAdmin.style.display = isAdmin ? "flex" : "none";
+        }
+        const adminEmailEl = document.getElementById("adminCurrentEmail");
+        if (adminEmailEl) {
+          adminEmailEl.textContent = user.email || "";
         }
 
         if (landingView) landingView.style.display = "none";
@@ -404,6 +453,10 @@ class OpportunityApp {
         if (loginWrapper) loginWrapper.style.display = "flex";
         if (userMenu) userMenu.style.display = "none";
         if (adminTab) adminTab.style.display = "none";
+        const btnNavbarAdmin = document.getElementById("btnNavbarAdminConsole");
+        if (btnNavbarAdmin) btnNavbarAdmin.style.display = "none";
+        const btnDropdownAdmin = document.getElementById("btnDropdownAdminConsole");
+        if (btnDropdownAdmin) btnDropdownAdmin.style.display = "none";
 
         if (landingView) landingView.style.display = "block";
         if (appWorkspace) appWorkspace.style.display = "none";
@@ -432,7 +485,7 @@ class OpportunityApp {
         pipeline: "Application Tracker (Kanban)",
         bookmarks: "Saved Bookmarks",
         submit: "Post a Student Opportunity",
-        admin: "Admin Moderation Queue"
+        admin: "👑 Enterprise Admin Console"
       };
       activeLabel.textContent = labels[tabId] || "Workspace Terminal";
     }
@@ -465,7 +518,11 @@ class OpportunityApp {
     if (tabId === "explore") this.loadExploreData();
     if (tabId === "pipeline") this.loadApplications();
     if (tabId === "bookmarks") this.renderBookmarks();
-    if (tabId === "admin") this.loadAdminSubmissions();
+    if (tabId === "admin") {
+      if (window.adminConsole) {
+        window.adminConsole.openConsole();
+      }
+    }
 
     // Scroll to top of main content smoothly
     const mainEl = document.getElementById("mainContent");
@@ -1235,6 +1292,47 @@ class OpportunityApp {
         <div class="skeleton" style="height: 40px; width: 100%;"></div>
       </div>
     `).join("");
+  }
+
+  async checkGlobalAnnouncement() {
+    const banner = document.getElementById("globalAnnouncementBanner");
+    if (!banner) return;
+
+    try {
+      const data = await window.ApiClient.getPublicAnnouncement();
+      if (data && data.announcement && data.announcement.is_active && data.announcement.message) {
+        const a = data.announcement;
+        const typeClass = `banner-${a.badge_type || "info"}`;
+        banner.className = `site-announcement-container ${typeClass}`;
+        
+        let actionBtnHtml = "";
+        if (a.action_url && a.action_label) {
+          actionBtnHtml = `<a href="${this.escapeHtml(a.action_url)}" target="_blank" rel="noopener noreferrer" class="announcement-action-btn">${this.escapeHtml(a.action_label)} &rarr;</a>`;
+        }
+
+        banner.innerHTML = `
+          <div class="announcement-content-inner">
+            <span class="announcement-badge-pill">${this.escapeHtml((a.badge_type || "UPDATE").toUpperCase())}</span>
+            <span class="announcement-message-text">${this.escapeHtml(a.message)}</span>
+            ${actionBtnHtml}
+          </div>
+          <button type="button" class="announcement-dismiss-btn" id="btnDismissAnnouncement" aria-label="Dismiss announcement">&times;</button>
+        `;
+        banner.style.display = "block";
+
+        const btnDismiss = document.getElementById("btnDismissAnnouncement");
+        if (btnDismiss) {
+          btnDismiss.addEventListener("click", () => {
+            banner.style.display = "none";
+          });
+        }
+      } else {
+        banner.style.display = "none";
+      }
+    } catch (err) {
+      console.warn("Could not check global announcements:", err);
+      banner.style.display = "none";
+    }
   }
 }
 
