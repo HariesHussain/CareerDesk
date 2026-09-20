@@ -12,7 +12,7 @@ import logging
 
 from flask import Blueprint, request, jsonify
 
-from api.services.supabase_client import get_service_client
+from api.services.supabase_client import get_anon_client, get_service_client
 from api.middleware.validators import VALID_SORT_OPTIONS
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def list_opportunities():
       offset   — default 0
     """
     try:
-        supabase = get_service_client()
+        supabase = get_anon_client()
 
         # ── Parse pagination params ──────────────────────────────────
         try:
@@ -152,7 +152,7 @@ def get_opportunity(opp_id: int):
     Returns 404 if not found or not approved.
     """
     try:
-        supabase = get_service_client()
+        supabase = get_anon_client()
 
         result = (
             supabase.table("opp_opportunities")
