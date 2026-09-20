@@ -38,6 +38,7 @@
 * **Phase 7.5 (Supabase Auth Migration & DB Cleanup)**: ✅ Complete (Dropped 26 legacy hospital tables, migrated from Flask sessions to Supabase Auth Google SSO only, created `opp_profiles` linked to `auth.users(id)` with automated trigger, Bearer JWT validation in middleware).
 * **Phase 8 (Frontend Discovery UI & Career OS)**: ✅ Complete (Semantic HTML5, Neo-Cyber CSS design system, live stats radar, debounced search, mode/type filtering, optimistic bookmarks, Kanban pipeline tracker, Google SSO auth client, details & recovery modals).
 * **Phase 9 (Live Ingestion, Full-Stack Testing & Vercel Deployment)**: ✅ Complete (Batch upserting in 15.8s, 914 live opportunities stored in Supabase, 11/11 automated tests passed, local server verified, Vercel deployment instructions prepared).
+* **Phase 10 (Legal Compliance, Privacy Shield & WCAG 2.2 Accessibility)**: ✅ Complete (Privacy Policy, Terms & Conditions, Cookie Policy, Refund Policy, Cookie/Storage consent banner, statutory Grievance Officer details, Section 79 IT Act intermediary safe harbor, Right to Erasure cascade deletion `DELETE /api/auth/profile`, form submission consent, zero third-party trackers/ad pixels, inline SVG default avatar, WCAG 2.2 AA accessibility skip-links, focus rings, and aria-labels).
 
 ---
 
@@ -56,6 +57,7 @@
 | **7.5** | **Supabase Auth & DB Cleanup** | Dropped 26 legacy tables, Google SSO only, `opp_profiles` with `auth.users` trigger, Bearer JWT middleware | ✅ Done |
 | **8** | **Frontend Discovery UI** | Neo-Cyber UI, Supabase Google sign-in, opportunity search & filter, bookmarks & Kanban tracker | ✅ Done |
 | **9** | **Live Ingestion & Vercel Deployment** | Live sync (914 opportunities), batch upserting, 11/11 automated tests passed, deployment guide | ✅ Done |
+| **10** | **Legal Compliance & Accessibility** | DPDP Act 2023 / GDPR / CCPA privacy policy, Terms of Service, cookie banner, Section 79 safe harbor, Right to Erasure, WCAG 2.2 AA | ✅ Done |
 
 ---
 
@@ -127,3 +129,14 @@ Next step: Phase 9 (Vercel Deployment & Cron Automation).
     * Implemented full-stack test suite (`11/11` assertions passed covering health, config, static assets, live data queries, search, and cron auth protection).
     * Verified local development server running on `http://127.0.0.1:3000`.
     * Commit: `350562a`. Production ready.
+  * **Phase 10 (Legal Compliance, Privacy Shield, WCAG 2.2 Accessibility & Anti-Liability Overhaul)**:
+    * Implemented full legal suite: `public/privacy.html` (DPDP Act 2023, GDPR, CCPA compliant), `public/terms.html` (Section 79 IT Act 2000 safe harbor intermediary status, 48h notice-and-takedown SLA), `public/cookies.html` (comprehensive storage inventory), and `public/refund.html` (₹0 platform service fee disclosure).
+    * Implemented Cookie & Local Storage consent banner (`#cookieConsentBanner`) with persistent preferences in `localStorage`.
+    * Designed statutory Grievance Redressal mechanism: Publisher: OpportunityOS Technologies, Bengaluru; Support: `support@opportunityos.in`; Grievance Officer: Haries Hussain (`grievance@opportunityos.in`) with 48h SLA.
+    * Added user Right to Erasure cascade deletion endpoint: `DELETE /api/auth/profile` in `api/routes/auth.py`, wrapped in `ApiClient.deleteAccount()` and triggered via user profile menu with explicit confirmation modal.
+    * Enforced statutory submission consent checkbox (`#submissionConsent`) on community event submission form.
+    * Overhauled accessibility to WCAG 2.2 AA standard: added `.skip-link`, high-contrast `*:focus-visible` rings, descriptive `aria-label`s on buttons, landmark roles (`role="banner"`, `role="navigation"`, `role="main"`, `role="contentinfo"`, `role="region"`).
+    * Replaced external Unsplash avatar dependency with a zero-network procedural SVG gradient avatar, eliminating third-party tracking and copyright risk.
+    * Made hero prize pool counter dynamic and backed by live database totals.
+    * Commit: `f99ed5e`. 100% compliant.
+
