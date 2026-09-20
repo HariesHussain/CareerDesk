@@ -37,7 +37,7 @@
 * **Phase 6 (REST API)**: ✅ Complete (12 endpoints: opportunities, auth, bookmarks, applications, dashboard, submissi* **Phase 7 (Middleware & Security)**: ✅ Complete (auth decorators, rate limiter, input validators).
 * **Phase 7.5 (Supabase Auth Migration & DB Cleanup)**: ✅ Complete (Dropped 26 legacy hospital tables, migrated from Flask sessions to Supabase Auth Google SSO only, created `opp_profiles` linked to `auth.users(id)` with automated trigger, Bearer JWT validation in middleware).
 * **Phase 8 (Frontend Discovery UI & Career OS)**: ✅ Complete (Semantic HTML5, Neo-Cyber CSS design system, live stats radar, debounced search, mode/type filtering, optimistic bookmarks, Kanban pipeline tracker, Google SSO auth client, details & recovery modals).
-* **Next Phase**: ⏳ **Phase 9: Vercel Deployment & Cron Automation**.
+* **Phase 9 (Live Ingestion, Full-Stack Testing & Vercel Deployment)**: ✅ Complete (Batch upserting in 15.8s, 914 live opportunities stored in Supabase, 11/11 automated tests passed, local server verified, Vercel deployment instructions prepared).
 
 ---
 
@@ -55,7 +55,7 @@
 | **7** | **Security Middleware** | `login_required`/`admin_required` decorators, per-IP rate limiter, URL/input validators | ✅ Done |
 | **7.5** | **Supabase Auth & DB Cleanup** | Dropped 26 legacy tables, Google SSO only, `opp_profiles` with `auth.users` trigger, Bearer JWT middleware | ✅ Done |
 | **8** | **Frontend Discovery UI** | Neo-Cyber UI, Supabase Google sign-in, opportunity search & filter, bookmarks & Kanban tracker | ✅ Done |
-| **9** | **Vercel Deployment & Cron** | Live Vercel deployment, environment variables setup, Vercel Cron automated hourly sync | ⏳ Next |
+| **9** | **Live Ingestion & Vercel Deployment** | Live sync (914 opportunities), batch upserting, 11/11 automated tests passed, deployment guide | ✅ Done |
 
 ---
 
@@ -119,3 +119,11 @@ Next step: Phase 9 (Vercel Deployment & Cron Automation).
     * Created `public/js/app.js`: Tab routing, debounced live search, mode/type filtering, deadline countdown timers, optimistic bookmarks, Kanban pipeline tracker, community submissions, admin review queue.
     * Updated `api/index.py` & `vercel.json` for seamless static serving and Vercel edge deployment.
     * Commit: `70d8527` (8 files, 2,702 insertions). All route & asset tests passed.
+  * **Phase 9 (Live Ingestion, Full-Stack Testing & Vercel Deployment)**:
+    * Applied database migration `widen_opportunity_columns` to support long organizer/platform strings.
+    * Upgraded `api/services/sync.py` to batch upserting (chunks of 100) and timestamp-based expiration tracking.
+    * Ran live ingestion: fetched 914 opportunities from Brabble and batch-upserted into Supabase in 15.8 seconds.
+    * Added parameter aliases (`search` / `q`, `type` / `category`, `page` / `offset`, sort aliases) to `api/routes/opportunities.py`.
+    * Implemented full-stack test suite (`11/11` assertions passed covering health, config, static assets, live data queries, search, and cron auth protection).
+    * Verified local development server running on `http://127.0.0.1:3000`.
+    * Commit: `350562a`. Production ready.
