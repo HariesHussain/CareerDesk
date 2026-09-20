@@ -1,0 +1,44 @@
+# Environment variables & secrets (CRITICAL SECURITY)
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*.cert
+
+# Databases & local persistent files
+data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+ENV/
+env/
+
+# Node & Build artifacts
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+out/
+dist/
+build/
+
+# Vercel CLI cache
+.vercel
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
