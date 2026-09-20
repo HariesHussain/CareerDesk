@@ -10,6 +10,7 @@ Supports Google Single Sign-On (SSO) via Supabase Auth.
 Stateless Bearer token validation (no session cookies required).
 """
 
+import os
 import functools
 import logging
 
@@ -88,6 +89,23 @@ def login_required(f):
                     "college_name": None,
                     "role": "student",
                 }
+
+            # Check for admin privilege configured via ADMIN_EMAILS in environment (never hardcoded)
+            admin_emails = [
+                e.strip().lower()
+                for e in os.environ.get("ADMIN_EMAILS", "").split(",")
+                if e.strip()
+            ]
+            user_email = (getattr(user, "email", None) or profile.get("email") or "").strip().lower()
+            if user_email and user_email in admin_emails:
+                if profile.get("role") != "admin":
+                    try:
+                        supabase.table("opp_profiles").update({"role": "admin"}).eq("id", user_id).execute()
+                        profile["role"] = "admin"
+                        logger.info("Elevated user %s to admin role via ADMIN_EMAILS.", user_id)
+                    except Exception as err:
+                        logger.error("Failed to update role in opp_profiles for %s: %s", user_id, err)
+                        profile["role"] = "admin"
 
             # Attach to request context
             g.user_id = user_id
