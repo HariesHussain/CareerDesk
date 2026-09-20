@@ -1,50 +1,70 @@
-# OpportunityOS
+# CareerDesk
 
-A student-focused discovery and personal-tracking platform ("Student Career Operating System") for hackathons, coding contests, case competitions, and innovation challenges open to college students in India. Built as a high-impact, production-grade portfolio project.
+> **An aggregator and career operating system for Indian students and developers to discover verified hackathons, coding contests, hiring challenges, and tech fellowships.**
 
-## Status
-- **Phase 1 Complete**: API verification, comprehensive architecture & technical documentation in `/docs`.
-- **Phase 2 Complete**: Repository initialized, security hardening (`.gitignore`, `.env.example`), and AI handoff context setup in `/context`.
-- **Next Phase**: Supabase Database Schema creation and Brabble Ingestion pipeline.
+CareerDesk is a high-impact, production-grade opportunity platform and application tracking terminal. It connects students across Indian colleges with 900+ national competitions, hackathons, and innovation challenges with live prize pools, verified direct links, and zero spam.
 
-## Data Source
-- **[Brabble API](https://brabble.ai/developers)** — Verified live and documented in `docs/08-EXTERNAL-API-INTEGRATION.md`.
-- 1,000 requests/day, single endpoint (`GET /api/listings`), hourly-refreshed.
-- Ingestion occurs strictly server-side via scheduled sync into Supabase; browser clients never query Brabble or touch API credentials.
+---
 
-## Tech Stack
-- **Frontend**: HTML5 / Modern CSS / Vanilla JavaScript (or React/Next.js UI) deployed to **Vercel Edge Network**.
-- **Backend**: Python (Flask / Serverless Functions) deployed on **Vercel**.
-- **Database**: **Supabase (Managed PostgreSQL)** with Row Level Security (RLS) and connection pooling.
-- **Automation / Sync**: **Vercel Cron** invoking `/api/cron/sync` hourly to ingest new opportunities.
+## ✨ Key Features
 
-## Security Rules
-- All secret keys (`BRABBLE_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SECRET_KEY`, `CRON_SECRET`) are stored strictly in `.env` (locally) and Vercel Environment Variables (in production).
-- Browser clients only ever receive `SUPABASE_ANON_KEY`, protected by Row Level Security policies.
-- Parameterized SQL queries prevent SQL injection.
+- **🎯 Opportunity Explorer**: Browse 900+ verified hackathons and coding contests with multi-dimensional filtering (category, mode, deadline, prize pool) and instant keyword search.
+- **📊 Kanban Application Tracker**: Personal pipeline (Saved, Applied, In Progress, Shortlisted, Won) to track contest milestones.
+- **⭐ Optimistic Bookmarks**: Instant client-side bookmarking with seamless Supabase synchronization.
+- **🔒 Secure Google Authentication**: Native Supabase Auth with Google OAuth SSO and profile provisioning.
+- **👑 Enterprise Admin Console**:
+  - **Live Telemetry & KPIs**: Real-time active users (24h/7d), institutions represented, volume stats, and sync status.
+  - **User Governance & Permanent Bans**: Moderation directory with hard-delete and permanent Gmail blacklisting (`opp_banned_emails`) enforced at the API middleware layer.
+  - **Live Ingestion Engine**: On-demand Brabble catalog sync trigger with execution history logs.
+  - **Global Broadcast Banner**: High-visibility site-wide announcements with customizable themes and action buttons.
+  - **Audit Trail**: Immutable compliance logs tracking every administrative action.
 
-## Documentation
-See `/docs` for the complete engineering specifications:
-- `01-PRODUCT-REQUIREMENTS.md` & `02-TECHNICAL-REQUIREMENTS.md`
-- `03-SYSTEM-ARCHITECTURE.md`
-- `06-DATABASE-DESIGN.md` (PostgreSQL schemas & RLS policies)
-- `08-EXTERNAL-API-INTEGRATION.md` (Brabble API details)
-- `10-SECURITY.md` (DevSecOps, key isolation, OWASP)
-- `13-DEPLOYMENT.md` (Vercel + Supabase deployment guide)
-- `14-ENVIRONMENT-VARIABLES.md`
-- `15-DEVELOPMENT-ROADMAP.md`
-- `context/PROJECT_STATE.md` (Master AI handoff & session continuity)
+---
 
-## Setup (Local Development)
-1. Copy `.env.example` to `.env` and fill in:
-   - `BRABBLE_API_KEY` (from [brabble.ai/dashboard](https://brabble.ai/dashboard))
-   - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL` (from Supabase dashboard)
-   - `SECRET_KEY` and `CRON_SECRET`
-2. `pip install -r requirements.txt` (once backend implementation begins).
-3. Apply Supabase database migrations (`docs/06-DATABASE-DESIGN.md`).
-4. Run manual sync to populate initial opportunities: `python sync.py`.
-5. Run the development server.
+## 🛠️ Tech Stack
 
-## License
-Student portfolio project — not affiliated with Brabble.ai or any listed platform.
+- **Frontend**: Vanilla JavaScript (ES6+), Modern Vanilla CSS Design System, Responsive Layout, Google Fonts (Inter & Outfit).
+- **Backend**: Python 3.12, Flask Serverless Application Factory, `auth_middleware` with JWT Bearer validation.
+- **Database**: **Supabase (Managed PostgreSQL)** with Row Level Security (RLS), connection pooling, and automated profile triggers.
+- **External Ingestion**: **Brabble API** developer integration with automated upsert synchronization.
+- **Deployment**: Configured for **Vercel Edge & Serverless Functions**.
+
+---
+
+## 🔐 Security Architecture
+
+- **Zero Hardcoded Secrets**: All keys (`SUPABASE_SERVICE_ROLE_KEY`, `BRABBLE_API_KEY`, `SECRET_KEY`) reside strictly in environment variables.
+- **Blacklist Enforcement**: Banned users are intercepted at the middleware layer (`auth_middleware.py`) with `HTTP 403 Forbidden` even if Supabase issues a valid OAuth token.
+- **Admin Immunity**: Root admin configured in `ADMIN_EMAILS` is protected from accidental deletion, ban, or demotion.
+
+---
+
+## 🚀 Local Development
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/HariesHussain/CareerDesk.git
+   cd CareerDesk
+   ```
+2. Copy environment template:
+   ```bash
+   cp .env.example .env
+   ```
+3. Configure `.env` with your Supabase credentials, Brabble API key, and admin email.
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Run the local development server:
+   ```bash
+   python api/index.py
+   ```
+6. Open `http://127.0.0.1:3000` in your browser.
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
 
