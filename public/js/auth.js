@@ -91,7 +91,16 @@ class AuthManager {
    */
   async signInWithGoogle() {
     if (!this.client) {
-      alert("Supabase is initializing. Please try again in a moment.");
+      if (window.AppConfig && (!AppConfig.SUPABASE_URL || !AppConfig.SUPABASE_ANON_KEY)) {
+        await window.AppConfig.load();
+      }
+      if (AppConfig.SUPABASE_URL && AppConfig.SUPABASE_ANON_KEY) {
+        await this.init();
+      }
+    }
+
+    if (!this.client) {
+      alert("Authentication service is connecting. Please wait a moment and try again.");
       return;
     }
 
