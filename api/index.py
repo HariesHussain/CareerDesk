@@ -39,7 +39,7 @@ def create_app():
     @app.after_request
     def add_cors_headers(response):
         """
-        Production: restrict to CareerDesk domain only.
+        Production: allow CareerDesk domains and any *.vercel.app deployments.
         Development: allow localhost origins.
         """
         allowed_origins = [
@@ -49,14 +49,10 @@ def create_app():
             "http://localhost:5173",
             "http://127.0.0.1:3000",
         ]
-        origin = response.headers.get("Origin") or ""
-        request_origin = __import__("flask").request.headers.get("Origin", "")
+        request_origin = request.headers.get("Origin", "")
 
-        if os.environ.get("FLASK_ENV") == "production":
-            if request_origin in ["https://careerdesk.vercel.app", "https://opportunity-os.vercel.app"]:
-                response.headers["Access-Control-Allow-Origin"] = request_origin
-        else:
-            if request_origin in allowed_origins:
+        if request_origin:
+            if request_origin in allowed_origins or request_origin.endswith(".vercel.app"):
                 response.headers["Access-Control-Allow-Origin"] = request_origin
 
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
