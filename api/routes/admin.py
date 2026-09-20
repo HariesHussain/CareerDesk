@@ -38,7 +38,7 @@ def list_submissions():
         query = (
             supabase.table("opp_submissions")
             .select(
-                "*, opp_users!submitted_by_user_id(email, full_name)"
+                "*, opp_profiles!submitted_by_user_id(email, full_name)"
             )
             .order("created_at", desc=True)
         )

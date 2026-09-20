@@ -1,18 +1,19 @@
 """
 Authentication Middleware
 ==========================
-Provides decorators for protecting API endpoints:
-  - `login_required`: Validates session, attaches user_id to request context
-  - `admin_required`: Extends login_required with admin role check
+Provides decorators for protecting API endpoints using Supabase Auth:
+  - `login_required`: Validates Supabase JWT access token from Authorization header,
+                      fetches/provisions student profile, attaches to flask.g
+  - `admin_required`: Extends login_required with role == "admin" check
 
-Session management uses Flask's built-in secure signed cookies.
-Passwords hashed with werkzeug.security (PBKDF2-SHA256 with salt).
+Supports Google Single Sign-On (SSO) via Supabase Auth.
+Stateless Bearer token validation (no session cookies required).
 """
 
 import functools
 import logging
 
-from flask import request, jsonify, session, g
+from flask import request, jsonify, g
 
 from api.services.supabase_client import get_service_client
 
@@ -21,36 +22,80 @@ logger = logging.getLogger(__name__)
 
 def login_required(f):
     """
-    Decorator: requires a valid session with user_id.
-    Attaches user data to flask.g for downstream handlers.
-    Returns 401 if not authenticated.
+    Decorator: requires a valid Supabase JWT Bearer token.
+    Header format: `Authorization: Bearer <access_token>`
+    
+    Attaches to flask.g:
+      - `g.user_id`: UUID string of the authenticated user
+      - `g.current_user`: Dict with id, email, full_name, avatar_url, college_name, role
+    
+    Returns 401 if missing, invalid, or expired.
     """
     @functools.wraps(f)
     def decorated_function(*args, **kwargs):
-        user_id = session.get("user_id")
-        if not user_id:
-            return jsonify({"error": "Authentication required."}), 401
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return jsonify({
+                "error": "Authentication required. Provide Authorization: Bearer <token>"
+            }), 401
+
+        token = auth_header[7:].strip()
+        if not token:
+            return jsonify({"error": "Missing access token."}), 401
 
         try:
             supabase = get_service_client()
+
+            # Verify token and retrieve user details from Supabase Auth
+            user_response = supabase.auth.get_user(token)
+            if not user_response or not getattr(user_response, "user", None):
+                return jsonify({"error": "Invalid or expired authorization token."}), 401
+
+            user = user_response.user
+            user_id = user.id
+
+            # Fetch profile from opp_profiles
             result = (
-                supabase.table("opp_users")
-                .select("id, email, full_name, college_name, role")
+                supabase.table("opp_profiles")
+                .select("id, email, full_name, avatar_url, college_name, role")
                 .eq("id", user_id)
                 .execute()
             )
 
-            if not result.data:
-                session.clear()
-                return jsonify({"error": "Authentication required."}), 401
+            if result.data:
+                profile = result.data[0]
+            else:
+                # Auto-provision profile fallback if trigger was delayed
+                user_meta = getattr(user, "user_metadata", {}) or {}
+                full_name = user_meta.get("full_name") or user_meta.get("name") or ""
+                avatar_url = user_meta.get("avatar_url") or user_meta.get("picture") or ""
+                new_profile = (
+                    supabase.table("opp_profiles")
+                    .insert({
+                        "id": user_id,
+                        "email": user.email or "",
+                        "full_name": full_name,
+                        "avatar_url": avatar_url,
+                        "role": "student",
+                    })
+                    .execute()
+                )
+                profile = new_profile.data[0] if new_profile.data else {
+                    "id": user_id,
+                    "email": user.email or "",
+                    "full_name": full_name,
+                    "avatar_url": avatar_url,
+                    "college_name": None,
+                    "role": "student",
+                }
 
-            # Attach user to request context
-            g.current_user = result.data[0]
+            # Attach to request context
             g.user_id = user_id
+            g.current_user = profile
 
         except Exception as e:
-            logger.error("Auth middleware error: %s", str(e)[:200])
-            return jsonify({"error": "Something went wrong, please try again."}), 500
+            logger.warning("Auth token verification error: %s", str(e)[:200])
+            return jsonify({"error": "Invalid or expired authorization token."}), 401
 
         return f(*args, **kwargs)
 
@@ -60,8 +105,8 @@ def login_required(f):
 def admin_required(f):
     """
     Decorator: requires admin role.
-    Must be used after @login_required or combines both checks.
-    Returns 403 if authenticated but not admin.
+    Must be used with @login_required or wraps it automatically.
+    Returns 403 if authenticated user is not an admin.
     """
     @functools.wraps(f)
     @login_required

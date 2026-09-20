@@ -17,10 +17,16 @@ def create_app():
     app = Flask(__name__)
 
     # ── Security Configuration ──────────────────────────────────────────
+    # Secret key for serverless runtime hardening
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-fallback-change-me")
-    app.config["SESSION_COOKIE_HTTPONLY"] = True
-    app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_ENV") == "production"
-    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+    # ── Preflight / CORS Handling ───────────────────────────────────────
+    @app.before_request
+    def handle_preflight():
+        from flask import request
+        if request.method == "OPTIONS":
+            response = app.make_default_options_response()
+            return add_cors_headers(response)
 
     # ── CORS Configuration ──────────────────────────────────────────────
     @app.after_request
