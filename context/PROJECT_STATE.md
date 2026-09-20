@@ -31,7 +31,12 @@
 * **Phase 0 (API Verification)**: ✅ Complete (Brabble API live test verified).
 * **Phase 1 (Documentation & Rebranding)**: ✅ Complete (OpportunityOS branding updated across all docs).
 * **Phase 2 (Repo & Security Hardening)**: ✅ Complete (Git initialized, security-hardened `.gitignore`, `.env.example` created, commit-per-change protocol established).
-* **Application Code**: ⏳ **NOT STARTED YET** (User instruction: Waiting for explicit "build backend" command).
+* **Phase 3 (Database Schema)**: ✅ Complete (7 Supabase migrations: 6 tables + RLS policies via MCP).
+* **Phase 4 (Project Scaffold)**: ✅ Complete (Flask app factory, `vercel.json`, Supabase client).
+* **Phase 5 (Brabble Sync Engine)**: ✅ Complete (BrabbleClient, normalizer, sync orchestrator).
+* **Phase 6 (REST API)**: ✅ Complete (12 endpoints: opportunities, auth, bookmarks, applications, dashboard, submissions, admin, cron).
+* **Phase 7 (Middleware & Security)**: ✅ Complete (auth decorators, rate limiter, input validators).
+* **Frontend**: ⏳ **NOT STARTED YET**.
 
 ---
 
@@ -42,12 +47,13 @@
 | **0** | **API Verification** | Verified Brabble API endpoints, parameters, and live data | ✅ Done |
 | **1** | **Spec Documentation** | Requirements, schemas, and security documented in `/docs` | ✅ Done |
 | **2** | **Project Setup & Handoff** | Renamed to OpportunityOS, created context handoff system, git init | ✅ Done |
-| **3** | **Database Schema (Supabase)** | Create Postgres tables (`opportunities`, `users`, `bookmarks`, `applications`, `sync_logs`) & RLS | ⏳ Next |
-| **4** | **Brabble Ingestion Engine** | `brabble_client.py`, normalizer, and upsert logic into Supabase | ⏳ Upcoming |
-| **5** | **Public REST API** | `/api/opportunities` (filtering by type, city, platform, search, sort, pagination) | ⏳ Upcoming |
-| **6** | **Frontend Discovery UI** | Responsive search/filter UI, opportunity cards, detail modal | ⏳ Upcoming |
-| **7** | **Auth & Personal OS** | User accounts, saved bookmarks, Kanban-style application tracker | ⏳ Upcoming |
-| **8** | **Vercel Deployment & Cron** | Live URL, Vercel Cron setup for automated sync | ⏳ Upcoming |
+| **3** | **Database Schema (Supabase)** | 7 migrations: 6 tables (`opp_opportunities`, `opp_users`, `opp_bookmarks`, `opp_applications`, `opp_submissions`, `opp_sync_logs`) + RLS policies | ✅ Done |
+| **4** | **Backend Scaffold** | Flask app factory, `vercel.json`, Supabase client factory (service_role + anon) | ✅ Done |
+| **5** | **Brabble Sync Engine** | `brabble_client.py` (paginated, rate-limited), `normalizer.py`, `sync.py` (upsert + expire) | ✅ Done |
+| **6** | **REST API (12 endpoints)** | Opportunities search/filter, auth (register/login/logout), bookmarks, applications, dashboard, submissions, admin CRUD, cron sync | ✅ Done |
+| **7** | **Security Middleware** | `login_required`/`admin_required` decorators, per-IP rate limiter, URL/email/password validators | ✅ Done |
+| **8** | **Frontend Discovery UI** | Responsive search/filter UI, opportunity cards, detail modal | ⏳ Next |
+| **9** | **Vercel Deployment & Cron** | Live URL, Vercel Cron setup for automated sync | ⏳ Upcoming |
 
 ---
 
@@ -57,7 +63,7 @@
 3. **Commit After Every Change**: Run atomic git commits after completing each discrete unit of work.
 4. **Zero Live Ingestion Queries on User Search**: Frontend search queries our indexed Supabase database, not the external Brabble API. Brabble is only hit by the hourly sync job.
 5. **Anti-IDOR & Parameterized SQL**: Every user query is scoped to `user_id = authenticated_user_id` and executed via parameterized queries.
-6. **No Unapproved Code**: Do not write application code until the user explicitly prompts "build backend".
+6. **Backend Built**: User explicitly prompted "build backend" — Phase 3–7 complete. All backend code committed.
 
 ---
 
@@ -68,7 +74,8 @@ When starting a new session or switching accounts, give the AI this prompt:
 I am building "OpportunityOS" — a student discovery & tracking platform for hackathons and coding contests.
 Please read `context/PROJECT_STATE.md` and `docs/` in the project root to understand the complete architecture, stack, and current progress.
 Follow all security rules: no hardcoded keys, commit after every single change, and do not hallucinate external dependencies.
-We are currently starting Phase 3 (Supabase Database Schema).
+Backend is COMPLETE (Phases 3–7). The codebase has a Flask API in `/api/` with 12 REST endpoints, Brabble sync engine, Supabase PostgreSQL (tables prefixed `opp_`), and security middleware.
+Next step: Phase 8 (Frontend Discovery UI) or Phase 9 (Vercel Deployment).
 ```
 
 ---
@@ -83,4 +90,12 @@ We are currently starting Phase 3 (Supabase Database Schema).
   * First commit created: `chore: initialize repository with security rules, environment templates, and AI context`.
   * Updated entire documentation suite in `/docs` (`01-PRD`, `02-TRD`, `03-Architecture`, `06-Database`, `07-API`, `10-Security`, `13-Deployment`, `14-Env`, `15-Roadmap`, `16-Decisions`, `17-Explanation`, `18-Interview-Prep`, `19-Troubleshooting`, `20-Changelog`).
   * Enforced zero-application-code policy until user explicitly requests "build backend".
+  * **Backend Built** (user command: "Build backend"):
+    * Applied 7 Supabase migrations via MCP: `opp_opportunities`, `opp_users`, `opp_bookmarks`, `opp_applications`, `opp_submissions`, `opp_sync_logs` + RLS policies.
+    * Created Flask app factory (`api/index.py`) with CORS, error handlers.
+    * Built Brabble sync engine: `brabble_client.py` (paginated fetch, rate limit tracking, retry), `normalizer.py` (Brabble→DB transform), `sync.py` (orchestrator).
+    * Implemented 12 REST API endpoints across 8 blueprint files.
+    * Security middleware: `auth_middleware.py` (session-based auth decorators), `rate_limiter.py` (per-IP), `validators.py` (URL scheme blocking, input validation).
+    * Passwords hashed with werkzeug PBKDF2-SHA256. Anti-enumeration on login errors.
+    * Commit: `b8e6a62` — 22 files, 2,187 insertions.
 
