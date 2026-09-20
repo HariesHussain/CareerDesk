@@ -1,10 +1,16 @@
 /**
- * OpportunityOS — API Client Service
+ * CareerDesk — API Client Service
  * ===================================
- * Handles requests to Flask backend endpoints with automatic Bearer JWT injection.
+ * Handles requests to Flask backend endpoints with automatic Bearer JWT injection,
+ * in-memory/sessionStorage query caching (5-min TTL), and request cancellation.
  */
 
 const ApiClient = {
+  // In-memory query cache & inflight request controllers
+  _cache: new Map(),
+  _activeAbortController: null,
+  _CACHE_TTL_MS: 5 * 60 * 1000, // 5 minutes
+
   async request(endpoint, options = {}) {
     const url = `${AppConfig.API_BASE_URL}${endpoint}`;
     const headers = {
@@ -33,15 +39,19 @@ const ApiClient = {
 
       return data;
     } catch (err) {
+      if (err.name === "AbortError") {
+        // Request was intentionally cancelled for newer query
+        return null;
+      }
       console.error(`API Error [${endpoint}]:`, err);
       throw err;
     }
   },
 
-  // ── Public Opportunity Endpoints ──────────────────────────────────────────
-  async getOpportunities(params = {}) {
+  // ── Public Opportunity Endpoints with Query Caching & Request Cancellation ─
+  async getOpportunities(params = {}, bypassCache = false) {
     const query = new URLSearchParams();
-    if (params.search) query.set("search", params.search);
+    if (params.search) query.set("search", params.search.trim());
     if (params.type && params.type !== "all") query.set("type", params.type);
     if (params.mode && params.mode !== "all") query.set("mode", params.mode);
     if (params.sort) query.set("sort", params.sort);
@@ -49,11 +59,90 @@ const ApiClient = {
     if (params.limit) query.set("limit", params.limit);
 
     const queryString = query.toString() ? `?${query.toString()}` : "";
-    return this.request(`/api/opportunities${queryString}`);
+    const cacheKey = `cd_opps_${queryString}`;
+    const now = Date.now();
+
+    // 1. Check in-memory cache
+    if (!bypassCache && this._cache.has(cacheKey)) {
+      const cached = this._cache.get(cacheKey);
+      if (now - cached.timestamp < this._CACHE_TTL_MS) {
+        return cached.data;
+      }
+      this._cache.delete(cacheKey);
+    }
+
+    // 2. Check sessionStorage cache
+    if (!bypassCache) {
+      try {
+        const stored = sessionStorage.getItem(cacheKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (now - parsed.timestamp < this._CACHE_TTL_MS) {
+            this._cache.set(cacheKey, parsed);
+            return parsed.data;
+          }
+          sessionStorage.removeItem(cacheKey);
+        }
+      } catch (e) {
+        // Ignore storage quotas or restrictions
+      }
+    }
+
+    // 3. Cancel previous inflight opportunity search request to avoid race conditions
+    if (this._activeAbortController) {
+      this._activeAbortController.abort();
+    }
+    this._activeAbortController = new AbortController();
+
+    try {
+      const data = await this.request(`/api/opportunities${queryString}`, {
+        signal: this._activeAbortController.signal
+      });
+
+      if (!data) return null; // Was aborted
+
+      // Cache the result
+      const cacheEntry = { timestamp: now, data };
+      this._cache.set(cacheKey, cacheEntry);
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify(cacheEntry));
+      } catch (e) {
+        // Handle potential quota exceeded
+      }
+
+      return data;
+    } finally {
+      this._activeAbortController = null;
+    }
+  },
+
+  clearCache() {
+    this._cache.clear();
+    try {
+      Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith("cd_opps_")) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    } catch (e) {}
   },
 
   async getOpportunity(id) {
-    return this.request(`/api/opportunities/${id}`);
+    const cacheKey = `cd_opp_${id}`;
+    const now = Date.now();
+
+    if (this._cache.has(cacheKey)) {
+      const cached = this._cache.get(cacheKey);
+      if (now - cached.timestamp < this._CACHE_TTL_MS) {
+        return cached.data;
+      }
+    }
+
+    const data = await this.request(`/api/opportunities/${id}`);
+    if (data) {
+      this._cache.set(cacheKey, { timestamp: now, data });
+    }
+    return data;
   },
 
   // ── Bookmarks ─────────────────────────────────────────────────────────────

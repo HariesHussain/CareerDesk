@@ -1,7 +1,7 @@
 /**
- * OpportunityOS — Auth Module (Supabase Auth & Google OAuth)
- * ==========================================================
- * Handles Google OAuth, session storage, and JWT token injection.
+ * CareerDesk — Auth Module (Supabase Auth & Google OAuth)
+ * ========================================================
+ * Implements Google One-Tap/OAuth, demo mode sign-in, and auth listener callbacks.
  */
 
 class AuthManager {

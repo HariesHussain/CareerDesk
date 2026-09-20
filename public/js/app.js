@@ -1,5 +1,5 @@
 /**
- * OpportunityOS — Application Controller
+ * CareerDesk — Application Controller
  * =======================================
  * Manages view routing, live search/filtering, Internshala-style opportunity cards,
  * optimistic bookmarks, Kanban pipeline, modals, and toasts.
@@ -26,8 +26,30 @@ class OpportunityApp {
     this.setupEventListeners();
     this.setupCookieConsent();
     this.setupAuthSync();
-    await this.loadExploreData();
+    this.setupScrollAnimations();
+    
+    // Lazy-load: only eagerly fetch opportunities if user is already authenticated into workspace
+    if (window.authManager && window.authManager.isAuthenticated()) {
+      await this.loadExploreData();
+    }
     await this.updateHeroStats();
+  }
+
+  // ── Scroll Reveal Animations ──────────────────────────────────────────────
+  setupScrollAnimations() {
+    if (!("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".reveal-on-scroll").forEach(el => observer.observe(el));
   }
 
   // ── Event Handlers & Routing ──────────────────────────────────────────────
@@ -115,7 +137,7 @@ class OpportunityApp {
     const btnDevStudentLogin = document.getElementById("btnDevStudentLogin");
     if (btnDevStudentLogin) {
       btnDevStudentLogin.addEventListener("click", async () => {
-        await window.authManager.loginAsDemo("student@opportunityos.in", "Rahul Sharma", "student");
+        await window.authManager.loginAsDemo("student@careerdesk.in", "Rahul Sharma", "student");
         this.closeAllModals();
         this.showToast("Logged in as Candidate (Rahul Sharma)", "success");
       });
@@ -449,6 +471,7 @@ class OpportunityApp {
 
     try {
       const data = await window.ApiClient.getOpportunities(this.currentFilters);
+      if (!data) return; // Request was aborted due to rapid new search query; ignore
       this.opportunities = data.opportunities || [];
       this.renderOpportunities(this.opportunities);
     } catch (err) {

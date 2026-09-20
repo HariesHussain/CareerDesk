@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A4E9B"/>
+      <stop offset="100%" stop-color="#008BDC"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD200"/>
+      <stop offset="100%" stop-color="#FFA800"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bgGrad)" filter="url(#glow)"/>
+  
+  <!-- Subtle Inner Border -->
+  <rect x="8.5" y="8.5" width="111" height="111" rx="27.5" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+
+  <!-- Geometric "CD" Ascending Symbol -->
+  <!-- Stylized "C" Arc & Arrow -->
+  <path d="M72 34 H48 C36.95 34 28 42.95 28 54 V74 C28 85.05 36.95 94 48 94 H72 C80 94 86 89 86 89 L78 79 C78 79 74 82 70 82 H48 C43.58 82 40 78.42 40 74 V54 C40 49.58 43.58 46 48 46 H70 C74 46 78 49 78 49 L86 39 C86 39 80 34 72 34 Z" fill="#FFFFFF"/>
+  
+  <!-- Electric Upward Career Spark / Diamond in Gold -->
+  <polygon points="78,24 94,40 82,52 66,36" fill="url(#accentGrad)"/>
+  <polygon points="86,46 102,62 90,74 74,58" fill="#FFFFFF" opacity="0.95"/>
+  <polygon points="94,68 106,80 96,90 84,78" fill="url(#accentGrad)"/>
+</svg>

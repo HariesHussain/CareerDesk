@@ -3,9 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-  <title>OpportunityOS — India's #1 Student Career OS for Hackathons, Contests & Fellowships</title>
-  <meta name="description" content="Discover 900+ national hackathons, coding challenges, internships, and fellowships. Track your applications with OpportunityOS.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <title>CareerDesk — India's #1 Platform for Hackathons, Internships & Student Opportunities</title>
+  <meta name="description" content="Discover 900+ national hackathons, coding contests, paid internships, and fellowships with ₹1.8 Cr+ in live prize pools. Official direct links, zero spam.">
+  
+  <!-- Custom Favicon (CareerDesk Monogram Squircle) -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="alternate icon" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+
+  <!-- Open Graph / Facebook / LinkedIn / WhatsApp Social Share Cards -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://careerdesk.in/">
+  <meta property="og:title" content="CareerDesk — India's #1 Platform for Hackathons, Internships & Opportunities">
+  <meta property="og:description" content="Discover 900+ national hackathons, coding contests, paid internships, and fellowships with ₹1.8 Cr+ in live prize pools. Verified direct links, zero spam.">
+  <meta property="og:image" content="/images/hero_students.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="CareerDesk">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://careerdesk.in/">
+  <meta name="twitter:title" content="CareerDesk — India's #1 Platform for Hackathons & Internships">
+  <meta name="twitter:description" content="Discover 900+ verified hackathons, coding contests, and fellowships with live prize pools. Track applications effortlessly.">
+  <meta name="twitter:image" content="/images/hero_students.jpg">
 
   <!-- Design System & Google Fonts -->
   <link rel="stylesheet" href="/css/style.css">
@@ -19,11 +40,11 @@
   <header class="site-header" role="banner">
     <div class="nav-container">
       <!-- Left: Brand Logo -->
-      <a href="/" class="brand-wrapper" aria-label="OpportunityOS Home">
+      <a href="/" class="brand-wrapper" aria-label="CareerDesk Home">
         <div class="brand-logo-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
-        <span class="brand-title">Opportunity<span>OS</span></span>
+        <span class="brand-title">Career<span>Desk</span></span>
       </a>
 
       <!-- Center: Guest Navigation Links (Visible when logged out) -->
@@ -195,28 +216,28 @@
                 Continue with Google
               </button>
 
-              <button id="btnHeroExplore" class="btn-signup-secondary" aria-label="Explore Product Guide">
+              <button id="btnHeroDevLogin" class="btn-signup-email" aria-label="Continue with Email">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
-                How It Works
+                Continue with Email
               </button>
             </div>
 
             <div class="hero-tnc-notice">
-              By continuing as a candidate, you agree to our <a href="/terms.html" target="_blank">T&amp;C</a> &amp; <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+              By continuing, you agree to our <a href="/terms.html" target="_blank">T&amp;C</a> &amp; <a href="/privacy.html" target="_blank">Privacy Policy</a>.
             </div>
           </div>
 
-          <!-- Secondary Links: Organizer & Fast Dev Test -->
-          <div style="display: flex; gap: 20px; align-items: center; margin-top: 14px; flex-wrap: wrap;">
+          <!-- Secondary Links: Organizer & How It Works -->
+          <div class="hero-sublinks-wrapper">
             <a href="#how-to-use" id="btnHeroSubmit" class="hero-secondary-link">
               Organizer / College sign up &gt;
             </a>
             <span style="color: rgba(255,255,255,0.4);">&bull;</span>
-            <a href="#" id="btnHeroDevLogin" class="hero-secondary-link" style="color: #FFD200; font-weight: 600;">
-              ⚡ Quick Dev Sign-In &gt;
+            <a href="#overview" class="hero-secondary-link" style="color: rgba(255,255,255,0.85); font-weight: 500;">
+              How It Works &gt;
             </a>
           </div>
         </div>
@@ -240,7 +261,7 @@
             </div>
           </div>
 
-          <img src="/images/hero_students.jpg" alt="Smiling tech students holding laptop and achievement certificates" class="hero-students-img" width="520" height="340">
+          <img src="/images/hero_students.jpg" alt="Indian college students holding laptop and achievement certificates" class="hero-students-img" width="680" height="420">
         </div>
       </div>
     </section>
@@ -290,9 +311,9 @@
       </div>
     </section>
 
-    <!-- ── Section 1: What is OpportunityOS? (Platform Vision) ─────────────── -->
+    <!-- ── Section 1: What is CareerDesk? (Platform Vision) ─────────────── -->
     <section id="overview" class="landing-section">
-      <div class="section-center-head">
+      <div class="section-center-head reveal-on-scroll">
         <span class="section-tag-pill">About The Platform</span>
         <h2 class="section-main-title">The Student Career Operating System</h2>
         <p class="section-desc">
@@ -301,15 +322,15 @@
       </div>
 
       <div class="pillars-grid">
-        <div class="pillar-card">
+        <div class="pillar-card reveal-on-scroll">
           <div class="pillar-icon-box blue">🌐</div>
           <h3 class="pillar-title">50+ Portals in 1 Live Terminal</h3>
           <p class="pillar-text">
-            Stop checking scattered Discord channels, Telegram groups, and multiple aggregator websites. OpportunityOS aggregates 900+ active hackathons, coding contests, and fellowships into a single structured index.
+            Stop checking scattered Discord channels, Telegram groups, and multiple aggregator websites. CareerDesk aggregates 900+ active hackathons, coding contests, and fellowships into a single structured index.
           </p>
         </div>
 
-        <div class="pillar-card">
+        <div class="pillar-card reveal-on-scroll">
           <div class="pillar-icon-box green">🛡️</div>
           <h3 class="pillar-title">Zero Spam &amp; ₹0 Scam Filtering</h3>
           <p class="pillar-text">
@@ -317,7 +338,7 @@
           </p>
         </div>
 
-        <div class="pillar-card">
+        <div class="pillar-card reveal-on-scroll">
           <div class="pillar-icon-box purple">⚡</div>
           <h3 class="pillar-title">Centralized Career Kanban</h3>
           <p class="pillar-text">
@@ -330,16 +351,16 @@
     <!-- ── Section 2: How It Works (4-Step Animated Pipeline) ──────────────── -->
     <section id="how-it-works" class="landing-section-full">
       <div class="landing-section-inner">
-        <div class="section-center-head">
+        <div class="section-center-head reveal-on-scroll">
           <span class="section-tag-pill orange">Automated Intelligence</span>
-          <h2 class="section-main-title">How OpportunityOS Works Under The Hood</h2>
+          <h2 class="section-main-title">How CareerDesk Works Under The Hood</h2>
           <p class="section-desc">
             A continuous automated pipeline ensuring you discover every high-stakes national opportunity weeks before registration deadlines close.
           </p>
         </div>
 
         <div class="pipeline-steps-grid">
-          <div class="step-card">
+          <div class="step-card reveal-on-scroll">
             <span class="step-number">STEP 01</span>
             <h3 class="step-title">Multi-Source Scraping</h3>
             <p class="step-desc">
@@ -347,7 +368,7 @@
             </p>
           </div>
 
-          <div class="step-card">
+          <div class="step-card reveal-on-scroll">
             <span class="step-number">STEP 02</span>
             <h3 class="step-title">AI Normalization</h3>
             <p class="step-desc">
@@ -355,7 +376,7 @@
             </p>
           </div>
 
-          <div class="step-card">
+          <div class="step-card reveal-on-scroll">
             <span class="step-number">STEP 03</span>
             <h3 class="step-title">Direct Official Link</h3>
             <p class="step-desc">
@@ -363,7 +384,7 @@
             </p>
           </div>
 
-          <div class="step-card">
+          <div class="step-card reveal-on-scroll">
             <span class="step-number">STEP 04</span>
             <h3 class="step-title">Kanban Milestone Tracking</h3>
             <p class="step-desc">
@@ -376,16 +397,16 @@
 
     <!-- ── Section 3: How to Use It (Role Switcher Tabs) ───────────────────── -->
     <section id="how-to-use" class="landing-section">
-      <div class="section-center-head">
+      <div class="section-center-head reveal-on-scroll">
         <span class="section-tag-pill purple">Workflow Blueprint</span>
-        <h2 class="section-main-title">How To Use OpportunityOS</h2>
+        <h2 class="section-main-title">How To Use CareerDesk</h2>
         <p class="section-desc">
           Whether you are a student hungry for your next hackathon win or a college tech club organizing a national coding sprint, we have you covered.
         </p>
       </div>
 
       <!-- Segmented Role Control -->
-      <div class="role-tabs-wrap">
+      <div class="role-tabs-wrap reveal-on-scroll">
         <div class="role-segmented-control" role="tablist">
           <button class="role-tab-btn active" id="roleTabCandidate" role="tab" aria-selected="true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -400,19 +421,19 @@
 
       <!-- Candidates Workflow Panel -->
       <div id="rolePanelCandidate" class="role-workflow-grid">
-        <div class="workflow-card">
+        <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">1</div>
           <h4>Search &amp; Filter Opportunities</h4>
           <p>Filter by event type (Hackathons, Coding Contests, Fellowships), mode (Online / Hybrid), or prize pool to discover matching events instantly.</p>
         </div>
 
-        <div class="workflow-card">
+        <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">2</div>
           <h4>Bookmark &amp; Monitor Deadlines</h4>
           <p>Save events to your personal shortlist. Live countdown timers highlight urgent deadlines closing within 7 days so you never miss out.</p>
         </div>
 
-        <div class="workflow-card">
+        <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">3</div>
           <h4>Track on Private Kanban Board</h4>
           <p>Once you register on the official portal, advance your card from "Applied" to "In Review" and "Selected" to build your career track record.</p>
@@ -421,22 +442,22 @@
 
       <!-- Organizers Workflow Panel (Hidden by default) -->
       <div id="rolePanelOrganizer" class="role-workflow-grid" style="display: none;">
-        <div class="workflow-card">
+        <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">1</div>
           <h4>Submit Competition Details</h4>
           <p>Fill out the free community submission form with your event title, problem statements, registration deadline, and official link.</p>
         </div>
 
-        <div class="workflow-card">
+        <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">2</div>
           <h4>Fast 24h Moderation Check</h4>
           <p>Our admin moderation desk reviews your listing for authenticity, verified official URLs, and student safety within 24 hours.</p>
         </div>
 
-        <div class="workflow-card">
+        <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">3</div>
           <h4>Reach 50,000+ Active Students</h4>
-          <p>Once approved, your event appears directly on the live OpportunityOS terminal, viewed daily by ambitious engineering students nationwide.</p>
+          <p>Once approved, your event appears directly on the live CareerDesk terminal, viewed daily by ambitious engineering students nationwide.</p>
         </div>
       </div>
     </section>
@@ -444,7 +465,7 @@
     <!-- ── Section 4: Who Is It For? (Bento Persona Grid) ──────────────────── -->
     <section id="for-whom" class="landing-section-full">
       <div class="landing-section-inner">
-        <div class="section-center-head">
+        <div class="section-center-head reveal-on-scroll">
           <span class="section-tag-pill">Target Personas</span>
           <h2 class="section-main-title">Who Gets The Most Value?</h2>
           <p class="section-desc">
@@ -454,7 +475,7 @@
 
         <div class="persona-bento-grid">
           <!-- Persona 1 -->
-          <div class="persona-card">
+          <div class="persona-card reveal-on-scroll">
             <div class="persona-header">
               <div class="persona-avatar-box" style="background: var(--brand-primary-light); color: var(--brand-primary);">🎓</div>
               <div>
@@ -473,7 +494,7 @@
           </div>
 
           <!-- Persona 2 -->
-          <div class="persona-card accent-orange">
+          <div class="persona-card accent-orange reveal-on-scroll">
             <div class="persona-header">
               <div class="persona-avatar-box" style="background: var(--accent-orange-light); color: var(--accent-orange);">💻</div>
               <div>
@@ -492,7 +513,7 @@
           </div>
 
           <!-- Persona 3 -->
-          <div class="persona-card accent-purple">
+          <div class="persona-card accent-purple reveal-on-scroll">
             <div class="persona-header">
               <div class="persona-avatar-box" style="background: var(--accent-purple-light); color: var(--accent-purple);">🚀</div>
               <div>
@@ -511,7 +532,7 @@
           </div>
 
           <!-- Persona 4 -->
-          <div class="persona-card accent-green">
+          <div class="persona-card accent-green reveal-on-scroll">
             <div class="persona-header">
               <div class="persona-avatar-box" style="background: var(--accent-green-light); color: var(--accent-green);">🏛️</div>
               <div>
@@ -534,7 +555,7 @@
 
     <!-- ── Section 5: High-Conversion CTA Banner ────────────────────────────── -->
     <section id="cta-join" class="landing-section">
-      <div class="landing-cta-banner">
+      <div class="landing-cta-banner reveal-on-scroll">
         <h2 class="cta-title">Ready to Accelerate Your Tech Career?</h2>
         <p class="cta-sub">
           Unlock the full private terminal with 900+ verified hackathons, advanced multi-filters, and your personalized Kanban application tracker.
@@ -955,13 +976,13 @@
       <div class="footer-brand">
         <h3>
           <div class="brand-logo-icon" style="width: 28px; height: 28px;" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           </div>
-          Opportunity<span>OS</span>
+          Career<span>Desk</span>
         </h3>
         <p>The student career operating system aggregating verified hackathons, coding contests, and tech fellowships across India with direct official portals.</p>
         <div class="footer-safeharbor">
-          <strong>Intermediary Notice:</strong> OpportunityOS operates as an aggregator under Section 79 of the Information Technology Act, 2000. All listings link directly to external official registration portals.
+          <strong>Intermediary Notice:</strong> CareerDesk operates as an aggregator under Section 79 of the Information Technology Act, 2000. All listings link directly to external official registration portals.
         </div>
       </div>
 
@@ -978,16 +999,16 @@
       <div class="footer-col">
         <h4>Grievance Redressal</h4>
         <div class="footer-meta-item">
-          <strong>Publisher:</strong> OpportunityOS Technologies
+          <strong>Publisher:</strong> CareerDesk Technologies
         </div>
         <div class="footer-meta-item">
           <strong>Location:</strong> Bengaluru, Karnataka, India
         </div>
         <div class="footer-meta-item">
-          <strong>Support:</strong> <a href="mailto:support@opportunityos.in" style="color: var(--brand-primary);">support@opportunityos.in</a>
+          <strong>Support:</strong> <a href="mailto:support@careerdesk.in" style="color: var(--brand-primary);">support@careerdesk.in</a>
         </div>
         <div class="footer-meta-item">
-          <strong>Grievance Officer:</strong> Haries Hussain (<a href="mailto:grievance@opportunityos.in" style="color: var(--brand-primary);">grievance@opportunityos.in</a>)
+          <strong>Grievance Officer:</strong> Haries Hussain (<a href="mailto:grievance@careerdesk.in" style="color: var(--brand-primary);">grievance@careerdesk.in</a>)
         </div>
         <div class="footer-meta-item" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
           Statutory acknowledgement SLA: 48 hours.
@@ -996,7 +1017,7 @@
     </div>
 
     <div class="footer-bottom">
-      <div>&copy; 2026 OpportunityOS Technologies. All rights reserved. Built for Indian students &amp; developers.</div>
+      <div>&copy; 2026 CareerDesk Technologies. All rights reserved. Built for Indian students &amp; developers.</div>
       <div style="display: flex; gap: 16px;">
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>

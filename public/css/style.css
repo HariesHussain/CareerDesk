@@ -1,5 +1,5 @@
 /* ==========================================================================
-   OpportunityOS — Internshala-Inspired Design System
+   CareerDesk — Internshala-Inspired Design System
    Brand: #008BDC (Primary Blue) | #0A4E9B (Cobalt Hero) | #FF6B00 (Alert)
    Mobile-First · Production-Grade · Zero AI Slop
    ========================================================================== */
@@ -198,7 +198,7 @@ input:focus, select:focus, textarea:focus {
   font-family: var(--font-heading);
   font-size: 1.35rem;
   font-weight: 800;
-  color: #212121;
+  color: #1E293B;
   letter-spacing: -0.02em;
 }
 
@@ -397,7 +397,10 @@ input:focus, select:focus, textarea:focus {
   color: #FFFFFF;
   position: relative;
   overflow: hidden;
-  padding: 44px 0 0 0;
+  padding: 48px 0 0 0;
+  min-height: 86vh;
+  display: flex;
+  align-items: flex-end;
 }
 
 /* Ambient Subtle Background Curves */
@@ -426,19 +429,21 @@ input:focus, select:focus, textarea:focus {
 }
 
 .hero-inner {
-  max-width: 1240px;
+  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 32px;
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  align-items: end;
-  gap: 32px;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: flex-end;
+  gap: 36px;
   position: relative;
   z-index: 2;
 }
 
 .hero-left-content {
-  padding-bottom: 48px;
+  padding-bottom: 56px;
+  padding-top: 24px;
 }
 
 .hero-heading {
@@ -599,13 +604,51 @@ input:focus, select:focus, textarea:focus {
   align-items: flex-end;
 }
 
+.btn-signup-email {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #083B70;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 600;
+  height: 48px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-signup-email:hover {
+  background: #062F5B;
+  border-color: rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+.btn-signup-email svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.hero-sublinks-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
 .hero-students-img {
   width: 100%;
-  max-width: 520px;
+  max-width: 680px;
   height: auto;
   display: block;
-  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.3));
-  border-radius: 12px 12px 0 0;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.35));
+  border-radius: 0;
+  margin-bottom: 0;
 }
 
 /* Micro-interaction Floating Chips */
@@ -2110,17 +2153,44 @@ input:focus, select:focus, textarea:focus {
   transform: translateY(-2px);
 }
 
+/* ── Scroll Reveal Animations ────────────────────────────────────────────── */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 /* ── Responsive & Mobile-First Breakpoints ───────────────────────────────── */
 @media (max-width: 1024px) {
+  .hero-wrapper {
+    min-height: auto;
+    padding-top: 36px;
+  }
   .hero-inner {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 28px;
+    padding: 0 24px;
   }
   .hero-left-content {
-    padding-bottom: 20px;
+    padding-bottom: 24px;
   }
   .hero-right-image-container {
-    display: none; /* Mobile/tablet prioritizes conversion trigger */
+    max-width: 500px;
+    margin: 0 auto;
   }
   .kanban-board-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2142,16 +2212,100 @@ input:focus, select:focus, textarea:focus {
     height: 60px;
   }
   .hero-wrapper {
-    padding: 32px 0 0 0;
+    padding: 24px 16px 28px;
+    min-height: auto;
+    display: block;
+  }
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    gap: 0;
+  }
+  .hero-left-content {
+    display: contents; /* Flattens children so they can be re-ordered around the image */
+  }
+  .hero-heading {
+    order: 1;
+    margin-bottom: 14px;
+    width: 100%;
+    text-align: center;
   }
   .hero-title-main {
-    font-size: 1.85rem;
+    font-size: 2rem;
+    line-height: 1.15;
   }
   .hero-subheading {
-    font-size: 1rem;
+    font-size: 0.96rem;
+    margin-top: 6px;
+  }
+  .hero-right-image-container {
+    order: 2;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 340px;
+    margin: 10px auto 16px auto;
+    position: relative;
+  }
+  .hero-students-img {
+    max-width: 300px;
+    width: 88%;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+  }
+  .floating-chip {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+  .floating-chip.top-left {
+    top: 8%;
+    left: -6px;
+  }
+  .floating-chip.bottom-right {
+    bottom: 10%;
+    right: -6px;
+  }
+  .candidate-signup-box {
+    order: 3;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+  }
+  .candidate-tag {
+    justify-content: center;
+    margin-bottom: 12px;
   }
   .signup-buttons-row {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .btn-signup-google,
+  .btn-signup-email,
+  .btn-signup-secondary {
+    width: 100%;
+    height: 46px;
+  }
+  .hero-tnc-notice {
+    text-align: center;
+    margin-top: 12px;
+  }
+  .hero-sublinks-wrapper {
+    order: 4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 14px;
+    width: 100%;
   }
   .search-filter-grid {
     grid-template-columns: 1fr;

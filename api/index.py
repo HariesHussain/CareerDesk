@@ -1,6 +1,6 @@
 """
-OpportunityOS — Flask Application Factory
-==========================================
+CareerDesk — Flask Application Factory
+=======================================
 Single entry point for all API routes, deployed as a Vercel serverless function.
 All secrets loaded from environment variables — never hardcoded.
 """
@@ -39,10 +39,11 @@ def create_app():
     @app.after_request
     def add_cors_headers(response):
         """
-        Production: restrict to OpportunityOS domain only.
+        Production: restrict to CareerDesk domain only.
         Development: allow localhost origins.
         """
         allowed_origins = [
+            "https://careerdesk.vercel.app",
             "https://opportunity-os.vercel.app",
             "http://localhost:3000",
             "http://localhost:5173",
@@ -52,7 +53,7 @@ def create_app():
         request_origin = __import__("flask").request.headers.get("Origin", "")
 
         if os.environ.get("FLASK_ENV") == "production":
-            if request_origin == "https://opportunity-os.vercel.app":
+            if request_origin in ["https://careerdesk.vercel.app", "https://opportunity-os.vercel.app"]:
                 response.headers["Access-Control-Allow-Origin"] = request_origin
         else:
             if request_origin in allowed_origins:
@@ -82,6 +83,8 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(cron_bp)
 
+    public_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public")
+
     # ── Global Error Handlers ───────────────────────────────────────────
     # Never leak stack traces, file paths, or SQL errors to the client.
 
@@ -99,6 +102,11 @@ def create_app():
 
     @app.errorhandler(404)
     def not_found(e):
+        from flask import request, send_from_directory
+        if not request.path.startswith("/api"):
+            four_oh_four = os.path.join(public_dir, "404.html")
+            if os.path.isfile(four_oh_four):
+                return send_from_directory(public_dir, "404.html"), 404
         return jsonify({"error": "Resource not found."}), 404
 
     @app.errorhandler(405)
@@ -118,7 +126,7 @@ def create_app():
     # ── Health Check ────────────────────────────────────────────────────
     @app.route("/api/health")
     def health():
-        return jsonify({"status": "ok", "service": "OpportunityOS API"})
+        return jsonify({"status": "ok", "service": "CareerDesk API"})
 
     # ── Public Client Configuration ─────────────────────────────────────
     @app.route("/api/config")
@@ -133,8 +141,6 @@ def create_app():
         })
 
     # ── Static Frontend Serving (Local Development & Edge Fallback) ──────
-    public_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public")
-
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def serve_frontend(path):
@@ -146,9 +152,13 @@ def create_app():
         file_path = os.path.join(public_dir, path)
         if path and os.path.isfile(file_path):
             return send_from_directory(public_dir, path)
-        if os.path.isfile(os.path.join(public_dir, "index.html")):
+        elif not path:
             return send_from_directory(public_dir, "index.html")
-        return jsonify({"error": "Frontend build not found."}), 404
+        else:
+            four_oh_four = os.path.join(public_dir, "404.html")
+            if os.path.isfile(four_oh_four):
+                return send_from_directory(public_dir, "404.html"), 404
+            return jsonify({"error": "Frontend page not found."}), 404
 
     return app
 

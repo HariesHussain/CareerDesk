@@ -1,5 +1,5 @@
 /**
- * OpportunityOS — Frontend Configuration
+ * CareerDesk — Frontend Configuration
  * =======================================
  * Dynamically populated from backend server environment variables (/api/config).
  * Zero API keys or secrets hardcoded in frontend source files.
