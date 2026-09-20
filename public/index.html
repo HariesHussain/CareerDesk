@@ -877,11 +877,11 @@
       </div>
 
       <form id="profileForm" class="profile-form">
-        <!-- Section 1: Academic & Personal Background -->
+        <!-- Academic & Personal Background -->
         <div class="profile-form-section">
           <h4 class="profile-section-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            Personal &amp; Academic Background
+            Personal &amp; Academic Details
           </h4>
 
           <div class="form-row-2col">
@@ -892,7 +892,7 @@
 
             <div class="form-group">
               <label class="form-label" for="profileCollegeName">College / University Name</label>
-              <input type="text" id="profileCollegeName" name="college_name" class="form-input" placeholder="e.g. IIT Bombay / BITS Pilani" maxlength="300">
+              <input type="text" id="profileCollegeName" name="college_name" class="form-input" placeholder="e.g. Santhiram Engineering College" maxlength="300">
             </div>
           </div>
 
@@ -914,59 +914,6 @@
                 <option value="2029">2029+</option>
               </select>
             </div>
-          </div>
-        </div>
-
-        <!-- Section 2: Bio & Skills -->
-        <div class="profile-form-section">
-          <h4 class="profile-section-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            Skills &amp; Technical Interests
-          </h4>
-
-          <div class="form-group">
-            <label class="form-label" for="profileBio">Bio / Summary</label>
-            <textarea id="profileBio" name="bio" class="form-textarea" rows="3" placeholder="Tell organizers and teammates about your interests, past hackathons, or project specializations..." maxlength="1000"></textarea>
-            <div class="char-counter"><span id="profileBioCount">0</span> / 1000 characters</div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="profileSkills">Technical Skills (comma-separated)</label>
-            <input type="text" id="profileSkills" name="skills" class="form-input" placeholder="e.g. Python, React, Next.js, AI/ML, Rust, Tailwind CSS" maxlength="500">
-            
-            <div class="skill-quick-chips" aria-label="Suggested skills">
-              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('Python')">+ Python</span>
-              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('React')">+ React</span>
-              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('AI / ML')">+ AI / ML</span>
-              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('Next.js')">+ Next.js</span>
-              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('Web3 / Solidity')">+ Web3</span>
-              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('UI/UX')">+ UI/UX</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 3: Professional Portfolios & Links -->
-        <div class="profile-form-section">
-          <h4 class="profile-section-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-            Professional Links &amp; Profiles
-          </h4>
-
-          <div class="form-row-2col">
-            <div class="form-group">
-              <label class="form-label" for="profileGithubUrl">GitHub Profile URL</label>
-              <input type="url" id="profileGithubUrl" name="github_url" class="form-input" placeholder="https://github.com/username">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="profileLinkedinUrl">LinkedIn Profile URL</label>
-              <input type="url" id="profileLinkedinUrl" name="linkedin_url" class="form-input" placeholder="https://linkedin.com/in/username">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="profilePortfolioUrl">Portfolio / Personal Website</label>
-            <input type="url" id="profilePortfolioUrl" name="portfolio_url" class="form-input" placeholder="https://yourportfolio.dev">
           </div>
         </div>
 

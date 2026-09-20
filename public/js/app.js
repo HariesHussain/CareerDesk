@@ -165,14 +165,6 @@ class OpportunityApp {
       });
     }
 
-    const profileBio = document.getElementById("profileBio");
-    const profileBioCount = document.getElementById("profileBioCount");
-    if (profileBio && profileBioCount) {
-      profileBio.addEventListener("input", (e) => {
-        profileBioCount.textContent = e.target.value.length;
-      });
-    }
-
     // Role Switcher Tabs on Landing Page
     const roleTabCandidate = document.getElementById("roleTabCandidate");
     const roleTabOrganizer = document.getElementById("roleTabOrganizer");
@@ -1123,14 +1115,6 @@ class OpportunityApp {
     setVal("profileCollegeName", profile.college_name);
     setVal("profileDegree", profile.degree);
     setVal("profileGraduationYear", profile.graduation_year);
-    setVal("profileBio", profile.bio);
-    setVal("profileSkills", profile.skills);
-    setVal("profileGithubUrl", profile.github_url);
-    setVal("profileLinkedinUrl", profile.linkedin_url);
-    setVal("profilePortfolioUrl", profile.portfolio_url);
-
-    const bioCount = document.getElementById("profileBioCount");
-    if (bioCount) bioCount.textContent = (profile.bio || "").length;
 
     this.openModal("profileModal");
   }
@@ -1151,11 +1135,6 @@ class OpportunityApp {
       college_name: (document.getElementById("profileCollegeName")?.value || "").trim(),
       degree: (document.getElementById("profileDegree")?.value || "").trim(),
       graduation_year: (document.getElementById("profileGraduationYear")?.value || "").trim(),
-      bio: (document.getElementById("profileBio")?.value || "").trim(),
-      skills: (document.getElementById("profileSkills")?.value || "").trim(),
-      github_url: (document.getElementById("profileGithubUrl")?.value || "").trim(),
-      linkedin_url: (document.getElementById("profileLinkedinUrl")?.value || "").trim(),
-      portfolio_url: (document.getElementById("profilePortfolioUrl")?.value || "").trim(),
     };
 
     try {
