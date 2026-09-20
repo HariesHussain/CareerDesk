@@ -34,25 +34,26 @@
 * **Phase 3 (Database Schema)**: ✅ Complete (7 Supabase migrations: 6 tables + RLS policies via MCP).
 * **Phase 4 (Project Scaffold)**: ✅ Complete (Flask app factory, `vercel.json`, Supabase client).
 * **Phase 5 (Brabble Sync Engine)**: ✅ Complete (BrabbleClient, normalizer, sync orchestrator).
-* **Phase 6 (REST API)**: ✅ Complete (12 endpoints: opportunities, auth, bookmarks, applications, dashboard, submissions, admin, cron).
-* **Phase 7 (Middleware & Security)**: ✅ Complete (auth decorators, rate limiter, input validators).
-* **Frontend**: ⏳ **NOT STARTED YET**.
+* **Phase 6 (REST API)**: ✅ Complete (12 endpoints: opportunities, auth, bookmarks, applications, dashboard, submissi* **Phase 7 (Middleware & Security)**: ✅ Complete (auth decorators, rate limiter, input validators).
+* **Phase 7.5 (Supabase Auth Migration & DB Cleanup)**: ✅ Complete (Dropped 26 legacy hospital tables, migrated from Flask sessions to Supabase Auth Google SSO only, created `opp_profiles` linked to `auth.users(id)` with automated trigger, Bearer JWT validation in middleware).
+* **Frontend**: ⏳ **NOT STARTED YET** (Phase 8 is next).
 
 ---
 
 ## 4. Master Development Roadmap
 
 | Phase | Milestone | Description | Status |
-| :---: | :--- | :--- | :---: |
+| :---: | :--- | :--- | :--- |
 | **0** | **API Verification** | Verified Brabble API endpoints, parameters, and live data | ✅ Done |
 | **1** | **Spec Documentation** | Requirements, schemas, and security documented in `/docs` | ✅ Done |
 | **2** | **Project Setup & Handoff** | Renamed to OpportunityOS, created context handoff system, git init | ✅ Done |
-| **3** | **Database Schema (Supabase)** | 7 migrations: 6 tables (`opp_opportunities`, `opp_users`, `opp_bookmarks`, `opp_applications`, `opp_submissions`, `opp_sync_logs`) + RLS policies | ✅ Done |
+| **3** | **Database Schema (Supabase)** | Initial tables + RLS policies | ✅ Done |
 | **4** | **Backend Scaffold** | Flask app factory, `vercel.json`, Supabase client factory (service_role + anon) | ✅ Done |
 | **5** | **Brabble Sync Engine** | `brabble_client.py` (paginated, rate-limited), `normalizer.py`, `sync.py` (upsert + expire) | ✅ Done |
-| **6** | **REST API (12 endpoints)** | Opportunities search/filter, auth (register/login/logout), bookmarks, applications, dashboard, submissions, admin CRUD, cron sync | ✅ Done |
-| **7** | **Security Middleware** | `login_required`/`admin_required` decorators, per-IP rate limiter, URL/email/password validators | ✅ Done |
-| **8** | **Frontend Discovery UI** | Responsive search/filter UI, opportunity cards, detail modal | ⏳ Next |
+| **6** | **REST API (12 endpoints)** | Opportunities search/filter, auth, bookmarks, applications, dashboard, submissions, admin CRUD, cron sync | ✅ Done |
+| **7** | **Security Middleware** | `login_required`/`admin_required` decorators, per-IP rate limiter, URL/input validators | ✅ Done |
+| **7.5** | **Supabase Auth & DB Cleanup** | Dropped 26 legacy tables, Google SSO only, `opp_profiles` with `auth.users` trigger, Bearer JWT middleware | ✅ Done |
+| **8** | **Frontend Discovery UI** | Next.js / Vite UI, Supabase Google sign-in, opportunity search & filter, bookmarks & Kanban tracker | ⏳ Next |
 | **9** | **Vercel Deployment & Cron** | Live URL, Vercel Cron setup for automated sync | ⏳ Upcoming |
 
 ---
@@ -63,7 +64,7 @@
 3. **Commit After Every Change**: Run atomic git commits after completing each discrete unit of work.
 4. **Zero Live Ingestion Queries on User Search**: Frontend search queries our indexed Supabase database, not the external Brabble API. Brabble is only hit by the hourly sync job.
 5. **Anti-IDOR & Parameterized SQL**: Every user query is scoped to `user_id = authenticated_user_id` and executed via parameterized queries.
-6. **Backend Built**: User explicitly prompted "build backend" — Phase 3–7 complete. All backend code committed.
+6. **Authentication Pattern**: Supabase Auth with Google OAuth Only. No passwords stored on OpportunityOS. API expects `Authorization: Bearer <supabase_access_token>`.
 
 ---
 
@@ -74,8 +75,9 @@ When starting a new session or switching accounts, give the AI this prompt:
 I am building "OpportunityOS" — a student discovery & tracking platform for hackathons and coding contests.
 Please read `context/PROJECT_STATE.md` and `docs/` in the project root to understand the complete architecture, stack, and current progress.
 Follow all security rules: no hardcoded keys, commit after every single change, and do not hallucinate external dependencies.
-Backend is COMPLETE (Phases 3–7). The codebase has a Flask API in `/api/` with 12 REST endpoints, Brabble sync engine, Supabase PostgreSQL (tables prefixed `opp_`), and security middleware.
-Next step: Phase 8 (Frontend Discovery UI) or Phase 9 (Vercel Deployment).
+Backend and Database are COMPLETE (Phases 3–7.5). The Supabase database contains only `opp_*` tables (`opp_opportunities`, `opp_profiles`, `opp_bookmarks`, `opp_applications`, `opp_submissions`, `opp_sync_logs`).
+Authentication is Supabase Auth with Google Single Sign-On ONLY. Protected endpoints require `Authorization: Bearer <access_token>`.
+Next step: Phase 8 (Frontend Discovery UI).
 ```
 
 ---
@@ -88,14 +90,22 @@ Next step: Phase 8 (Frontend Discovery UI) or Phase 9 (Vercel Deployment).
   * Security-hardened `.gitignore` and `.env.example` created with Supabase pooler credentials and `CRON_SECRET`.
   * Git initialized; staged `.agents/` skills and initial configuration.
   * First commit created: `chore: initialize repository with security rules, environment templates, and AI context`.
-  * Updated entire documentation suite in `/docs` (`01-PRD`, `02-TRD`, `03-Architecture`, `06-Database`, `07-API`, `10-Security`, `13-Deployment`, `14-Env`, `15-Roadmap`, `16-Decisions`, `17-Explanation`, `18-Interview-Prep`, `19-Troubleshooting`, `20-Changelog`).
-  * Enforced zero-application-code policy until user explicitly requests "build backend".
+  * Updated entire documentation suite in `/docs`.
+  * Enforced zero-application-code policy until user explicitly requested "build backend".
   * **Backend Built** (user command: "Build backend"):
-    * Applied 7 Supabase migrations via MCP: `opp_opportunities`, `opp_users`, `opp_bookmarks`, `opp_applications`, `opp_submissions`, `opp_sync_logs` + RLS policies.
+    * Applied Supabase migrations via MCP: `opp_opportunities`, `opp_users`, `opp_bookmarks`, `opp_applications`, `opp_submissions`, `opp_sync_logs` + RLS policies.
     * Created Flask app factory (`api/index.py`) with CORS, error handlers.
     * Built Brabble sync engine: `brabble_client.py` (paginated fetch, rate limit tracking, retry), `normalizer.py` (Brabble→DB transform), `sync.py` (orchestrator).
     * Implemented 12 REST API endpoints across 8 blueprint files.
-    * Security middleware: `auth_middleware.py` (session-based auth decorators), `rate_limiter.py` (per-IP), `validators.py` (URL scheme blocking, input validation).
-    * Passwords hashed with werkzeug PBKDF2-SHA256. Anti-enumeration on login errors.
+    * Security middleware: `auth_middleware.py`, `rate_limiter.py`, `validators.py`.
     * Commit: `b8e6a62` — 22 files, 2,187 insertions.
-
+  * **Database Cleanup & Supabase Auth Migration (Google SSO Only)**:
+    * Executed `drop_legacy_hospital_tables` migration: dropped all 26 tables from old hospital project (`orders`, `audit_events`, `patients`, `appointments`, `doctors`, `medicines`, etc.).
+    * Executed `refactor_auth_to_opp_profiles` migration: removed `opp_users`, created `opp_profiles` linked 1-to-1 with `auth.users(id) ON DELETE CASCADE`.
+    * Created automated trigger `handle_new_user` on `auth.users` to automatically populate `opp_profiles` with Google user metadata upon OAuth sign-in.
+    * Re-linked foreign keys on `opp_bookmarks`, `opp_applications`, `opp_submissions` to `opp_profiles(id)`.
+    * Updated `api/middleware/auth_middleware.py` to validate Supabase JWT access tokens from `Authorization: Bearer <token>` and inject `g.user_id` and `g.current_user`.
+    * Updated `api/routes/auth.py` for Google-only auth (`GET /api/auth/me`, `PUT /api/auth/profile`, `POST /api/auth/forgot-password`, `POST /api/auth/logout`).
+    * Updated `api/routes/admin.py` to join on `opp_profiles`.
+    * Cleaned `api/index.py` session cookies for stateless JWT runtime and configured preflight OPTIONS handling.
+    * Commit: `f7cb956`. All tests passed.
