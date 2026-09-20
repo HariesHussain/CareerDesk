@@ -36,7 +36,8 @@
 * **Phase 5 (Brabble Sync Engine)**: ✅ Complete (BrabbleClient, normalizer, sync orchestrator).
 * **Phase 6 (REST API)**: ✅ Complete (12 endpoints: opportunities, auth, bookmarks, applications, dashboard, submissi* **Phase 7 (Middleware & Security)**: ✅ Complete (auth decorators, rate limiter, input validators).
 * **Phase 7.5 (Supabase Auth Migration & DB Cleanup)**: ✅ Complete (Dropped 26 legacy hospital tables, migrated from Flask sessions to Supabase Auth Google SSO only, created `opp_profiles` linked to `auth.users(id)` with automated trigger, Bearer JWT validation in middleware).
-* **Frontend**: ⏳ **NOT STARTED YET** (Phase 8 is next).
+* **Phase 8 (Frontend Discovery UI & Career OS)**: ✅ Complete (Semantic HTML5, Neo-Cyber CSS design system, live stats radar, debounced search, mode/type filtering, optimistic bookmarks, Kanban pipeline tracker, Google SSO auth client, details & recovery modals).
+* **Next Phase**: ⏳ **Phase 9: Vercel Deployment & Cron Automation**.
 
 ---
 
@@ -53,8 +54,8 @@
 | **6** | **REST API (12 endpoints)** | Opportunities search/filter, auth, bookmarks, applications, dashboard, submissions, admin CRUD, cron sync | ✅ Done |
 | **7** | **Security Middleware** | `login_required`/`admin_required` decorators, per-IP rate limiter, URL/input validators | ✅ Done |
 | **7.5** | **Supabase Auth & DB Cleanup** | Dropped 26 legacy tables, Google SSO only, `opp_profiles` with `auth.users` trigger, Bearer JWT middleware | ✅ Done |
-| **8** | **Frontend Discovery UI** | Next.js / Vite UI, Supabase Google sign-in, opportunity search & filter, bookmarks & Kanban tracker | ⏳ Next |
-| **9** | **Vercel Deployment & Cron** | Live URL, Vercel Cron setup for automated sync | ⏳ Upcoming |
+| **8** | **Frontend Discovery UI** | Neo-Cyber UI, Supabase Google sign-in, opportunity search & filter, bookmarks & Kanban tracker | ✅ Done |
+| **9** | **Vercel Deployment & Cron** | Live Vercel deployment, environment variables setup, Vercel Cron automated hourly sync | ⏳ Next |
 
 ---
 
@@ -75,9 +76,9 @@ When starting a new session or switching accounts, give the AI this prompt:
 I am building "OpportunityOS" — a student discovery & tracking platform for hackathons and coding contests.
 Please read `context/PROJECT_STATE.md` and `docs/` in the project root to understand the complete architecture, stack, and current progress.
 Follow all security rules: no hardcoded keys, commit after every single change, and do not hallucinate external dependencies.
-Backend and Database are COMPLETE (Phases 3–7.5). The Supabase database contains only `opp_*` tables (`opp_opportunities`, `opp_profiles`, `opp_bookmarks`, `opp_applications`, `opp_submissions`, `opp_sync_logs`).
-Authentication is Supabase Auth with Google Single Sign-On ONLY. Protected endpoints require `Authorization: Bearer <access_token>`.
-Next step: Phase 8 (Frontend Discovery UI).
+Backend, Database, and Frontend are COMPLETE (Phases 3–8).
+The UI is live in `public/` (Neo-Cyber aesthetic, Google OAuth Supabase Auth, Opportunity Explorer, Bookmark state, Kanban Pipeline tracker).
+Next step: Phase 9 (Vercel Deployment & Cron Automation).
 ```
 
 ---
@@ -109,3 +110,12 @@ Next step: Phase 8 (Frontend Discovery UI).
     * Updated `api/routes/admin.py` to join on `opp_profiles`.
     * Cleaned `api/index.py` session cookies for stateless JWT runtime and configured preflight OPTIONS handling.
     * Commit: `f7cb956`. All tests passed.
+  * **Phase 8 (Frontend Discovery UI & Student Career OS)**:
+    * Created `public/css/style.css`: Neo-Cyber Career Terminal design system (Deep Obsidian palette, glassmorphism, Google Fonts `Plus Jakarta Sans` & `Outfit`, urgency pulses, responsive breakpoints).
+    * Created `public/index.html`: Semantic HTML5 layout, sticky navigation bar, live hero stats radar, search & filter controls, view tabs, modals, toast container, Supabase JS v2 CDN.
+    * Created `public/js/config.js`: Dynamic configuration loading from server environment variables (`/api/config`).
+    * Created `public/js/auth.js`: Google OAuth integration via Supabase Auth, session listener, profile sync, Bearer token injection.
+    * Created `public/js/api.js`: REST client for Flask endpoints with automatic Bearer token headers.
+    * Created `public/js/app.js`: Tab routing, debounced live search, mode/type filtering, deadline countdown timers, optimistic bookmarks, Kanban pipeline tracker, community submissions, admin review queue.
+    * Updated `api/index.py` & `vercel.json` for seamless static serving and Vercel edge deployment.
+    * Commit: `70d8527` (8 files, 2,702 insertions). All route & asset tests passed.

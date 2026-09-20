@@ -113,6 +113,36 @@ def create_app():
     def health():
         return jsonify({"status": "ok", "service": "OpportunityOS API"})
 
+    # ── Public Client Configuration ─────────────────────────────────────
+    @app.route("/api/config")
+    def public_config():
+        """
+        Dynamically provides safe public configuration from environment variables.
+        Never exposes SECRET_KEY, SERVICE_ROLE_KEY, or BRABBLE_API_KEY.
+        """
+        return jsonify({
+            "supabase_url": os.environ.get("SUPABASE_URL", ""),
+            "supabase_anon_key": os.environ.get("SUPABASE_ANON_KEY", "")
+        })
+
+    # ── Static Frontend Serving (Local Development & Edge Fallback) ──────
+    public_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public")
+
+    @app.route("/", defaults={"path": ""})
+    @app.route("/<path:path>")
+    def serve_frontend(path):
+        from flask import send_from_directory
+        # Do not intercept /api/ routes
+        if path.startswith("api/") or path == "api":
+            return jsonify({"error": "Resource not found."}), 404
+
+        file_path = os.path.join(public_dir, path)
+        if path and os.path.isfile(file_path):
+            return send_from_directory(public_dir, path)
+        if os.path.isfile(os.path.join(public_dir, "index.html")):
+            return send_from_directory(public_dir, "index.html")
+        return jsonify({"error": "Frontend build not found."}), 404
+
     return app
 
 
