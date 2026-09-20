@@ -1,0 +1,9 @@
+# OpportunityOS Backend Dependencies
+# Flask + Supabase + Brabble Integration
+
+flask==3.1.1
+python-dotenv==1.1.0
+requests==2.32.3
+werkzeug==3.1.3
+supabase==2.15.1
+gunicorn==23.0.0

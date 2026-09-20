@@ -1,0 +1,118 @@
+"""
+OpportunityOS — Flask Application Factory
+==========================================
+Single entry point for all API routes, deployed as a Vercel serverless function.
+All secrets loaded from environment variables — never hardcoded.
+"""
+
+import os
+from flask import Flask, jsonify
+from dotenv import load_dotenv
+
+# Load .env for local development (Vercel injects env vars in production)
+load_dotenv()
+
+def create_app():
+    """Create and configure the Flask application."""
+    app = Flask(__name__)
+
+    # ── Security Configuration ──────────────────────────────────────────
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-fallback-change-me")
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_ENV") == "production"
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+    # ── CORS Configuration ──────────────────────────────────────────────
+    @app.after_request
+    def add_cors_headers(response):
+        """
+        Production: restrict to OpportunityOS domain only.
+        Development: allow localhost origins.
+        """
+        allowed_origins = [
+            "https://opportunity-os.vercel.app",
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:3000",
+        ]
+        origin = response.headers.get("Origin") or ""
+        request_origin = __import__("flask").request.headers.get("Origin", "")
+
+        if os.environ.get("FLASK_ENV") == "production":
+            if request_origin == "https://opportunity-os.vercel.app":
+                response.headers["Access-Control-Allow-Origin"] = request_origin
+        else:
+            if request_origin in allowed_origins:
+                response.headers["Access-Control-Allow-Origin"] = request_origin
+
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        return response
+
+    # ── Register Blueprints ─────────────────────────────────────────────
+    from api.routes.opportunities import opportunities_bp
+    from api.routes.auth import auth_bp
+    from api.routes.bookmarks import bookmarks_bp
+    from api.routes.applications import applications_bp
+    from api.routes.dashboard import dashboard_bp
+    from api.routes.submissions import submissions_bp
+    from api.routes.admin import admin_bp
+    from api.routes.cron import cron_bp
+
+    app.register_blueprint(opportunities_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(bookmarks_bp)
+    app.register_blueprint(applications_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(submissions_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(cron_bp)
+
+    # ── Global Error Handlers ───────────────────────────────────────────
+    # Never leak stack traces, file paths, or SQL errors to the client.
+
+    @app.errorhandler(400)
+    def bad_request(e):
+        return jsonify({"error": str(e.description) if hasattr(e, "description") else "Bad request."}), 400
+
+    @app.errorhandler(401)
+    def unauthorized(e):
+        return jsonify({"error": "Authentication required."}), 401
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return jsonify({"error": "You do not have permission to access this resource."}), 403
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"error": "Resource not found."}), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(e):
+        return jsonify({"error": "Method not allowed."}), 405
+
+    @app.errorhandler(429)
+    def rate_limited(e):
+        return jsonify({"error": "Too many requests. Please try again later."}), 429
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        # Log the real error server-side, return generic message to client
+        app.logger.error(f"Internal error: {e}")
+        return jsonify({"error": "Something went wrong, please try again."}), 500
+
+    # ── Health Check ────────────────────────────────────────────────────
+    @app.route("/api/health")
+    def health():
+        return jsonify({"status": "ok", "service": "OpportunityOS API"})
+
+    return app
+
+
+# ── Vercel Serverless Entry Point ───────────────────────────────────────
+app = create_app()
+
+# For local development: python api/index.py
+if __name__ == "__main__":
+    app.run(debug=True, port=int(os.environ.get("PORT", 3000)))
