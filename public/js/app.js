@@ -252,17 +252,30 @@ class OpportunityApp {
 
   renderOpportunityCard(opp) {
     const isBookmarked = this.bookmarks.has(opp.id);
-    const deadlineCountdown = this.calculateCountdown(opp.deadline);
-    const prizeFormatted = opp.prize_pool || "Non-Monetary / Swag";
-    const modeBadgeClass = opp.mode === "online" ? "badge-hackathon" : opp.mode === "in_person" ? "badge-contest" : "badge-internship";
+    const deadlineVal = opp.deadline_utc || opp.deadline;
+    const deadlineCountdown = this.calculateCountdown(deadlineVal);
+    const organizer = opp.organiser || opp.organizer || "Verified Organizer";
+    const category = opp.category || opp.opportunity_type || "Event";
+    const applyUrl = opp.official_url || opp.apply_url || "#";
+    const mode = (opp.mode || "online").toLowerCase();
+    
+    let prizeFormatted = opp.prize_label || opp.prize_pool;
+    if (!prizeFormatted && opp.prize_inr) {
+      prizeFormatted = `₹${Number(opp.prize_inr).toLocaleString('en-IN')}`;
+    }
+    if (!prizeFormatted) {
+      prizeFormatted = "Swag / Certificates";
+    }
+
+    const modeBadgeClass = mode === "online" ? "badge-hackathon" : mode === "in_person" || mode === "offline" ? "badge-contest" : "badge-internship";
 
     return `
       <div class="opportunity-card" data-id="${opp.id}">
         <div>
           <div class="card-top">
             <div class="card-badges">
-              <span class="badge ${modeBadgeClass}">${this.escapeHtml(opp.opportunity_type || "Event")}</span>
-              <span class="badge badge-mode">${this.escapeHtml(opp.mode || "Online")}</span>
+              <span class="badge ${modeBadgeClass}">${this.escapeHtml(category)}</span>
+              <span class="badge badge-mode">${this.escapeHtml(mode.toUpperCase())}</span>
               ${deadlineCountdown ? `<span class="badge badge-countdown ${deadlineCountdown.isUrgent ? 'urgent' : ''}">${deadlineCountdown.text}</span>` : ""}
             </div>
             <button class="btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" 
@@ -280,7 +293,7 @@ class OpportunityApp {
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
             </svg>
-            ${this.escapeHtml(opp.organizer || "Verified Organizer")}
+            ${this.escapeHtml(organizer)}
           </div>
           <p class="card-desc">${this.escapeHtml(opp.description || "No description provided.")}</p>
 
@@ -291,13 +304,13 @@ class OpportunityApp {
             </div>
             <div class="meta-item" style="text-align: right;">
               <span class="meta-label">Deadline</span>
-              <span class="meta-val">${this.formatDate(opp.deadline)}</span>
+              <span class="meta-val">${this.formatDate(deadlineVal)}</span>
             </div>
           </div>
         </div>
 
         <div class="card-actions">
-          <button class="btn-apply-primary" onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(opp.apply_url)}')">
+          <button class="btn-apply-primary" onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(applyUrl)}')">
             Apply Now
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="7" y1="17" x2="17" y2="7"></line>

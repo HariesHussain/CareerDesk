@@ -42,7 +42,13 @@ def list_opportunities():
         # ── Parse pagination params ──────────────────────────────────
         try:
             limit = min(int(request.args.get("limit", 20)), 100)
-            offset = max(int(request.args.get("offset", 0)), 0)
+            if "offset" in request.args:
+                offset = max(int(request.args.get("offset", 0)), 0)
+            elif "page" in request.args:
+                page = max(int(request.args.get("page", 1)), 1)
+                offset = (page - 1) * limit
+            else:
+                offset = 0
         except (ValueError, TypeError):
             limit = 20
             offset = 0
@@ -57,14 +63,19 @@ def list_opportunities():
         ).eq("status", "approved").eq("is_expired", False)
 
         # ── Apply filters ────────────────────────────────────────────
-        q = request.args.get("q", "").strip()
+        q = (request.args.get("q") or request.args.get("search") or "").strip()
         if q:
             # Use ilike for case-insensitive substring search
             query = query.or_(f"title.ilike.%{q}%,organiser.ilike.%{q}%")
 
-        category = request.args.get("category", "").strip().upper()
-        if category:
-            query = query.eq("category", category)
+        category = (request.args.get("category") or request.args.get("type") or "").strip().upper()
+        if category and category != "ALL":
+            if category == "CONTEST":
+                query = query.in_("category", ["CONTEST", "CODING", "COMPETITION"])
+            elif category == "GRANT":
+                query = query.in_("category", ["GRANT", "INNOVATION"])
+            else:
+                query = query.eq("category", category)
 
         mode = request.args.get("mode", "").strip().upper()
         if mode in ("ONLINE", "OFFLINE", "HYBRID"):
@@ -83,12 +94,16 @@ def list_opportunities():
             query = query.eq("fee", "Free")
 
         # ── Apply sorting ────────────────────────────────────────────
-        sort = request.args.get("sort", "deadline").strip().lower()
-        if sort not in VALID_SORT_OPTIONS:
+        raw_sort = request.args.get("sort", "deadline").strip().lower()
+        if "new" in raw_sort:
+            sort = "newest"
+        elif "alpha" in raw_sort or "title" in raw_sort:
+            sort = "alphabetical"
+        else:
             sort = "deadline"
 
         if sort == "deadline":
-            query = query.order("deadline_utc", desc=False, nullslast=True)
+            query = query.order("deadline_utc", desc=False, nullsfirst=False)
         elif sort == "newest":
             query = query.order("first_seen_at", desc=True)
         elif sort == "alphabetical":

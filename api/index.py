@@ -6,11 +6,18 @@ All secrets loaded from environment variables — never hardcoded.
 """
 
 import os
+import sys
+
+# Ensure repository root is in sys.path regardless of execution context
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if repo_root not in sys.path:
+    sys.path.insert(0, repo_root)
+
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 
 # Load .env for local development (Vercel injects env vars in production)
-load_dotenv()
+load_dotenv(os.path.join(repo_root, ".env"))
 
 def create_app():
     """Create and configure the Flask application."""
