@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpportunityOS — Career & Hackathon OS for Indian Students</title>
-  <meta name="description" content="Discover verified hackathons, coding contests, internships, and grants. Track your applications with OpportunityOS.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+  <title>OpportunityOS — India's #1 Student Career OS for Hackathons, Contests & Fellowships</title>
+  <meta name="description" content="Discover 900+ national hackathons, coding challenges, internships, and fellowships. Track your applications with OpportunityOS.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
 
   <!-- Design System & Google Fonts -->
@@ -15,92 +15,90 @@
   <!-- ── Skip to Main Content (WCAG 2.2 AA) ────────────────────────────── -->
   <a href="#mainContent" class="skip-link">Skip to main content</a>
 
-  <!-- ── Top Navigation Bar ─────────────────────────────────────────────── -->
-  <header class="navbar" role="banner">
+  <!-- ── Top Header / Navbar (Internshala Clean White Style) ─────────────── -->
+  <header class="site-header" role="banner">
     <div class="nav-container">
-      <div class="brand-wrapper">
-        <a href="/" class="brand-wrapper" style="text-decoration: none;" aria-label="OpportunityOS Home">
-          <div class="brand-logo" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-            </svg>
-          </div>
-          <span class="brand-text">Opportunity<span style="color: var(--accent-cyan);">OS</span></span>
-        </a>
-        <span class="brand-badge">Beta</span>
-      </div>
+      <!-- Left: Brand Logo -->
+      <a href="/" class="brand-wrapper" aria-label="OpportunityOS Home">
+        <div class="brand-logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <span class="brand-title">Opportunity<span>OS</span></span>
+      </a>
 
-      <!-- Navigation Tabs -->
-      <nav class="nav-tabs" id="navTabs" role="navigation" aria-label="Main Navigation">
-        <button class="nav-tab active" data-tab="explore">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- Center: Desktop Navigation Tabs -->
+      <nav class="desktop-nav-links" id="navTabs" role="navigation" aria-label="Primary Navigation">
+        <div class="nav-tab-item active" data-tab="explore">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
           </svg>
-          Explore
-        </button>
-        <button class="nav-tab" data-tab="pipeline">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          Explore All
+        </div>
+
+        <div class="nav-tab-item" data-tab="pipeline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="20" x2="18" y2="10"></line>
             <line x1="12" y1="20" x2="12" y2="4"></line>
             <line x1="6" y1="20" x2="6" y2="14"></line>
           </svg>
-          My Pipeline
-        </button>
-        <button class="nav-tab" data-tab="bookmarks">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          My Tracker
+        </div>
+
+        <div class="nav-tab-item" data-tab="bookmarks">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
           </svg>
           Saved
-          <span class="tab-badge" id="savedCountBadge">0</span>
-        </button>
-        <button class="nav-tab" data-tab="submit">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <span class="nav-badge-count" id="savedCountBadge">0</span>
+        </div>
+
+        <div class="nav-tab-item" data-tab="submit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="16"></line>
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
-          Submit
-        </button>
-        <button class="nav-tab" data-tab="admin" id="adminNavTab" style="display: none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          Post Event
+          <span class="nav-badge-pill">Free</span>
+        </div>
+
+        <div class="nav-tab-item" data-tab="admin" id="adminNavTab" style="display: none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
           Admin
-        </button>
+        </div>
       </nav>
 
-      <!-- Auth Controls -->
+      <!-- Right: Auth State -->
       <div class="nav-actions">
-        <!-- Google Sign-In Button (Guest State) -->
-        <div id="guestAuthWrapper" style="display: flex; flex-direction: column; align-items: flex-end;">
-          <button id="btnGoogleLogin" class="btn-google-login" aria-label="Sign in using your Google account">
+        <!-- Guest State: Google SSO Button -->
+        <div id="guestAuthWrapper">
+          <button id="btnGoogleLogin" class="btn-header-google" aria-label="Sign in with Google">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
               <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
               <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
               <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
             </svg>
-            Sign in with Google
+            Sign in
           </button>
-          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-align: right;">
-            By signing in, you accept our <a href="/terms.html" target="_blank" style="color: var(--text-muted); text-decoration: underline;">Terms</a> &amp; <a href="/privacy.html" target="_blank" style="color: var(--text-muted); text-decoration: underline;">Privacy</a>
-          </div>
         </div>
 
-        <!-- User Profile Menu (Authenticated State) -->
+        <!-- Authenticated State: User Profile Dropdown -->
         <div id="userProfileMenu" class="user-profile-menu" style="display: none;" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-label="User account menu">
           <img id="navUserAvatar" class="user-avatar" src="" alt="Profile avatar">
-          <div class="user-name-wrapper">
+          <div class="user-info">
             <span id="navUserName" class="user-name">Student</span>
-            <span id="navUserRole" class="user-role-badge">Student</span>
+            <span id="navUserRole" class="user-role-tag">Student</span>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted); margin-left: 4px;" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted);" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
 
-          <!-- Dropdown -->
+          <!-- Dropdown Menu -->
           <div id="userDropdown" class="user-dropdown" role="menu">
             <a href="#" class="dropdown-item" role="menuitem" onclick="window.app.switchTab('pipeline')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -122,9 +120,9 @@
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
-              Password &amp; Account Help
+              Security &amp; Account
             </a>
-            <a href="#" id="btnDeleteAccount" class="dropdown-item" role="menuitem" style="color: var(--accent-rose);">
+            <a href="#" id="btnDeleteAccount" class="dropdown-item danger" role="menuitem">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <polyline points="3 6 5 6 21 6"></polyline>
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -132,7 +130,7 @@
               Delete Account (Erasure)
             </a>
             <div class="dropdown-divider"></div>
-            <button id="btnLogout" class="dropdown-item danger" role="menuitem">
+            <button id="btnLogout" class="dropdown-item" role="menuitem" style="color: var(--text-muted);">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -146,238 +144,329 @@
     </div>
   </header>
 
-  <!-- ── Hero & Live Stats Radar ──────────────────────────────────────────── -->
-  <section class="hero-section">
-    <div class="hero-grid">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="pulse-dot"></span>
-          Live Ingestion • Verified Opportunities
-        </div>
-        <h1 class="hero-title">
-          Your Career Opportunity <br><span>Operating System</span>
-        </h1>
-        <p class="hero-desc">
-          Discover national hackathons, coding contests, and tech fellowships. Bookmark opportunities with one click and track your applications through every round.
-        </p>
-      </div>
-
-      <!-- Stats Radar Card -->
-      <div class="hero-stats-card">
-        <div class="stat-box">
-          <span class="stat-label">Active Events</span>
-          <span class="stat-value" id="statActiveCount">0</span>
-          <span class="stat-sub">Aggregated live</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Prize Pools</span>
-          <span class="stat-value" id="statPrizeCount">₹1.8 Cr+</span>
-          <span class="stat-sub">Cash & awards</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Urgent Deadlines</span>
-          <span class="stat-value" id="statUrgentCount">0</span>
-          <span class="stat-sub" style="color: var(--accent-amber);">Closing this week</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Search & Filter Controls ─────────────────────────────────────────── -->
-  <section class="controls-section" id="controlsSection">
-    <div class="controls-card">
-      <div class="search-row">
-        <!-- Search Input -->
-        <div class="search-input-wrapper">
-          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search hackathons, organizers, technologies, or keywords...">
-        </div>
-
-        <!-- Mode Select -->
-        <select id="modeSelect" class="filter-select">
-          <option value="all">🌐 All Modes</option>
-          <option value="online">💻 Online / Virtual</option>
-          <option value="in_person">📍 In-Person</option>
-          <option value="hybrid">⚡ Hybrid</option>
-        </select>
-
-        <!-- Sort Select -->
-        <select id="sortSelect" class="filter-select">
-          <option value="deadline_asc">⏳ Closing Soonest</option>
-          <option value="created_desc">✨ Recently Added</option>
-          <option value="deadline_desc">📅 Latest Deadline</option>
-        </select>
-      </div>
-
-      <!-- Category Filter Pills -->
-      <div class="category-pills-row">
-        <button class="pill-btn active" data-type="all">🌐 All Opportunities</button>
-        <button class="pill-btn" data-type="hackathon">⚡ Hackathons</button>
-        <button class="pill-btn" data-type="contest">🏆 Coding Contests</button>
-        <button class="pill-btn" data-type="internship">💼 Internships</button>
-        <button class="pill-btn" data-type="grant">🚀 Fellowships & Grants</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Main Views Container ─────────────────────────────────────────────── -->
-  <main id="mainContent" class="main-container" role="main">
-    <!-- View 1: Explore Opportunities -->
-    <div id="exploreView" class="view-panel active">
-      <div id="opportunitiesGrid" class="cards-grid">
-        <!-- Injected dynamically via app.js -->
-      </div>
-    </div>
-
-    <!-- View 2: Application Pipeline (Kanban) -->
-    <div id="pipelineView" class="view-panel">
-      <div style="margin-bottom: 24px;">
-        <h2 style="font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 4px;">Application Tracker</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem;">Track your journey from application submission to final selection.</p>
-      </div>
-      <div class="kanban-board" id="kanbanBoard">
-        <!-- Col 1: Saved -->
-        <div class="kanban-col">
-          <div class="kanban-header">
-            <div class="kanban-title-wrapper">
-              <span class="kanban-dot saved"></span>
-              <span class="kanban-title">Saved</span>
-            </div>
-            <span class="kanban-count" id="kanbanCount_saved">0</span>
+  <!-- ── Hero Banner Section (Internshala Split Layout Reference) ─────────── -->
+  <section class="hero-wrapper" role="region" aria-label="Hero Section">
+    <div class="hero-inner">
+      <!-- Left Column: Title & Conversion Card -->
+      <div class="hero-left-content">
+        <div class="hero-heading">
+          <h1 class="hero-title-main">
+            India's <span class="yellow-highlight">#1 platform</span>
+          </h1>
+          <div class="hero-subheading">
+            For hackathons, coding contests and fellowships
+            <svg class="hero-subheading-underline" viewBox="0 0 320 12" fill="none" preserveAspectRatio="none">
+              <path d="M2 8C50 3 150 1 318 6" stroke="rgba(255, 210, 0, 0.9)" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
           </div>
-          <div class="kanban-list" id="kanbanList_saved"></div>
+        </div>
+
+        <!-- Candidate Sign up Card -->
+        <div class="candidate-signup-box">
+          <div class="candidate-tag">
+            <span class="candidate-tag-dot"></span>
+            Candidate sign up
+          </div>
+
+          <div class="signup-buttons-row">
+            <button id="btnHeroGoogle" class="btn-signup-google" aria-label="Continue with Google">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
+                <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <button id="btnHeroExplore" class="btn-signup-secondary" aria-label="Explore Opportunities">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              </svg>
+              Explore 900+ Events
+            </button>
+          </div>
+
+          <div class="hero-tnc-notice">
+            By continuing as a candidate, you agree to our <a href="/terms.html" target="_blank">T&amp;C</a> &amp; <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+          </div>
+        </div>
+
+        <!-- Secondary Organizer Link -->
+        <a href="#" id="btnHeroSubmit" class="hero-secondary-link">
+          Organizer / College sign up &gt;
+        </a>
+      </div>
+
+      <!-- Right Column: Student Photography & Floating Badges -->
+      <div class="hero-right-image-container">
+        <!-- Floating Micro-Badges -->
+        <div class="floating-chip top-left">
+          <div class="chip-icon">🏆</div>
+          <div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Live Prize Pool</div>
+            <div id="heroPrizeBadge">₹1.8 Cr+</div>
+          </div>
+        </div>
+
+        <div class="floating-chip bottom-right">
+          <div class="chip-icon orange">⚡</div>
+          <div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Active Listings</div>
+            <div id="heroActiveBadge">914+ Verified</div>
+          </div>
+        </div>
+
+        <img src="/images/hero_students.jpg" alt="Smiling tech students holding laptop and achievement certificates" class="hero-students-img" width="520" height="340">
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Credibility Stats Strip (Internshala Company Strip Style) ─────────── -->
+  <section class="credibility-strip" role="region" aria-label="Platform Highlights">
+    <div class="credibility-inner">
+      <div class="cred-item">
+        <div class="cred-icon-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div class="cred-text">
+          <span class="cred-value" id="statActiveCount">914+</span>
+          <span class="cred-label">Active Opportunities</span>
+        </div>
+      </div>
+
+      <div class="cred-item">
+        <div class="cred-icon-box" style="background: var(--accent-green-light); color: var(--accent-green);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+        <div class="cred-text">
+          <span class="cred-value" id="statPrizeCount">₹1.8 Cr+</span>
+          <span class="cred-label">Prizes &amp; Grants</span>
+        </div>
+      </div>
+
+      <div class="cred-item">
+        <div class="cred-icon-box" style="background: var(--accent-orange-light); color: var(--accent-orange);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <div class="cred-text">
+          <span class="cred-value" id="statUrgentCount">0</span>
+          <span class="cred-label">Closing This Week</span>
+        </div>
+      </div>
+
+      <div class="cred-item">
+        <div class="cred-icon-box" style="background: var(--accent-purple-light); color: var(--accent-purple);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <div class="cred-text">
+          <span class="cred-value">100% Free</span>
+          <span class="cred-label">Official Direct Links</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Main Application Content ─────────────────────────────────────────── -->
+  <main id="mainContent" class="main-wrapper" role="main">
+
+    <!-- View 1: Explore / Search / Discover Opportunities -->
+    <div id="exploreView" class="view-panel active">
+      <div class="section-header-row">
+        <h2 class="section-title">What are you looking for today?</h2>
+        <p class="section-subtitle">Discover top national hackathons, coding contests, hiring challenges, and tech fellowships.</p>
+      </div>
+
+      <!-- Controls: Category Pills & Search -->
+      <section class="controls-card" id="controlsSection">
+        <!-- Horizontal Scrollable Category Pills -->
+        <div class="pill-carousel-wrapper" role="tablist" aria-label="Category Filters">
+          <button class="filter-pill active" data-type="all" role="tab">All Opportunities</button>
+          <button class="filter-pill" data-type="hackathon" role="tab">Hackathons</button>
+          <button class="filter-pill" data-type="contest" role="tab">Coding Contests</button>
+          <button class="filter-pill" data-type="internship" role="tab">Internships</button>
+          <button class="filter-pill" data-type="fellowship" role="tab">Fellowships</button>
+          <button class="filter-pill" data-type="grant" role="tab">Grants &amp; Innovation</button>
+        </div>
+
+        <!-- Search Bar & Filters -->
+        <div class="search-filter-grid">
+          <div class="search-input-box">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by title, organizer, keywords (e.g. AI, Web3, Python)..." aria-label="Search opportunities">
+          </div>
+
+          <select id="modeSelect" class="filter-select" aria-label="Filter by mode">
+            <option value="all">All Modes</option>
+            <option value="online">Online / Remote</option>
+            <option value="in_person">In-Person / Offline</option>
+          </select>
+
+          <select id="sortSelect" class="filter-select" aria-label="Sort opportunities">
+            <option value="deadline_asc">Deadline: Soonest First</option>
+            <option value="deadline_desc">Deadline: Latest First</option>
+            <option value="prize_desc">Prize Pool: Highest First</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Opportunities Cards Grid -->
+      <div id="opportunitiesGrid" class="opportunities-grid" role="feed" aria-busy="false" aria-label="Opportunities feed">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+
+    <!-- View 2: Application Tracker (Kanban Board) -->
+    <div id="pipelineView" class="view-panel">
+      <div class="section-header-row">
+        <h2 class="section-title">Application Status Tracker</h2>
+        <p class="section-subtitle">Track your registered hackathons, contests, and internship rounds through every milestone.</p>
+      </div>
+
+      <div class="kanban-board-grid">
+        <!-- Col 1: Saved -->
+        <div class="kanban-column">
+          <div class="kanban-column-header">
+            <span class="kanban-header-title">
+              <span class="kanban-dot saved"></span>
+              Bookmarked
+            </span>
+            <span class="kanban-header-count" id="kanbanCount_saved">0</span>
+          </div>
+          <div class="kanban-cards-container" id="kanbanList_saved"></div>
         </div>
 
         <!-- Col 2: Applied -->
-        <div class="kanban-col">
-          <div class="kanban-header">
-            <div class="kanban-title-wrapper">
+        <div class="kanban-column">
+          <div class="kanban-column-header">
+            <span class="kanban-header-title">
               <span class="kanban-dot applied"></span>
-              <span class="kanban-title">Applied</span>
-            </div>
-            <span class="kanban-count" id="kanbanCount_applied">0</span>
+              Applied
+            </span>
+            <span class="kanban-header-count" id="kanbanCount_applied">0</span>
           </div>
-          <div class="kanban-list" id="kanbanList_applied"></div>
+          <div class="kanban-cards-container" id="kanbanList_applied"></div>
         </div>
 
-        <!-- Col 3: In Review / Interview -->
-        <div class="kanban-col">
-          <div class="kanban-header">
-            <div class="kanban-title-wrapper">
-              <span class="kanban-dot interview"></span>
-              <span class="kanban-title">In Review</span>
-            </div>
-            <span class="kanban-count" id="kanbanCount_in_review">0</span>
+        <!-- Col 3: In Review -->
+        <div class="kanban-column">
+          <div class="kanban-column-header">
+            <span class="kanban-header-title">
+              <span class="kanban-dot in_review"></span>
+              In Review
+            </span>
+            <span class="kanban-header-count" id="kanbanCount_in_review">0</span>
           </div>
-          <div class="kanban-list" id="kanbanList_in_review"></div>
+          <div class="kanban-cards-container" id="kanbanList_in_review"></div>
         </div>
 
-        <!-- Col 4: Selected / Winner -->
-        <div class="kanban-col">
-          <div class="kanban-header">
-            <div class="kanban-title-wrapper">
+        <!-- Col 4: Selected / Won -->
+        <div class="kanban-column">
+          <div class="kanban-column-header">
+            <span class="kanban-header-title">
               <span class="kanban-dot selected"></span>
-              <span class="kanban-title">Selected / Won</span>
-            </div>
-            <span class="kanban-count" id="kanbanCount_selected">0</span>
+              Selected / Won
+            </span>
+            <span class="kanban-header-count" id="kanbanCount_selected">0</span>
           </div>
-          <div class="kanban-list" id="kanbanList_selected"></div>
+          <div class="kanban-cards-container" id="kanbanList_selected"></div>
         </div>
       </div>
     </div>
 
-    <!-- View 3: Bookmarks -->
+    <!-- View 3: Saved Bookmarks -->
     <div id="bookmarksView" class="view-panel">
-      <div style="margin-bottom: 24px;">
-        <h2 style="font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 4px;">Saved Opportunities</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem;">Quick access to all opportunities you've bookmarked for later.</p>
+      <div class="section-header-row">
+        <h2 class="section-title">Saved Opportunities</h2>
+        <p class="section-subtitle">All opportunities you bookmarked for later review.</p>
       </div>
-      <div id="bookmarksGrid" class="cards-grid">
-        <!-- Injected dynamically via app.js -->
+      <div id="bookmarksGrid" class="opportunities-grid">
+        <!-- Injected via app.js -->
       </div>
     </div>
 
-    <!-- View 4: Community Submission -->
+    <!-- View 4: Community Submission Form -->
     <div id="submitView" class="view-panel">
-      <div class="modal-box" style="margin: 0 auto; max-width: 720px;">
-        <h2 style="font-family: var(--font-display); font-size: 1.75rem; margin-bottom: 8px;">Submit an Opportunity</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 24px;">
-          Know a hackathon, contest, or fellowship that students shouldn't miss? Share it with the community. Submissions are reviewed and published promptly.
-        </p>
+      <div class="form-card-container">
+        <div style="margin-bottom: 24px; text-align: center;">
+          <h2 class="section-title">Post a Student Opportunity</h2>
+          <p class="section-subtitle">Organizing a hackathon, contest, or fellowship? Share it directly with 50,000+ Indian tech students. 100% free.</p>
+        </div>
 
         <form id="opportunitySubmitForm">
           <div class="form-group">
-            <label class="form-label">Opportunity Title *</label>
-            <input type="text" name="title" class="form-input" placeholder="e.g. Smart India Hackathon 2026" required>
+            <label class="form-label" for="submitTitle">Event / Opportunity Title *</label>
+            <input type="text" id="submitTitle" name="title" class="form-input" placeholder="e.g. Smart City Innovation Hackathon 2026" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="submitOrganizer">Organizer / Institution *</label>
+            <input type="text" id="submitOrganizer" name="organizer" class="form-input" placeholder="e.g. IIT Bombay / Google Developer Group" required>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="form-group">
-              <label class="form-label">Organizer *</label>
-              <input type="text" name="organizer" class="form-input" placeholder="e.g. Ministry of Education / Tech Club" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Type *</label>
+              <label class="form-label">Category *</label>
               <select name="opportunity_type" class="form-select" required>
                 <option value="hackathon">Hackathon</option>
                 <option value="contest">Coding Contest</option>
                 <option value="internship">Internship</option>
-                <option value="grant">Grant / Fellowship</option>
+                <option value="fellowship">Fellowship</option>
+                <option value="grant">Grant</option>
               </select>
             </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="form-group">
-              <label class="form-label">Mode *</label>
+              <label class="form-label">Event Mode *</label>
               <select name="mode" class="form-select" required>
-                <option value="online">Online</option>
+                <option value="online">Online / Remote</option>
                 <option value="in_person">In-Person</option>
                 <option value="hybrid">Hybrid</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Registration Deadline *</label>
-              <input type="date" name="deadline" class="form-input" required>
-            </div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="form-group">
-              <label class="form-label">Official Application URL *</label>
-              <input type="url" name="apply_url" class="form-input" placeholder="https://..." required>
+              <label class="form-label">Registration Deadline *</label>
+              <input type="date" name="deadline" class="form-input" required>
             </div>
             <div class="form-group">
               <label class="form-label">Prize Pool / Perks</label>
-              <input type="text" name="prize_pool" class="form-input" placeholder="e.g. ₹5,00,000 + Swag">
+              <input type="text" name="prize_pool" class="form-input" placeholder="e.g. ₹5,00,000 + Internship Interview">
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Short Description *</label>
-            <textarea name="description" class="form-textarea" rows="4" placeholder="Brief overview of themes, problem statements, and key dates..." required></textarea>
+            <label class="form-label">Official Application / Registration URL *</label>
+            <input type="url" name="apply_url" class="form-input" placeholder="https://..." required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Brief Description *</label>
+            <textarea name="description" class="form-textarea" rows="4" placeholder="Overview of themes, problem statements, and key rules..." required></textarea>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="submitEligibility">Eligibility Criteria</label>
-            <input type="text" id="submitEligibility" name="eligibility" class="form-input" placeholder="e.g. Open to all engineering college students">
+            <input type="text" id="submitEligibility" name="eligibility" class="form-input" placeholder="e.g. Open to all engineering students across India">
           </div>
 
           <!-- Form Consent Checkbox (DPDP & Consumer Protection) -->
-          <div class="form-group" style="margin-top: 18px; margin-bottom: 20px;">
+          <div class="form-group" style="margin: 20px 0;">
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-              <input type="checkbox" id="submissionConsent" name="consent" required style="margin-top: 4px; accent-color: var(--accent-primary); width: 16px; height: 16px;">
-              <span style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
-                I certify that this event is authentic, non-fraudulent, and free of copyright infringement. I accept the <a href="/terms.html" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">Terms &amp; Conditions</a> and <a href="/privacy.html" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">Privacy Policy</a>.
+              <input type="checkbox" id="submissionConsent" name="consent" required style="margin-top: 4px; accent-color: var(--brand-primary); width: 16px; height: 16px;">
+              <span style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5;">
+                I certify that this event is authentic, non-fraudulent, and free of intellectual property infringement. I accept the <a href="/terms.html" target="_blank" style="color: var(--brand-primary); text-decoration: underline;">Terms &amp; Conditions</a> and <a href="/privacy.html" target="_blank" style="color: var(--brand-primary); text-decoration: underline;">Privacy Policy</a>.
               </span>
             </label>
           </div>
 
-          <button type="submit" class="btn-apply-primary" style="width: 100%; padding: 14px; font-size: 1rem; margin-top: 6px;">
-            Submit for Review
+          <button type="submit" class="btn-apply-action" style="width: 100%; justify-content: center; height: 48px; font-size: 1rem;">
+            Submit Opportunity for Review
           </button>
         </form>
       </div>
@@ -385,9 +474,9 @@
 
     <!-- View 5: Admin Moderation -->
     <div id="adminView" class="view-panel">
-      <div style="margin-bottom: 24px;">
-        <h2 style="font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 4px;">Admin Moderation Queue</h2>
-        <p style="color: var(--text-secondary); font-size: 0.95rem;">Review and approve community-submitted opportunities.</p>
+      <div class="section-header-row">
+        <h2 class="section-title">Admin Moderation Queue</h2>
+        <p class="section-subtitle">Review and verify community-submitted opportunities before publishing.</p>
       </div>
       <div id="adminSubmissionsList">
         <!-- Injected via app.js -->
@@ -398,62 +487,106 @@
   <!-- ── Opportunity Detail Modal ─────────────────────────────────────────── -->
   <div id="detailsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
     <div class="modal-box">
-      <button class="modal-close-btn" aria-label="Close opportunity details">&times;</button>
+      <button class="modal-close-btn" aria-label="Close details dialog">&times;</button>
       <div id="detailsModalContent">
         <!-- Injected dynamically -->
       </div>
     </div>
   </div>
 
-  <!-- ── Forgot Password & Google SSO Help Modal ──────────────────────────── -->
+  <!-- ── Security & Account Help Modal ────────────────────────────────────── -->
   <div id="forgotPasswordModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
-    <div class="modal-box" style="max-width: 520px;">
-      <button class="modal-close-btn" aria-label="Close recovery modal">&times;</button>
+    <div class="modal-box" style="max-width: 500px;">
+      <button class="modal-close-btn" aria-label="Close modal">&times;</button>
       <div style="text-align: center; margin-bottom: 20px;">
-        <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" aria-hidden="true">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M12 16v-4"></path>
             <path d="M12 8h.01"></path>
           </svg>
         </div>
-        <h3 id="forgotPasswordTitle" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">
-          Password &amp; Account Recovery
+        <h3 id="forgotPasswordTitle" style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; margin-bottom: 8px;">
+          Passwordless Google Security
         </h3>
-        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
+        <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.5;">
           OpportunityOS uses <strong>Google Single Sign-On (SSO)</strong> for 100% passwordless security. We never store or manage passwords on our servers.
         </p>
       </div>
 
-      <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; margin-bottom: 24px;">
-        <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 8px;">Need to recover your password?</h4>
+      <div style="background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px;">
+        <h4 style="font-size: 0.85rem; font-weight: 600; color: var(--brand-primary); text-transform: uppercase; margin-bottom: 6px;">Need to recover your Google Account?</h4>
         <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
-          Since your login is handled by your Google account, you can reset your credentials directly via Google Account Recovery.
+          Since your authentication is securely verified by Google, you can manage or recover your credentials directly via Google Account Recovery.
         </p>
       </div>
 
       <div style="display: flex; gap: 12px;">
-        <a href="https://accounts.google.com/signin/recovery" target="_blank" rel="noopener noreferrer" class="btn-apply-primary" style="flex: 1; text-align: center;">
+        <a href="https://accounts.google.com/signin/recovery" target="_blank" rel="noopener noreferrer" class="btn-apply-action" style="flex: 1; justify-content: center; height: 44px;">
           Open Google Account Recovery
         </a>
-        <button class="btn-detail-secondary btn-modal-close" aria-label="Close dialog">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- ── Site Footer (Statutory & Legal Disclosures) ────────────────────── -->
+  <!-- ── Sticky Mobile Bottom Navigation Bar (Internshala Style) ──────────── -->
+  <nav class="mobile-bottom-nav" role="navigation" aria-label="Mobile Bottom Navigation">
+    <button class="mobile-nav-item active" data-tab="explore" aria-label="Explore Opportunities">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+      </svg>
+      <span>Explore</span>
+    </button>
+
+    <button class="mobile-nav-item" data-tab="pipeline" aria-label="Application Tracker">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+      <span>Tracker</span>
+    </button>
+
+    <button class="mobile-nav-item" data-tab="bookmarks" aria-label="Saved Bookmarks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <span class="mobile-nav-badge" id="mobileSavedBadge" style="display: none;">0</span>
+      <span>Saved</span>
+    </button>
+
+    <button class="mobile-nav-item" data-tab="submit" aria-label="Submit Opportunity">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="16"></line>
+        <line x1="8" y1="12" x2="16" y2="12"></line>
+      </svg>
+      <span>Submit</span>
+    </button>
+
+    <button class="mobile-nav-item" id="mobileNavAccountBtn" aria-label="Account Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>Account</span>
+    </button>
+  </nav>
+
+  <!-- ── Site Footer (Statutory & Grievance Disclosures) ─────────────────── -->
   <footer class="site-footer" role="contentinfo">
     <div class="footer-grid">
       <div class="footer-brand">
         <h3>
-          <div class="brand-logo" style="width: 28px; height: 28px;" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          <div class="brand-logo-icon" style="width: 28px; height: 28px;" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
           </div>
-          Opportunity<span style="color: var(--accent-cyan);">OS</span>
+          Opportunity<span>OS</span>
         </h3>
-        <p>The student career operating system aggregating verified hackathons, coding challenges, internships, and fellowships from trusted national portals.</p>
+        <p>The student career operating system aggregating verified hackathons, coding contests, and tech fellowships across India with direct official portals.</p>
         <div class="footer-safeharbor">
-          <strong>Intermediary Notice:</strong> OpportunityOS operates as an aggregator under Section 79 of the Information Technology Act, 2000. Listings are indexed from external platforms. Trademarks belong to their respective proprietors.
+          <strong>Intermediary Notice:</strong> OpportunityOS operates as an aggregator under Section 79 of the Information Technology Act, 2000. All listings link directly to external official registration portals.
         </div>
       </div>
 
@@ -476,43 +609,43 @@
           <strong>Location:</strong> Bengaluru, Karnataka, India
         </div>
         <div class="footer-meta-item">
-          <strong>Support Desk:</strong> <a href="mailto:support@opportunityos.in" style="color: var(--accent-cyan);">support@opportunityos.in</a>
+          <strong>Support:</strong> <a href="mailto:support@opportunityos.in" style="color: var(--brand-primary);">support@opportunityos.in</a>
         </div>
         <div class="footer-meta-item">
-          <strong>Grievance Officer:</strong> Haries Hussain (<a href="mailto:grievance@opportunityos.in" style="color: var(--accent-cyan);">grievance@opportunityos.in</a>)
+          <strong>Grievance Officer:</strong> Haries Hussain (<a href="mailto:grievance@opportunityos.in" style="color: var(--brand-primary);">grievance@opportunityos.in</a>)
         </div>
-        <div class="footer-meta-item" style="font-size: 0.8rem; color: var(--text-muted);">
+        <div class="footer-meta-item" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
           Statutory acknowledgement SLA: 48 hours.
         </div>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <div>&copy; 2026 OpportunityOS Technologies. All rights reserved. Built for developers &amp; students.</div>
+      <div>&copy; 2026 OpportunityOS Technologies. All rights reserved. Built for Indian students &amp; developers.</div>
       <div style="display: flex; gap: 16px;">
-        <a href="/privacy.html" style="color: var(--text-muted); text-decoration: none;">Privacy</a>
-        <a href="/terms.html" style="color: var(--text-muted); text-decoration: none;">Terms</a>
-        <a href="/cookies.html" style="color: var(--text-muted); text-decoration: none;">Cookies</a>
-        <a href="/refund.html" style="color: var(--text-muted); text-decoration: none;">Refunds</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/cookies.html">Cookies</a>
+        <a href="/refund.html">Refunds</a>
       </div>
     </div>
   </footer>
 
-  <!-- ── Cookie & Storage Consent Banner (ePrivacy & DPDP) ────────────────── -->
-  <aside id="cookieConsentBanner" class="cookie-banner" role="region" aria-label="Cookie & Storage Notice" style="display: none;">
+  <!-- ── Cookie & Storage Consent Banner ──────────────────────────────────── -->
+  <aside id="cookieConsentBanner" class="cookie-banner" role="region" aria-label="Cookie Notice" style="display: none;">
     <div class="cookie-banner-content">
       <div class="cookie-banner-text">
         <div class="cookie-banner-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-mint);" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" stroke-width="2" aria-hidden="true">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
           Privacy &amp; Local Storage Notice
         </div>
-        <p>We use essential local storage strictly for Google authentication and to save your preferences. We do not use third-party advertising cookies or cross-site tracking. Read our <a href="/cookies.html" target="_blank">Cookie Policy</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</p>
+        <p>We use essential local storage strictly for Google authentication and saving your bookmarks. We do not use advertising cookies or cross-site tracking. Read our <a href="/cookies.html" target="_blank">Cookie Policy</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</p>
       </div>
       <div class="cookie-banner-actions">
-        <button id="btnAcceptCookies" class="btn-apply-primary" style="padding: 10px 20px; font-size: 0.9rem;" aria-label="Accept and close cookie notice">Accept &amp; Continue</button>
-        <a href="/cookies.html" class="btn-detail-secondary" style="padding: 10px 16px; font-size: 0.9rem; text-decoration: none;" aria-label="Learn more about cookie policy">Learn More</a>
+        <button id="btnAcceptCookies" class="btn-apply-action" aria-label="Accept and close cookie notice">Accept &amp; Continue</button>
+        <a href="/cookies.html" style="font-size: 0.88rem; font-weight: 500; color: var(--text-secondary); padding: 8px 12px;" aria-label="Learn more about cookie policy">Learn More</a>
       </div>
     </div>
   </aside>

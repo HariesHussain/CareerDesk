@@ -1,7 +1,7 @@
 /**
  * OpportunityOS — Application Controller
  * =======================================
- * Manages view routing, live search/filtering, opportunity rendering,
+ * Manages view routing, live search/filtering, Internshala-style opportunity cards,
  * optimistic bookmarks, Kanban pipeline, modals, and toasts.
  */
 
@@ -32,9 +32,9 @@ class OpportunityApp {
 
   // ── Event Handlers & Routing ──────────────────────────────────────────────
   setupEventListeners() {
-    // Navigation Tabs
-    document.querySelectorAll(".nav-tab").forEach(tab => {
-      tab.addEventListener("click", (e) => {
+    // Desktop Navigation Tabs & Mobile Bottom Nav Items
+    document.querySelectorAll(".nav-tab-item, .mobile-nav-item").forEach(tab => {
+      tab.addEventListener("click", () => {
         const targetTab = tab.dataset.tab;
         if (targetTab) {
           this.switchTab(targetTab);
@@ -42,10 +42,10 @@ class OpportunityApp {
       });
     });
 
-    // Category Filter Pills
-    document.querySelectorAll(".pill-btn").forEach(pill => {
+    // Category Filter Pills (Internshala Style)
+    document.querySelectorAll(".filter-pill").forEach(pill => {
       pill.addEventListener("click", () => {
-        document.querySelectorAll(".pill-btn").forEach(p => p.classList.remove("active"));
+        document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
         pill.classList.add("active");
         this.currentFilters.type = pill.dataset.type || "all";
         this.loadExploreData();
@@ -82,11 +82,49 @@ class OpportunityApp {
       });
     }
 
-    // Auth Buttons
+    // Auth Buttons (Header & Hero)
     const btnGoogleLogin = document.getElementById("btnGoogleLogin");
     if (btnGoogleLogin) {
       btnGoogleLogin.addEventListener("click", () => {
         window.authManager.signInWithGoogle();
+      });
+    }
+
+    const btnHeroGoogle = document.getElementById("btnHeroGoogle");
+    if (btnHeroGoogle) {
+      btnHeroGoogle.addEventListener("click", () => {
+        window.authManager.signInWithGoogle();
+      });
+    }
+
+    const btnHeroExplore = document.getElementById("btnHeroExplore");
+    if (btnHeroExplore) {
+      btnHeroExplore.addEventListener("click", () => {
+        this.switchTab("explore");
+        const controls = document.getElementById("controlsSection");
+        if (controls) {
+          controls.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    }
+
+    const btnHeroSubmit = document.getElementById("btnHeroSubmit");
+    if (btnHeroSubmit) {
+      btnHeroSubmit.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.switchTab("submit");
+      });
+    }
+
+    const mobileNavAccountBtn = document.getElementById("mobileNavAccountBtn");
+    if (mobileNavAccountBtn) {
+      mobileNavAccountBtn.addEventListener("click", () => {
+        if (window.authManager && window.authManager.isAuthenticated()) {
+          const userDropdown = document.getElementById("userDropdown");
+          if (userDropdown) userDropdown.classList.toggle("show");
+        } else {
+          window.authManager.signInWithGoogle();
+        }
       });
     }
 
@@ -192,29 +230,29 @@ class OpportunityApp {
 
   setupAuthSync() {
     window.authManager.onAuthChange((user) => {
-      const loginBtn = document.getElementById("btnGoogleLogin");
+      const loginWrapper = document.getElementById("guestAuthWrapper");
       const userMenu = document.getElementById("userProfileMenu");
       const adminTab = document.getElementById("adminNavTab");
 
       if (user) {
-        if (loginBtn) loginBtn.style.display = "none";
+        if (loginWrapper) loginWrapper.style.display = "none";
         if (userMenu) {
           userMenu.style.display = "flex";
           const nameEl = document.getElementById("navUserName");
           const avatarEl = document.getElementById("navUserAvatar");
           const roleEl = document.getElementById("navUserRole");
-          const defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366F1'/%3E%3Cstop offset='100%25' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='40' r='18' fill='%23FFFFFF' opacity='0.9'/%3E%3Cpath d='M20 85 C20 66 35 62 50 62 C65 62 80 66 80 85 Z' fill='%23FFFFFF' opacity='0.9'/%3E%3C/svg%3E";
+          const defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23008BDC'/%3E%3Cstop offset='100%25' stop-color='%23006BC7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='40' r='18' fill='%23FFFFFF' opacity='0.9'/%3E%3Cpath d='M20 85 C20 66 35 62 50 62 C65 62 80 66 80 85 Z' fill='%23FFFFFF' opacity='0.9'/%3E%3C/svg%3E";
           if (nameEl) nameEl.textContent = user.full_name || "Student";
           if (avatarEl) avatarEl.src = user.avatar_url || defaultAvatarSvg;
           if (roleEl) roleEl.textContent = user.role || "student";
         }
         if (adminTab) {
-          adminTab.style.display = (user.role === "admin") ? "flex" : "none";
+          adminTab.style.display = (user.role === "admin") ? "inline-flex" : "none";
         }
         this.loadBookmarks();
         this.loadApplications();
       } else {
-        if (loginBtn) loginBtn.style.display = "inline-flex";
+        if (loginWrapper) loginWrapper.style.display = "flex";
         if (userMenu) userMenu.style.display = "none";
         if (adminTab) adminTab.style.display = "none";
         this.bookmarks.clear();
@@ -227,8 +265,13 @@ class OpportunityApp {
   switchTab(tabId) {
     this.currentTab = tabId;
 
-    // Update Nav Tab UI
-    document.querySelectorAll(".nav-tab").forEach(tab => {
+    // Synchronize Desktop Nav Tab UI
+    document.querySelectorAll(".nav-tab-item").forEach(tab => {
+      tab.classList.toggle("active", tab.dataset.tab === tabId);
+    });
+
+    // Synchronize Mobile Bottom Nav UI
+    document.querySelectorAll(".mobile-nav-item").forEach(tab => {
       tab.classList.toggle("active", tab.dataset.tab === tabId);
     });
 
@@ -237,17 +280,17 @@ class OpportunityApp {
       panel.classList.toggle("active", panel.id === `${tabId}View`);
     });
 
-    // Show or hide search controls (only needed for explore)
-    const controls = document.getElementById("controlsSection");
-    if (controls) {
-      controls.style.display = (tabId === "explore") ? "block" : "none";
-    }
-
     // Refresh tab-specific data
     if (tabId === "explore") this.loadExploreData();
     if (tabId === "pipeline") this.loadApplications();
     if (tabId === "bookmarks") this.renderBookmarks();
     if (tabId === "admin") this.loadAdminSubmissions();
+
+    // Scroll to top of main content smoothly
+    const mainEl = document.getElementById("mainContent");
+    if (mainEl && window.scrollY > 300) {
+      mainEl.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   // ── Explore View ──────────────────────────────────────────────────────────
@@ -263,10 +306,10 @@ class OpportunityApp {
       this.renderOpportunities(this.opportunities);
     } catch (err) {
       grid.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-title">Failed to load opportunities</div>
-          <p class="empty-desc">Could not connect to the backend server. Please check your connection or retry.</p>
-          <button class="btn-apply-primary" style="margin-top: 16px;" onclick="window.app.loadExploreData()">Retry</button>
+        <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Failed to load opportunities</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 16px;">Could not connect to the backend server. Please check your connection or retry.</p>
+          <button class="btn-apply-action" onclick="window.app.loadExploreData()">Retry</button>
         </div>
       `;
     }
@@ -278,13 +321,13 @@ class OpportunityApp {
 
     if (!list || list.length === 0) {
       grid.innerHTML = `
-        <div class="empty-state">
-          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
+          <svg style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <div class="empty-title">No opportunities found</div>
-          <p class="empty-desc">Try clearing your filters or searching for different keywords.</p>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">No opportunities found</h3>
+          <p style="color: var(--text-muted);">Try selecting a different category or clearing search keywords.</p>
         </div>
       `;
       return;
@@ -307,19 +350,30 @@ class OpportunityApp {
       prizeFormatted = `₹${Number(opp.prize_inr).toLocaleString('en-IN')}`;
     }
     if (!prizeFormatted) {
-      prizeFormatted = "Swag / Certificates";
+      prizeFormatted = "Prizes & Certificates";
     }
 
-    const modeBadgeClass = mode === "online" ? "badge-hackathon" : mode === "in_person" || mode === "offline" ? "badge-contest" : "badge-internship";
+    const modeDisplay = mode === "in_person" || mode === "offline" ? "In-Person" : mode === "hybrid" ? "Hybrid" : "Online / Remote";
 
     return `
       <div class="opportunity-card" data-id="${opp.id}">
         <div>
-          <div class="card-top">
-            <div class="card-badges">
-              <span class="badge ${modeBadgeClass}">${this.escapeHtml(category)}</span>
-              <span class="badge badge-mode">${this.escapeHtml(mode.toUpperCase())}</span>
-              ${deadlineCountdown ? `<span class="badge badge-countdown ${deadlineCountdown.isUrgent ? 'urgent' : ''}">${deadlineCountdown.text}</span>` : ""}
+          <!-- Header Row: Category Badge & Urgency / Hiring tags + Bookmark -->
+          <div class="card-header-row">
+            <div class="card-tags-wrapper">
+              <span class="badge-tag badge-type-blue">${this.escapeHtml(category.toUpperCase())}</span>
+              <span class="badge-tag badge-mode">${this.escapeHtml(modeDisplay)}</span>
+              ${deadlineCountdown && deadlineCountdown.isUrgent ? `
+                <span class="badge-tag badge-urgent">
+                  <span class="dot"></span>
+                  ${deadlineCountdown.text}
+                </span>
+              ` : `
+                <span class="badge-tag badge-actively-hiring">
+                  <span class="dot"></span>
+                  Active
+                </span>
+              `}
             </div>
             <button class="btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" 
                     title="${isBookmarked ? 'Remove Bookmark' : 'Bookmark Opportunity'}"
@@ -333,40 +387,59 @@ class OpportunityApp {
 
           <h3 class="card-title">${this.escapeHtml(opp.title)}</h3>
           <div class="card-organizer">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
             ${this.escapeHtml(organizer)}
           </div>
-          <p class="card-desc">${this.escapeHtml(opp.description || "No description provided.")}</p>
+          <p class="card-description">${this.escapeHtml(opp.description || "No description provided.")}</p>
 
-          <div class="card-meta-row">
-            <div class="meta-item">
-              <span class="meta-label">Prize Pool</span>
-              <span class="meta-val prize">${this.escapeHtml(prizeFormatted)}</span>
-            </div>
-            <div class="meta-item" style="text-align: right;">
-              <span class="meta-label">Deadline</span>
-              <span class="meta-val">${this.formatDate(deadlineVal)}</span>
-            </div>
-          </div>
+          <!-- Metadata List with Icons (Internshala <ul> Style) -->
+          <ul class="card-metadata-list">
+            <li class="meta-item-row">
+              <div class="meta-item-left">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span>Prize / Stipend</span>
+              </div>
+              <span class="meta-item-val prize">${this.escapeHtml(prizeFormatted)}</span>
+            </li>
+            <li class="meta-item-row">
+              <div class="meta-item-left">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Deadline</span>
+              </div>
+              <span class="meta-item-val">${this.formatDate(deadlineVal)}</span>
+            </li>
+          </ul>
         </div>
 
-        <div class="card-actions">
-          <button class="btn-apply-primary" 
+        <!-- Footer Actions Row -->
+        <div class="card-actions-row">
+          <button class="btn-card-details" 
+                  aria-label="View details for ${this.escapeHtml(opp.title)}"
+                  onclick="window.app.showOpportunityDetails(${opp.id})">
+            View details
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+          <button class="btn-apply-action" 
                   aria-label="Apply to ${this.escapeHtml(opp.title)} on official portal"
                   onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(applyUrl)}')">
             Apply Now
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <line x1="7" y1="17" x2="17" y2="7"></line>
               <polyline points="7 7 17 7 17 17"></polyline>
             </svg>
-          </button>
-          <button class="btn-detail-secondary" 
-                  aria-label="View details for ${this.escapeHtml(opp.title)}"
-                  onclick="window.app.showOpportunityDetails(${opp.id})">
-            Details
           </button>
         </div>
       </div>
@@ -380,10 +453,20 @@ class OpportunityApp {
     try {
       const data = await window.ApiClient.getBookmarks();
       this.bookmarks = new Set((data.bookmarks || []).map(b => b.opportunity_id));
-      const badge = document.getElementById("savedCountBadge");
-      if (badge) badge.textContent = this.bookmarks.size;
+      this.updateBookmarkBadges();
     } catch (err) {
       console.warn("Could not load bookmarks:", err);
+    }
+  }
+
+  updateBookmarkBadges() {
+    const badge = document.getElementById("savedCountBadge");
+    if (badge) badge.textContent = this.bookmarks.size;
+
+    const mobileBadge = document.getElementById("mobileSavedBadge");
+    if (mobileBadge) {
+      mobileBadge.textContent = this.bookmarks.size;
+      mobileBadge.style.display = this.bookmarks.size > 0 ? "flex" : "none";
     }
   }
 
@@ -407,8 +490,7 @@ class OpportunityApp {
       this.showToast("Saved to bookmarks!", "success");
     }
 
-    const badge = document.getElementById("savedCountBadge");
-    if (badge) badge.textContent = this.bookmarks.size;
+    this.updateBookmarkBadges();
 
     try {
       if (isCurrentlyBookmarked) {
@@ -425,6 +507,7 @@ class OpportunityApp {
         this.bookmarks.delete(oppId);
         btnEl.classList.remove("bookmarked");
       }
+      this.updateBookmarkBadges();
       this.showToast("Failed to update bookmark. Please try again.", "error");
     }
   }
@@ -435,11 +518,11 @@ class OpportunityApp {
 
     if (!window.authManager.isAuthenticated()) {
       grid.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-title">Sign In Required</div>
-          <p class="empty-desc">Sign in with Google to view and sync your saved bookmarks across devices.</p>
-          <button class="btn-google-login" style="margin-top: 16px;" onclick="window.authManager.signInWithGoogle()">
-            Sign in with Google
+        <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Sign In Required</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 16px;">Sign in with Google to view and sync your saved bookmarks across devices.</p>
+          <button class="btn-signup-google" style="margin: 0 auto; border: 1px solid #D1D5DB;" onclick="window.authManager.signInWithGoogle()">
+            Continue with Google
           </button>
         </div>
       `;
@@ -452,10 +535,10 @@ class OpportunityApp {
 
       if (bookmarkedOpps.length === 0) {
         grid.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-title">No Bookmarks Saved Yet</div>
-            <p class="empty-desc">Explore live hackathons and click the bookmark button to save them here.</p>
-            <button class="btn-apply-primary" style="margin-top: 16px;" onclick="window.app.switchTab('explore')">Explore Opportunities</button>
+          <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 8px;">No Bookmarks Saved Yet</h3>
+            <p style="color: var(--text-muted); margin-bottom: 16px;">Explore live hackathons and click the bookmark button to save them here.</p>
+            <button class="btn-apply-action" onclick="window.app.switchTab('explore')">Explore Opportunities</button>
           </div>
         `;
         return;
@@ -463,25 +546,13 @@ class OpportunityApp {
 
       grid.innerHTML = bookmarkedOpps.map(opp => this.renderOpportunityCard(opp)).join("");
     } catch (err) {
-      grid.innerHTML = `<div class="empty-state"><p class="empty-desc">Error loading bookmarks.</p></div>`;
+      grid.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">Error loading bookmarks.</div>`;
     }
   }
 
   // ── Application Pipeline (Kanban) ─────────────────────────────────────────
   async loadApplications() {
     if (!window.authManager.isAuthenticated()) {
-      const board = document.getElementById("kanbanBoard");
-      if (board) {
-        board.innerHTML = `
-          <div class="empty-state" style="grid-column: 1 / -1;">
-            <div class="empty-title">Career Pipeline Locked</div>
-            <p class="empty-desc">Sign in with Google to track your hackathon and contest applications through every stage.</p>
-            <button class="btn-google-login" style="margin-top: 16px;" onclick="window.authManager.signInWithGoogle()">
-              Sign in with Google
-            </button>
-          </div>
-        `;
-      }
       return;
     }
 
@@ -506,7 +577,7 @@ class OpportunityApp {
       if (countEl) countEl.textContent = items.length;
 
       if (items.length === 0) {
-        listEl.innerHTML = `<div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.8rem;">No opportunities here</div>`;
+        listEl.innerHTML = `<div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.8rem;">No items in this stage</div>`;
         return;
       }
 
@@ -514,11 +585,11 @@ class OpportunityApp {
         const opp = item.opp_opportunities || {};
         return `
           <div class="kanban-card">
-            <div class="kanban-card-title">${this.escapeHtml(opp.title || "Opportunity")}</div>
-            <div class="kanban-card-org">${this.escapeHtml(opp.organizer || "")}</div>
-            <div class="kanban-card-actions">
-              <span style="font-size: 0.72rem; color: var(--text-muted);">Deadline: ${this.formatDate(opp.deadline)}</span>
-              <select class="kanban-stage-select" onchange="window.app.changeApplicationStatus(${opp.id}, this.value)">
+            <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; color: var(--text-primary);">${this.escapeHtml(opp.title || "Opportunity")}</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px;">${this.escapeHtml(opp.organizer || "")}</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+              <span style="font-size: 0.75rem; color: var(--text-secondary);">${this.formatDate(opp.deadline)}</span>
+              <select style="font-size: 0.78rem; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: #FFFFFF;" onchange="window.app.changeApplicationStatus(${opp.id}, this.value)">
                 <option value="saved" ${stage === 'saved' ? 'selected' : ''}>Saved</option>
                 <option value="applied" ${stage === 'applied' ? 'selected' : ''}>Applied</option>
                 <option value="in_review" ${stage === 'in_review' ? 'selected' : ''}>In Review</option>
@@ -543,12 +614,11 @@ class OpportunityApp {
 
   // ── Apply & Details ───────────────────────────────────────────────────────
   async applyToOpportunity(oppId, applyUrl) {
-    // If logged in, automatically record into application pipeline as "applied"
     if (window.authManager.isAuthenticated()) {
       try {
         await window.ApiClient.updateApplication(oppId, "applied");
       } catch (e) {
-        // Continue even if logging fails
+        // Continue even if recording fails
       }
     }
 
@@ -564,45 +634,45 @@ class OpportunityApp {
     const content = document.getElementById("detailsModalContent");
     if (!modal || !content) return;
 
-    content.innerHTML = `<div style="text-align:center; padding: 40px;"><p>Loading details...</p></div>`;
+    content.innerHTML = `<div style="text-align:center; padding: 40px;"><p>Loading opportunity details...</p></div>`;
     this.openModal("detailsModal");
 
     try {
       const opp = await window.ApiClient.getOpportunity(oppId);
       content.innerHTML = `
         <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
-          <span class="badge badge-hackathon">${this.escapeHtml(opp.opportunity_type || "Event")}</span>
-          <span class="badge badge-mode">${this.escapeHtml(opp.mode || "Online")}</span>
-          <span class="badge" style="background: rgba(16,185,129,0.15); color: #6EE7B7;">${this.escapeHtml(opp.status || "Open")}</span>
+          <span class="badge-tag badge-type-blue">${this.escapeHtml((opp.opportunity_type || "Event").toUpperCase())}</span>
+          <span class="badge-tag badge-mode">${this.escapeHtml(opp.mode || "Online")}</span>
+          <span class="badge-tag badge-actively-hiring"><span class="dot"></span> ${this.escapeHtml(opp.status || "Open")}</span>
         </div>
-        <h2 style="font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 8px; color: #FFFFFF;">${this.escapeHtml(opp.title)}</h2>
-        <div style="color: var(--accent-cyan); font-weight: 500; font-size: 0.95rem; margin-bottom: 20px;">Organized by ${this.escapeHtml(opp.organizer || "Verified Organizer")}</div>
+        <h2 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; color: var(--text-primary);">${this.escapeHtml(opp.title)}</h2>
+        <div style="color: var(--brand-primary); font-weight: 600; font-size: 0.95rem; margin-bottom: 20px;">Organized by ${this.escapeHtml(opp.organizer || "Verified Organizer")}</div>
 
-        <div class="card-meta-row" style="margin-bottom: 20px;">
-          <div class="meta-item">
-            <span class="meta-label">Total Prize Pool</span>
-            <span class="meta-val prize">${this.escapeHtml(opp.prize_pool || "Swag / Certificates")}</span>
+        <div class="card-metadata-list" style="margin-bottom: 20px;">
+          <div class="meta-item-row" style="margin-bottom: 6px;">
+            <span style="color: var(--text-muted);">Total Prize Pool:</span>
+            <span class="meta-item-val prize">${this.escapeHtml(opp.prize_pool || "Prizes / Certificates")}</span>
           </div>
-          <div class="meta-item">
-            <span class="meta-label">Registration Deadline</span>
-            <span class="meta-val">${this.formatDate(opp.deadline)}</span>
+          <div class="meta-item-row">
+            <span style="color: var(--text-muted);">Registration Deadline:</span>
+            <span class="meta-item-val">${this.formatDate(opp.deadline)}</span>
           </div>
         </div>
 
-        <h4 style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">About This Opportunity</h4>
-        <div style="color: var(--text-secondary); line-height: 1.7; font-size: 0.95rem; margin-bottom: 24px; white-space: pre-line;">
+        <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">About This Opportunity</h4>
+        <div style="color: var(--text-secondary); line-height: 1.7; font-size: 0.92rem; margin-bottom: 20px; white-space: pre-line;">
           ${this.escapeHtml(opp.description || "No detailed description provided.")}
         </div>
 
         ${opp.eligibility ? `
-          <h4 style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Eligibility</h4>
-          <p style="color: var(--text-secondary); margin-bottom: 24px;">${this.escapeHtml(opp.eligibility)}</p>
+          <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Eligibility</h4>
+          <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 24px;">${this.escapeHtml(opp.eligibility)}</p>
         ` : ""}
 
         <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <button class="btn-apply-primary" style="flex: 1;" onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(opp.apply_url)}')">
-            Go to Official Application Portal
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button class="btn-apply-action" style="flex: 1; justify-content: center; height: 46px;" onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(opp.apply_url)}')">
+            Go to Official Registration Portal
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <line x1="7" y1="17" x2="17" y2="7"></line>
               <polyline points="7 7 17 7 17 17"></polyline>
             </svg>
@@ -610,7 +680,7 @@ class OpportunityApp {
         </div>
       `;
     } catch (err) {
-      content.innerHTML = `<div class="empty-state"><p class="empty-desc">Error loading details.</p></div>`;
+      content.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);">Error loading details.</div>`;
     }
   }
 
@@ -648,39 +718,39 @@ class OpportunityApp {
     const listEl = document.getElementById("adminSubmissionsList");
     if (!listEl) return;
 
-    listEl.innerHTML = `<div style="text-align: center; padding: 30px;"><p>Loading submissions...</p></div>`;
+    listEl.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><p>Loading submissions...</p></div>`;
 
     try {
       const data = await window.ApiClient.getAdminSubmissions("all");
       const subs = data.submissions || [];
 
       if (subs.length === 0) {
-        listEl.innerHTML = `<div class="empty-state"><p class="empty-desc">No community submissions waiting for review.</p></div>`;
+        listEl.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><p>No community submissions waiting for review.</p></div>`;
         return;
       }
 
       listEl.innerHTML = subs.map(sub => `
         <div class="opportunity-card" style="margin-bottom: 16px;">
-          <div class="card-top">
-            <span class="badge badge-contest">${this.escapeHtml(sub.status)}</span>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">${this.formatDate(sub.created_at)}</span>
+          <div class="card-header-row">
+            <span class="badge-tag badge-type-blue">${this.escapeHtml(sub.status.toUpperCase())}</span>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">${this.formatDate(sub.created_at)}</span>
           </div>
           <h3 class="card-title">${this.escapeHtml(sub.title)}</h3>
           <div class="card-organizer">${this.escapeHtml(sub.organizer)}</div>
-          <p class="card-desc">${this.escapeHtml(sub.description)}</p>
-          <div style="margin: 12px 0; font-size: 0.85rem;">
-            <strong>Link:</strong> <a href="${this.escapeHtml(sub.apply_url)}" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">${this.escapeHtml(sub.apply_url)}</a>
+          <p class="card-description">${this.escapeHtml(sub.description)}</p>
+          <div style="margin: 12px 0; font-size: 0.88rem;">
+            <strong>Link:</strong> <a href="${this.escapeHtml(sub.apply_url)}" target="_blank" style="color: var(--brand-primary); text-decoration: underline;">${this.escapeHtml(sub.apply_url)}</a>
           </div>
           ${sub.status === 'pending' ? `
             <div style="display: flex; gap: 10px; margin-top: 14px;">
-              <button class="btn-apply-primary" style="background: var(--accent-mint);" onclick="window.app.reviewAdminSubmission(${sub.id}, 'approve')">Approve & Publish</button>
-              <button class="btn-detail-secondary" style="color: var(--accent-rose);" onclick="window.app.reviewAdminSubmission(${sub.id}, 'reject')">Reject</button>
+              <button class="btn-apply-action" style="background: var(--accent-green);" onclick="window.app.reviewAdminSubmission(${sub.id}, 'approve')">Approve &amp; Publish</button>
+              <button class="btn-card-details" style="color: #DC2626;" onclick="window.app.reviewAdminSubmission(${sub.id}, 'reject')">Reject</button>
             </div>
           ` : ""}
         </div>
       `).join("");
     } catch (err) {
-      listEl.innerHTML = `<div class="empty-state"><p class="empty-desc">Admin access required or request failed.</p></div>`;
+      listEl.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><p>Admin access required or request failed.</p></div>`;
     }
   }
 
@@ -702,7 +772,10 @@ class OpportunityApp {
       const totalCount = data.total || opps.length;
 
       const activeCountEl = document.getElementById("statActiveCount");
-      if (activeCountEl) activeCountEl.textContent = totalCount;
+      if (activeCountEl) activeCountEl.textContent = `${totalCount}+`;
+
+      const heroActive = document.getElementById("heroActiveBadge");
+      if (heroActive) heroActive.textContent = `${totalCount}+ Verified`;
 
       const deadlinesThisWeek = opps.filter(o => {
         const d = new Date(o.deadline);
@@ -721,15 +794,22 @@ class OpportunityApp {
           totalPrize += Number(o.prize_inr);
         }
       });
+
+      let prizeFormatted = "₹1.8 Cr+";
+      if (totalPrize >= 10000000) {
+        prizeFormatted = `₹${(totalPrize / 10000000).toFixed(1)} Cr+`;
+      } else if (totalPrize >= 100000) {
+        prizeFormatted = `₹${(totalPrize / 100000).toFixed(1)} Lakhs+`;
+      }
+
       const prizeEl = document.getElementById("statPrizeCount");
       if (prizeEl && totalPrize > 0) {
-        if (totalPrize >= 10000000) {
-          prizeEl.textContent = `₹${(totalPrize / 10000000).toFixed(1)} Cr+`;
-        } else if (totalPrize >= 100000) {
-          prizeEl.textContent = `₹${(totalPrize / 100000).toFixed(1)} Lakhs+`;
-        } else {
-          prizeEl.textContent = `₹${totalPrize.toLocaleString('en-IN')}`;
-        }
+        prizeEl.textContent = prizeFormatted;
+      }
+
+      const heroPrize = document.getElementById("heroPrizeBadge");
+      if (heroPrize && totalPrize > 0) {
+        heroPrize.textContent = prizeFormatted;
       }
     } catch (e) {
       // Graceful fallback
@@ -778,7 +858,7 @@ class OpportunityApp {
       return { text: `${hours}h left`, isUrgent: true };
     }
     if (days <= 3) {
-      return { text: `${days}d ${hours}h left`, isUrgent: true };
+      return { text: `${days}d left`, isUrgent: true };
     }
     return { text: `${days}d left`, isUrgent: false };
   }

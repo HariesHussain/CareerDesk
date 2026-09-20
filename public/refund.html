@@ -8,29 +8,31 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
   <link rel="stylesheet" href="/css/style.css">
   <style>
+    body {
+      background-color: var(--bg-subtle);
+    }
     .legal-container {
-      max-width: 860px;
-      margin: 40px auto 80px;
-      padding: 0 24px;
+      max-width: 880px;
+      margin: 32px auto 80px;
+      padding: 0 20px;
     }
     .legal-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 48px;
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow-glass);
+      padding: 40px;
+      box-shadow: var(--shadow-sm);
     }
     .legal-header {
-      margin-bottom: 32px;
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
     }
     .legal-title {
-      font-family: var(--font-display);
-      font-size: 2.2rem;
+      font-family: var(--font-heading);
+      font-size: 2rem;
       font-weight: 800;
-      color: #FFFFFF;
+      color: var(--text-primary);
       margin-bottom: 8px;
       letter-spacing: -0.02em;
     }
@@ -43,13 +45,13 @@
       flex-wrap: wrap;
     }
     .legal-section {
-      margin-bottom: 32px;
+      margin-bottom: 30px;
     }
     .legal-section h2 {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
       font-weight: 700;
-      color: #FFFFFF;
+      color: var(--text-primary);
       margin-bottom: 12px;
       display: flex;
       align-items: center;
@@ -60,11 +62,11 @@
       display: inline-block;
       width: 4px;
       height: 18px;
-      background: var(--accent-amber);
+      background: var(--brand-primary);
       border-radius: 2px;
     }
     .legal-section p, .legal-section li {
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       color: var(--text-secondary);
       line-height: 1.7;
       margin-bottom: 12px;
@@ -77,15 +79,16 @@
       margin-bottom: 8px;
     }
     .legal-highlight-box {
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.2);
+      background: var(--brand-primary-light);
+      border: 1px solid var(--brand-primary-border);
       border-radius: var(--radius-md);
       padding: 16px 20px;
       margin: 20px 0;
     }
     .legal-highlight-box p {
       margin: 0;
-      color: #E2E8F0;
+      color: var(--brand-primary-hover);
+      font-weight: 500;
       font-size: 0.92rem;
     }
     .btn-back-home {
@@ -100,26 +103,24 @@
       transition: color var(--transition-fast);
     }
     .btn-back-home:hover {
-      color: var(--accent-amber);
+      color: var(--brand-primary);
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="navbar" role="banner">
-    <div class="nav-container">
-      <div class="brand-wrapper">
-        <a href="/" class="brand-wrapper" style="text-decoration: none;" aria-label="OpportunityOS Home">
-          <div class="brand-logo" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
-            </svg>
-          </div>
-          <span class="brand-text">Opportunity<span style="color: var(--accent-cyan);">OS</span></span>
-        </a>
-      </div>
-      <div class="nav-actions">
-        <a href="/" class="btn-detail-secondary" style="text-decoration: none;">&larr; Back to App</a>
+  <!-- Clean Internshala Header -->
+  <header class="site-header" role="banner">
+    <div class="nav-inner-container">
+      <a href="/" class="brand-wrapper" aria-label="OpportunityOS Home">
+        <div class="brand-logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+        </div>
+        <span class="brand-title-text">Opportunity<span style="color: var(--brand-primary);">OS</span></span>
+      </a>
+      <div class="nav-right-actions">
+        <a href="/" class="btn-outline-primary" style="text-decoration: none;">&larr; Back to App</a>
       </div>
     </div>
   </header>
