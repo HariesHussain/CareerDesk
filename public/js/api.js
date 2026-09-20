@@ -121,6 +121,13 @@ const ApiClient = {
       method: "POST",
       body: JSON.stringify({ email })
     });
+  },
+
+  // ── Account Erasure (DPDP Act 2023 & GDPR Right to be Forgotten) ───────────
+  async deleteAccount() {
+    return this.request(`/api/auth/profile`, {
+      method: "DELETE"
+    });
   }
 };
 

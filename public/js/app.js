@@ -24,6 +24,7 @@ class OpportunityApp {
 
   async init() {
     this.setupEventListeners();
+    this.setupCookieConsent();
     this.setupAuthSync();
     await this.loadExploreData();
     await this.updateHeroStats();
@@ -120,6 +121,28 @@ class OpportunityApp {
       });
     }
 
+    // Delete Account (Right to Erasure) Trigger
+    const btnDeleteAccount = document.getElementById("btnDeleteAccount");
+    if (btnDeleteAccount) {
+      btnDeleteAccount.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const confirmed = window.confirm(
+          "Permanent Account Deletion (Right to Erasure):\n\nAre you sure you want to permanently delete your profile, saved bookmarks, and application tracking history?\n\nIn accordance with DPDP & GDPR guidelines, this action is irreversible."
+        );
+        if (!confirmed) return;
+
+        try {
+          await window.ApiClient.deleteAccount();
+          this.showToast("Your account and data have been permanently erased.", "info");
+          if (window.authManager) {
+            await window.authManager.signOut();
+          }
+        } catch (err) {
+          this.showToast("Failed to erase account: " + (err.message || "Unknown error"), "error");
+        }
+      });
+    }
+
     // Modal Close Buttons
     document.querySelectorAll(".modal-close-btn, .btn-modal-close").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -148,6 +171,25 @@ class OpportunityApp {
     }
   }
 
+  // ── Cookie & Storage Notice ───────────────────────────────────────────────
+  setupCookieConsent() {
+    const banner = document.getElementById("cookieConsentBanner");
+    const btnAccept = document.getElementById("btnAcceptCookies");
+    if (!banner) return;
+
+    const consent = localStorage.getItem("opp_cookie_consent");
+    if (!consent) {
+      banner.style.display = "block";
+    }
+
+    if (btnAccept) {
+      btnAccept.addEventListener("click", () => {
+        localStorage.setItem("opp_cookie_consent", "accepted");
+        banner.style.display = "none";
+      });
+    }
+  }
+
   setupAuthSync() {
     window.authManager.onAuthChange((user) => {
       const loginBtn = document.getElementById("btnGoogleLogin");
@@ -161,8 +203,9 @@ class OpportunityApp {
           const nameEl = document.getElementById("navUserName");
           const avatarEl = document.getElementById("navUserAvatar");
           const roleEl = document.getElementById("navUserRole");
+          const defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366F1'/%3E%3Cstop offset='100%25' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='40' r='18' fill='%23FFFFFF' opacity='0.9'/%3E%3Cpath d='M20 85 C20 66 35 62 50 62 C65 62 80 66 80 85 Z' fill='%23FFFFFF' opacity='0.9'/%3E%3C/svg%3E";
           if (nameEl) nameEl.textContent = user.full_name || "Student";
-          if (avatarEl) avatarEl.src = user.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80";
+          if (avatarEl) avatarEl.src = user.avatar_url || defaultAvatarSvg;
           if (roleEl) roleEl.textContent = user.role || "student";
         }
         if (adminTab) {
@@ -280,6 +323,7 @@ class OpportunityApp {
             </div>
             <button class="btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" 
                     title="${isBookmarked ? 'Remove Bookmark' : 'Bookmark Opportunity'}"
+                    aria-label="${isBookmarked ? 'Remove bookmark for ' + this.escapeHtml(opp.title) : 'Bookmark ' + this.escapeHtml(opp.title)}"
                     onclick="window.app.toggleBookmark(${opp.id}, this)">
               <svg viewBox="0 0 24 24">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -310,14 +354,18 @@ class OpportunityApp {
         </div>
 
         <div class="card-actions">
-          <button class="btn-apply-primary" onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(applyUrl)}')">
+          <button class="btn-apply-primary" 
+                  aria-label="Apply to ${this.escapeHtml(opp.title)} on official portal"
+                  onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(applyUrl)}')">
             Apply Now
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="7" y1="17" x2="17" y2="7"></line>
               <polyline points="7 7 17 7 17 17"></polyline>
             </svg>
           </button>
-          <button class="btn-detail-secondary" onclick="window.app.showOpportunityDetails(${opp.id})">
+          <button class="btn-detail-secondary" 
+                  aria-label="View details for ${this.escapeHtml(opp.title)}"
+                  onclick="window.app.showOpportunityDetails(${opp.id})">
             Details
           </button>
         </div>
@@ -568,6 +616,11 @@ class OpportunityApp {
 
   // ── Community Submissions ─────────────────────────────────────────────────
   async handleOpportunitySubmission(formData) {
+    if (!formData.get("consent")) {
+      this.showToast("Please certify event authenticity and accept the Terms & Privacy Policy.", "error");
+      return;
+    }
+
     const payload = {
       title: formData.get("title"),
       organizer: formData.get("organizer"),
@@ -660,6 +713,24 @@ class OpportunityApp {
 
       const urgentEl = document.getElementById("statUrgentCount");
       if (urgentEl) urgentEl.textContent = deadlinesThisWeek || "0";
+
+      // Dynamically calculate live aggregate prize pool from fetched opportunities
+      let totalPrize = 0;
+      opps.forEach(o => {
+        if (o.prize_inr && !isNaN(o.prize_inr)) {
+          totalPrize += Number(o.prize_inr);
+        }
+      });
+      const prizeEl = document.getElementById("statPrizeCount");
+      if (prizeEl && totalPrize > 0) {
+        if (totalPrize >= 10000000) {
+          prizeEl.textContent = `₹${(totalPrize / 10000000).toFixed(1)} Cr+`;
+        } else if (totalPrize >= 100000) {
+          prizeEl.textContent = `₹${(totalPrize / 100000).toFixed(1)} Lakhs+`;
+        } else {
+          prizeEl.textContent = `₹${totalPrize.toLocaleString('en-IN')}`;
+        }
+      }
     } catch (e) {
       // Graceful fallback
     }

@@ -12,12 +12,15 @@
 </head>
 <body>
 
+  <!-- ── Skip to Main Content (WCAG 2.2 AA) ────────────────────────────── -->
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
+
   <!-- ── Top Navigation Bar ─────────────────────────────────────────────── -->
-  <header class="navbar">
+  <header class="navbar" role="banner">
     <div class="nav-container">
       <div class="brand-wrapper">
-        <a href="/" class="brand-wrapper" style="text-decoration: none;">
-          <div class="brand-logo">
+        <a href="/" class="brand-wrapper" style="text-decoration: none;" aria-label="OpportunityOS Home">
+          <div class="brand-logo" aria-hidden="true">
             <svg viewBox="0 0 24 24">
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
             </svg>
@@ -28,7 +31,7 @@
       </div>
 
       <!-- Navigation Tabs -->
-      <nav class="nav-tabs" id="navTabs">
+      <nav class="nav-tabs" id="navTabs" role="navigation" aria-label="Main Navigation">
         <button class="nav-tab active" data-tab="explore">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
@@ -71,54 +74,66 @@
       <!-- Auth Controls -->
       <div class="nav-actions">
         <!-- Google Sign-In Button (Guest State) -->
-        <button id="btnGoogleLogin" class="btn-google-login">
-          <svg viewBox="0 0 24 24">
-            <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
-            <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
-            <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
-            <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
-          </svg>
-          Sign in with Google
-        </button>
+        <div id="guestAuthWrapper" style="display: flex; flex-direction: column; align-items: flex-end;">
+          <button id="btnGoogleLogin" class="btn-google-login" aria-label="Sign in using your Google account">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+              <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
+              <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
+            </svg>
+            Sign in with Google
+          </button>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-align: right;">
+            By signing in, you accept our <a href="/terms.html" target="_blank" style="color: var(--text-muted); text-decoration: underline;">Terms</a> &amp; <a href="/privacy.html" target="_blank" style="color: var(--text-muted); text-decoration: underline;">Privacy</a>
+          </div>
+        </div>
 
         <!-- User Profile Menu (Authenticated State) -->
-        <div id="userProfileMenu" class="user-profile-menu" style="display: none;">
-          <img id="navUserAvatar" class="user-avatar" src="" alt="Avatar">
+        <div id="userProfileMenu" class="user-profile-menu" style="display: none;" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-label="User account menu">
+          <img id="navUserAvatar" class="user-avatar" src="" alt="Profile avatar">
           <div class="user-name-wrapper">
             <span id="navUserName" class="user-name">Student</span>
             <span id="navUserRole" class="user-role-badge">Student</span>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted); margin-left: 4px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted); margin-left: 4px;" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
 
           <!-- Dropdown -->
-          <div id="userDropdown" class="user-dropdown">
-            <a href="#" class="dropdown-item" onclick="window.app.switchTab('pipeline')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <div id="userDropdown" class="user-dropdown" role="menu">
+            <a href="#" class="dropdown-item" role="menuitem" onclick="window.app.switchTab('pipeline')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <line x1="18" y1="20" x2="18" y2="10"></line>
                 <line x1="12" y1="20" x2="12" y2="4"></line>
                 <line x1="6" y1="20" x2="6" y2="14"></line>
               </svg>
               My Application Tracker
             </a>
-            <a href="#" class="dropdown-item" onclick="window.app.switchTab('bookmarks')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <a href="#" class="dropdown-item" role="menuitem" onclick="window.app.switchTab('bookmarks')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
               </svg>
               Saved Bookmarks
             </a>
-            <a href="#" id="btnForgotPassword" class="dropdown-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <a href="#" id="btnForgotPassword" class="dropdown-item" role="menuitem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
-              Password & Account Help
+              Password &amp; Account Help
+            </a>
+            <a href="#" id="btnDeleteAccount" class="dropdown-item" role="menuitem" style="color: var(--accent-rose);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Delete Account (Erasure)
             </a>
             <div class="dropdown-divider"></div>
-            <button id="btnLogout" class="dropdown-item danger">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button id="btnLogout" class="dropdown-item danger" role="menuitem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>
                 <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -156,7 +171,7 @@
         </div>
         <div class="stat-box">
           <span class="stat-label">Prize Pools</span>
-          <span class="stat-value">₹1.8 Cr+</span>
+          <span class="stat-value" id="statPrizeCount">₹1.8 Cr+</span>
           <span class="stat-sub">Cash & awards</span>
         </div>
         <div class="stat-box">
@@ -209,7 +224,7 @@
   </section>
 
   <!-- ── Main Views Container ─────────────────────────────────────────────── -->
-  <main class="main-container">
+  <main id="mainContent" class="main-container" role="main">
     <!-- View 1: Explore Opportunities -->
     <div id="exploreView" class="view-panel active">
       <div id="opportunitiesGrid" class="cards-grid">
@@ -347,11 +362,21 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Eligibility Criteria</label>
-            <input type="text" name="eligibility" class="form-input" placeholder="e.g. Open to all engineering college students">
+            <label class="form-label" for="submitEligibility">Eligibility Criteria</label>
+            <input type="text" id="submitEligibility" name="eligibility" class="form-input" placeholder="e.g. Open to all engineering college students">
           </div>
 
-          <button type="submit" class="btn-apply-primary" style="width: 100%; padding: 14px; font-size: 1rem; margin-top: 10px;">
+          <!-- Form Consent Checkbox (DPDP & Consumer Protection) -->
+          <div class="form-group" style="margin-top: 18px; margin-bottom: 20px;">
+            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+              <input type="checkbox" id="submissionConsent" name="consent" required style="margin-top: 4px; accent-color: var(--accent-primary); width: 16px; height: 16px;">
+              <span style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
+                I certify that this event is authentic, non-fraudulent, and free of copyright infringement. I accept the <a href="/terms.html" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">Terms &amp; Conditions</a> and <a href="/privacy.html" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">Privacy Policy</a>.
+              </span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-apply-primary" style="width: 100%; padding: 14px; font-size: 1rem; margin-top: 6px;">
             Submit for Review
           </button>
         </form>
@@ -371,9 +396,9 @@
   </main>
 
   <!-- ── Opportunity Detail Modal ─────────────────────────────────────────── -->
-  <div id="detailsModal" class="modal-backdrop">
+  <div id="detailsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
     <div class="modal-box">
-      <button class="modal-close-btn">&times;</button>
+      <button class="modal-close-btn" aria-label="Close opportunity details">&times;</button>
       <div id="detailsModalContent">
         <!-- Injected dynamically -->
       </div>
@@ -381,19 +406,19 @@
   </div>
 
   <!-- ── Forgot Password & Google SSO Help Modal ──────────────────────────── -->
-  <div id="forgotPasswordModal" class="modal-backdrop">
+  <div id="forgotPasswordModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="forgotPasswordTitle">
     <div class="modal-box" style="max-width: 520px;">
-      <button class="modal-close-btn">&times;</button>
+      <button class="modal-close-btn" aria-label="Close recovery modal">&times;</button>
       <div style="text-align: center; margin-bottom: 20px;">
         <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M12 16v-4"></path>
             <path d="M12 8h.01"></path>
           </svg>
         </div>
-        <h3 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">
-          Password & Account Recovery
+        <h3 id="forgotPasswordTitle" style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">
+          Password &amp; Account Recovery
         </h3>
         <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">
           OpportunityOS uses <strong>Google Single Sign-On (SSO)</strong> for 100% passwordless security. We never store or manage passwords on our servers.
@@ -411,13 +436,89 @@
         <a href="https://accounts.google.com/signin/recovery" target="_blank" rel="noopener noreferrer" class="btn-apply-primary" style="flex: 1; text-align: center;">
           Open Google Account Recovery
         </a>
-        <button class="btn-detail-secondary btn-modal-close">Close</button>
+        <button class="btn-detail-secondary btn-modal-close" aria-label="Close dialog">Close</button>
       </div>
     </div>
   </div>
 
+  <!-- ── Site Footer (Statutory & Legal Disclosures) ────────────────────── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>
+          <div class="brand-logo" style="width: 28px; height: 28px;" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          </div>
+          Opportunity<span style="color: var(--accent-cyan);">OS</span>
+        </h3>
+        <p>The student career operating system aggregating verified hackathons, coding challenges, internships, and fellowships from trusted national portals.</p>
+        <div class="footer-safeharbor">
+          <strong>Intermediary Notice:</strong> OpportunityOS operates as an aggregator under Section 79 of the Information Technology Act, 2000. Listings are indexed from external platforms. Trademarks belong to their respective proprietors.
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Compliance &amp; Legal</h4>
+        <ul class="footer-links">
+          <li><a href="/privacy.html">Privacy Policy</a></li>
+          <li><a href="/terms.html">Terms &amp; Conditions</a></li>
+          <li><a href="/cookies.html">Cookie &amp; Storage Policy</a></li>
+          <li><a href="/refund.html">Refund &amp; Cancellation Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Grievance Redressal</h4>
+        <div class="footer-meta-item">
+          <strong>Publisher:</strong> OpportunityOS Technologies
+        </div>
+        <div class="footer-meta-item">
+          <strong>Location:</strong> Bengaluru, Karnataka, India
+        </div>
+        <div class="footer-meta-item">
+          <strong>Support Desk:</strong> <a href="mailto:support@opportunityos.in" style="color: var(--accent-cyan);">support@opportunityos.in</a>
+        </div>
+        <div class="footer-meta-item">
+          <strong>Grievance Officer:</strong> Haries Hussain (<a href="mailto:grievance@opportunityos.in" style="color: var(--accent-cyan);">grievance@opportunityos.in</a>)
+        </div>
+        <div class="footer-meta-item" style="font-size: 0.8rem; color: var(--text-muted);">
+          Statutory acknowledgement SLA: 48 hours.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 OpportunityOS Technologies. All rights reserved. Built for developers &amp; students.</div>
+      <div style="display: flex; gap: 16px;">
+        <a href="/privacy.html" style="color: var(--text-muted); text-decoration: none;">Privacy</a>
+        <a href="/terms.html" style="color: var(--text-muted); text-decoration: none;">Terms</a>
+        <a href="/cookies.html" style="color: var(--text-muted); text-decoration: none;">Cookies</a>
+        <a href="/refund.html" style="color: var(--text-muted); text-decoration: none;">Refunds</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Cookie & Storage Consent Banner (ePrivacy & DPDP) ────────────────── -->
+  <aside id="cookieConsentBanner" class="cookie-banner" role="region" aria-label="Cookie & Storage Notice" style="display: none;">
+    <div class="cookie-banner-content">
+      <div class="cookie-banner-text">
+        <div class="cookie-banner-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-mint);" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          Privacy &amp; Local Storage Notice
+        </div>
+        <p>We use essential local storage strictly for Google authentication and to save your preferences. We do not use third-party advertising cookies or cross-site tracking. Read our <a href="/cookies.html" target="_blank">Cookie Policy</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</p>
+      </div>
+      <div class="cookie-banner-actions">
+        <button id="btnAcceptCookies" class="btn-apply-primary" style="padding: 10px 20px; font-size: 0.9rem;" aria-label="Accept and close cookie notice">Accept &amp; Continue</button>
+        <a href="/cookies.html" class="btn-detail-secondary" style="padding: 10px 16px; font-size: 0.9rem; text-decoration: none;" aria-label="Learn more about cookie policy">Learn More</a>
+      </div>
+    </div>
+  </aside>
+
   <!-- ── Floating Toast Container ─────────────────────────────────────────── -->
-  <div id="toastContainer" class="toast-container"></div>
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
   <!-- ── Scripts ─────────────────────────────────────────────────────────── -->
   <!-- Official Supabase JavaScript SDK v2 -->
