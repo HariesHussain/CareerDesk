@@ -13,26 +13,25 @@
 
 ---
 
-## 2. Recommended Tech Stack (Optimized for Portfolio & Vercel)
-* **Frontend**: Vanilla HTML/CSS/JavaScript *(or Next.js/React)* deployed on **Vercel** (instant global CDN, 0-second spin-up).
-* **Backend**: Python (Flask / Serverless WSGI) or Node.js running on **Vercel Serverless Functions** (`/api`).
-* **Database**: **Supabase (Managed PostgreSQL)**:
-  * Persistent cloud storage (replaces ephemeral local SQLite).
-  * Never gets wiped on deployment restarts.
-  * Real relational database (Postgres) — looks significantly better on resumes.
+## 2. Locked Production Tech Stack
+* **Frontend**: Responsive UI (HTML5 / Modern CSS / Vanilla JS or React) deployed to **Vercel Edge CDN** (0s spin-up, instant global caching).
+* **Backend**: Python (Flask / Serverless Functions) deployed on **Vercel**.
+* **Database**: **Supabase (Managed PostgreSQL 15+)**:
+  * Persistent cloud storage with Connection Pooling (`pgbouncer` on port 6543 for serverless).
+  * Row Level Security (RLS) protecting student bookmarks, applications, and profile records.
 * **External Ingestion Source**: **Brabble API** (`GET https://brabble.ai/api/listings`):
-  * Refreshed hourly on Brabble's side.
+  * Refreshed hourly on Brabble's end.
   * Free tier: 1,000 requests/day.
-  * Server-side authentication only (`BRABBLE_API_KEY`), never exposed to frontend.
-* **Sync Mechanism**: **Vercel Cron** hitting `/api/cron/sync` (or scheduled task) to refresh opportunities in the database periodically.
+  * Server-side authentication only (`BRABBLE_API_KEY`), never sent to the browser.
+* **Sync Mechanism**: **Vercel Cron** hitting `/api/cron/sync` (protected with `CRON_SECRET`) hourly.
 
 ---
 
 ## 3. Current Implementation Status
 * **Phase 0 (API Verification)**: ✅ Complete (Brabble API live test verified).
-* **Phase 1 (Documentation & Planning)**: ✅ Complete (Full 20-file spec suite in `/docs`).
-* **Phase 2 (Handoff & Architecture Lock)**: ✅ In progress (Choosing Vercel + Supabase, preparing backend foundation).
-* **Application Code**: ⏳ **NOT STARTED YET** (User instruction: Do not write code until explicitly told).
+* **Phase 1 (Documentation & Rebranding)**: ✅ Complete (OpportunityOS branding updated across all docs).
+* **Phase 2 (Repo & Security Hardening)**: ✅ Complete (Git initialized, security-hardened `.gitignore`, `.env.example` created, commit-per-change protocol established).
+* **Application Code**: ⏳ **NOT STARTED YET** (User instruction: Waiting for explicit "build backend" command).
 
 ---
 
@@ -42,8 +41,8 @@
 | :---: | :--- | :--- | :---: |
 | **0** | **API Verification** | Verified Brabble API endpoints, parameters, and live data | ✅ Done |
 | **1** | **Spec Documentation** | Requirements, schemas, and security documented in `/docs` | ✅ Done |
-| **2** | **Project Setup & Handoff** | Renamed to OpportunityOS, created context handoff system | 🔄 Current |
-| **3** | **Database Schema (Supabase)** | Create Postgres tables (`opportunities`, `users`, `bookmarks`, `applications`, `sync_logs`) | ⏳ Upcoming |
+| **2** | **Project Setup & Handoff** | Renamed to OpportunityOS, created context handoff system, git init | ✅ Done |
+| **3** | **Database Schema (Supabase)** | Create Postgres tables (`opportunities`, `users`, `bookmarks`, `applications`, `sync_logs`) & RLS | ⏳ Next |
 | **4** | **Brabble Ingestion Engine** | `brabble_client.py`, normalizer, and upsert logic into Supabase | ⏳ Upcoming |
 | **5** | **Public REST API** | `/api/opportunities` (filtering by type, city, platform, search, sort, pagination) | ⏳ Upcoming |
 | **6** | **Frontend Discovery UI** | Responsive search/filter UI, opportunity cards, detail modal | ⏳ Upcoming |
@@ -52,11 +51,13 @@
 
 ---
 
-## 5. Critical Technical Constraints & Rules
-1. **Never expose `BRABBLE_API_KEY` to the browser**: All Brabble calls happen server-side.
-2. **Never query Brabble on user search**: The user searches our Supabase database, not the Brabble API. Brabble is only queried by our scheduled background sync worker.
-3. **Handle Serverless Ephemerality**: Backend runs stateless. All persistent states (sessions, bookmarks, opportunities) must live in Supabase PostgreSQL, not on the server disk.
-4. **Resilient Data Ingestion**: Brabble may change data fields or omit optional fields (`prize`, `fee`, `eligibility`). The normalizer must have robust fallback defaults and never crash the sync process on a missing field.
+## 5. Critical Technical Constraints & Security Rules
+1. **Zero Keys in Code**: All API keys, connection strings, and tokens must ONLY exist in `.env` (locally) and Vercel Environment Variables (in production). Never hardcode secrets.
+2. **Never Expose `BRABBLE_API_KEY` or `SUPABASE_SERVICE_ROLE_KEY` to the browser**: Ingestion and privileged operations happen strictly server-side.
+3. **Commit After Every Change**: Run atomic git commits after completing each discrete unit of work.
+4. **Zero Live Ingestion Queries on User Search**: Frontend search queries our indexed Supabase database, not the external Brabble API. Brabble is only hit by the hourly sync job.
+5. **Anti-IDOR & Parameterized SQL**: Every user query is scoped to `user_id = authenticated_user_id` and executed via parameterized queries.
+6. **No Unapproved Code**: Do not write application code until the user explicitly prompts "build backend".
 
 ---
 
@@ -66,7 +67,8 @@ When starting a new session or switching accounts, give the AI this prompt:
 ```markdown
 I am building "OpportunityOS" — a student discovery & tracking platform for hackathons and coding contests.
 Please read `context/PROJECT_STATE.md` and `docs/` in the project root to understand the complete architecture, stack, and current progress.
-Do not hallucinate external packages. We are currently at Phase [INSERT CURRENT PHASE NUMBER].
+Follow all security rules: no hardcoded keys, commit after every single change, and do not hallucinate external dependencies.
+We are currently starting Phase 3 (Supabase Database Schema).
 ```
 
 ---
@@ -75,6 +77,10 @@ Do not hallucinate external packages. We are currently at Phase [INSERT CURRENT 
 * **2026-09-20**: 
   * Workspace reviewed. Identified 20 documentation files.
   * Project officially renamed to **OpportunityOS**.
-  * Evaluated hosting constraints for Vercel: recommended **Vercel + Supabase** over local SQLite to prevent data loss on serverless restarts and eliminate cold-start delays.
-  * Created `context/PROJECT_STATE.md` as the living AI handoff document.
-  * User instruction enforced: Zero code written until backend is explicitly initiated.
+  * User confirmed stack choice: **Vercel + Supabase (PostgreSQL)**.
+  * Security-hardened `.gitignore` and `.env.example` created with Supabase pooler credentials and `CRON_SECRET`.
+  * Git initialized; staged `.agents/` skills and initial configuration.
+  * First commit created: `chore: initialize repository with security rules, environment templates, and AI context`.
+  * Updated entire documentation suite in `/docs` (`01-PRD`, `02-TRD`, `03-Architecture`, `06-Database`, `07-API`, `10-Security`, `13-Deployment`, `14-Env`, `15-Roadmap`, `16-Decisions`, `17-Explanation`, `18-Interview-Prep`, `19-Troubleshooting`, `20-Changelog`).
+  * Enforced zero-application-code policy until user explicitly requests "build backend".
+

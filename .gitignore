@@ -41,4 +41,5 @@ build/
 Thumbs.db
 .vscode/
 .idea/
-
+docs/
+.agents/
