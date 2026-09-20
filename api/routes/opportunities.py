@@ -142,7 +142,7 @@ def list_opportunities():
 
     except Exception as e:
         logger.error("Error listing opportunities: %s", str(e)[:200])
-        return jsonify({"error": "Something went wrong, please try again."}), 500
+        return jsonify({"error": f"Failed to load opportunities: {str(e)}"}), 500
 
 
 @opportunities_bp.route("/api/opportunities/<int:opp_id>", methods=["GET"])

@@ -143,7 +143,7 @@ def login_required(f):
 
         except Exception as e:
             logger.warning("Auth token verification error: %s", str(e)[:200])
-            return jsonify({"error": "Invalid or expired authorization token."}), 401
+            return jsonify({"error": "Invalid or expired authorization token.", "details": str(e)}), 401
 
         return f(*args, **kwargs)
 

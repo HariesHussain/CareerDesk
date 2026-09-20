@@ -15,18 +15,21 @@ from supabase import create_client, Client
 def get_service_client() -> Client:
     """
     Returns a Supabase client with SERVICE_ROLE_KEY.
-    This bypasses Row Level Security — use ONLY for:
-      - Background sync (Brabble ingestion)
-      - Admin operations
-      - Cron jobs
-    NEVER expose this client or its key to the browser.
+    Falls back to SUPABASE_ANON_KEY if SERVICE_ROLE_KEY is not yet configured.
     """
-    url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+    url = (os.environ.get("SUPABASE_URL") or "").strip().strip('"').strip("'")
+    key = (
+        os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+        or os.environ.get("SUPABASE_SERVICE_KEY")
+        or os.environ.get("SERVICE_ROLE_KEY")
+        or os.environ.get("SUPABASE_ANON_KEY")
+        or os.environ.get("SUPABASE_KEY")
+        or ""
+    ).strip().strip('"').strip("'")
 
     if not url or not key:
         raise RuntimeError(
-            "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in environment variables."
+            f"Supabase credentials missing: url={'configured' if url else 'missing'}, key={'configured' if key else 'missing'}"
         )
 
     return create_client(url, key)
@@ -36,14 +39,17 @@ def get_anon_client() -> Client:
     """
     Returns a Supabase client with ANON_KEY.
     This client respects Row Level Security policies.
-    Safe for operations where the user's auth context matters.
     """
-    url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_ANON_KEY")
+    url = (os.environ.get("SUPABASE_URL") or "").strip().strip('"').strip("'")
+    key = (
+        os.environ.get("SUPABASE_ANON_KEY")
+        or os.environ.get("SUPABASE_KEY")
+        or ""
+    ).strip().strip('"').strip("'")
 
     if not url or not key:
         raise RuntimeError(
-            "SUPABASE_URL and SUPABASE_ANON_KEY must be set in environment variables."
+            f"Supabase anon credentials missing: url={'configured' if url else 'missing'}, anon_key={'configured' if key else 'missing'}"
         )
 
     return create_client(url, key)
