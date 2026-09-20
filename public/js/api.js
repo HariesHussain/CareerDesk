@@ -212,6 +212,18 @@ const ApiClient = {
     });
   },
 
+  // ── User Profile Management ──────────────────────────────────────────────
+  async getProfile() {
+    return this.request(`/api/auth/me`);
+  },
+
+  async updateProfile(profileData) {
+    return this.request(`/api/auth/profile`, {
+      method: "PUT",
+      body: JSON.stringify(profileData)
+    });
+  },
+
   // ── Account Erasure (DPDP Act 2023 & GDPR Right to be Forgotten) ───────────
   async deleteAccount() {
     return this.request(`/api/auth/profile`, {

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-  <title>CareerDesk — India's #1 Platform for Hackathons, Internships & Student Opportunities</title>
-  <meta name="description" content="Discover 900+ national hackathons, coding contests, paid internships, and fellowships with ₹1.8 Cr+ in live prize pools. Official direct links, zero spam.">
+  <title>CareerDesk — India's #1 Platform for Hackathons, Coding Contests &amp; Competitions</title>
+  <meta name="description" content="Discover 900+ national hackathons, coding contests, and student opportunities with ₹1.8 Cr+ in live prize pools. Official direct links, zero spam.">
   
   <!-- Custom Favicon (CareerDesk Monogram Squircle) -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -14,8 +14,8 @@
   <!-- Open Graph / Facebook / LinkedIn / WhatsApp Social Share Cards -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://careerdesk.in/">
-  <meta property="og:title" content="CareerDesk — India's #1 Platform for Hackathons, Internships & Opportunities">
-  <meta property="og:description" content="Discover 900+ national hackathons, coding contests, paid internships, and fellowships with ₹1.8 Cr+ in live prize pools. Verified direct links, zero spam.">
+  <meta property="og:title" content="CareerDesk — India's #1 Platform for Hackathons &amp; Contests">
+  <meta property="og:description" content="Discover 900+ national hackathons, coding contests, and competitions with ₹1.8 Cr+ in live prize pools. Verified direct links, zero spam.">
   <meta property="og:image" content="/images/hero_students.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -24,7 +24,7 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://careerdesk.in/">
-  <meta name="twitter:title" content="CareerDesk — India's #1 Platform for Hackathons & Internships">
+  <meta name="twitter:title" content="CareerDesk — India's #1 Platform for Hackathons &amp; Contests">
   <meta name="twitter:description" content="Discover 900+ verified hackathons, coding contests, and fellowships with live prize pools. Track applications effortlessly.">
   <meta name="twitter:image" content="/images/hero_students.jpg">
 
@@ -103,12 +103,8 @@
 
       <!-- Right: Auth State -->
       <div class="nav-actions">
-        <!-- Guest State: Google SSO Button & Test Login -->
+        <!-- Guest State: Google SSO Button -->
         <div id="guestAuthWrapper" style="display: flex; align-items: center; gap: 10px;">
-          <button id="btnOpenDevLogin" class="btn-outline-subtle" aria-label="Quick Dev Test Sign In">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Test Sign-in
-          </button>
           <button id="btnGoogleLogin" class="btn-header-google" aria-label="Sign in with Google">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
@@ -133,6 +129,13 @@
 
           <!-- Dropdown Menu -->
           <div id="userDropdown" class="user-dropdown" role="menu">
+            <a href="#" id="btnOpenProfileModal" class="dropdown-item" role="menuitem">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              My Profile &amp; Details
+            </a>
             <a href="#" class="dropdown-item" role="menuitem" onclick="window.app.switchTab('pipeline')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -216,13 +219,13 @@
                 Continue with Google
               </button>
 
-              <button id="btnHeroDevLogin" class="btn-signup-email" aria-label="Continue with Email">
+              <a href="#overview" class="btn-signup-email" aria-label="Explore Platform & Events" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                  <polyline points="22,6 12,13 2,6"></polyline>
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
                 </svg>
-                Continue with Email
-              </button>
+                Explore Platform &amp; Events
+              </a>
             </div>
 
             <div class="hero-tnc-notice">
@@ -484,7 +487,7 @@
               </div>
             </div>
             <p class="persona-desc">
-              Build resume-worthy proof-of-work beyond college syllabi. Team up, build software prototypes, win cash prizes, and secure high-stipend internships.
+              Build resume-worthy proof-of-work beyond college syllabi. Team up, build software prototypes, win cash prizes, and secure top industry recognition.
             </p>
             <ul class="persona-features-list">
               <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> National student hackathons &amp; campus fests</li>
@@ -571,11 +574,6 @@
             </svg>
             Sign in with Google to Enter App
           </button>
-
-          <button id="btnCtaDevLogin" class="btn-cta-demo" aria-label="Dev Test Fast Login">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            Instant Test Login (Local Dev)
-          </button>
         </div>
 
         <div class="cta-guarantee-note">
@@ -628,12 +626,12 @@
       <section class="controls-card" id="controlsSection">
         <!-- Horizontal Scrollable Category Pills -->
         <div class="pill-carousel-wrapper" role="tablist" aria-label="Category Filters">
-          <button class="filter-pill active" data-type="all" role="tab">All Opportunities</button>
-          <button class="filter-pill" data-type="hackathon" role="tab">Hackathons</button>
-          <button class="filter-pill" data-type="contest" role="tab">Coding Contests</button>
-          <button class="filter-pill" data-type="internship" role="tab">Internships</button>
-          <button class="filter-pill" data-type="fellowship" role="tab">Fellowships</button>
-          <button class="filter-pill" data-type="grant" role="tab">Grants &amp; Innovation</button>
+          <button class="filter-pill active" data-type="all" role="tab">All Opportunities (914+)</button>
+          <button class="filter-pill" data-type="hackathon" role="tab">Hackathons (397)</button>
+          <button class="filter-pill" data-type="contest" role="tab">Coding Contests (56)</button>
+          <button class="filter-pill" data-type="competition" role="tab">Competitions (281)</button>
+          <button class="filter-pill" data-type="innovation" role="tab">Design &amp; Innovation (98)</button>
+          <button class="filter-pill" data-type="case_study" role="tab">Case Studies &amp; Quizzes (82)</button>
         </div>
 
         <!-- Search Bar & Filters -->
@@ -660,9 +658,33 @@
         </div>
       </section>
 
+      <!-- Results Counter Bar -->
+      <div class="opportunities-results-bar">
+        <span class="opps-result-summary">
+          Showing <strong id="oppsLoadedCount">0</strong> of <strong id="oppsTotalCount">914</strong> verified opportunities
+        </span>
+      </div>
+
       <!-- Opportunities Cards Grid -->
       <div id="opportunitiesGrid" class="opportunities-grid" role="feed" aria-busy="false" aria-label="Opportunities feed">
         <!-- Injected via app.js -->
+      </div>
+
+      <!-- Load More Section -->
+      <div id="loadMoreSection" class="load-more-section">
+        <button id="btnLoadMoreOpps" class="btn-load-more" aria-label="Load more opportunities">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <span>Load More Opportunities</span>
+        </button>
+        <div id="allLoadedIndicator" class="all-loaded-indicator" style="display: none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>All 914+ verified opportunities loaded</span>
+        </div>
       </div>
     </div>
 
@@ -670,7 +692,7 @@
     <div id="pipelineView" class="view-panel">
       <div class="section-header-row">
         <h2 class="section-title">Application Status Tracker</h2>
-        <p class="section-subtitle">Track your registered hackathons, contests, and internship rounds through every milestone.</p>
+        <p class="section-subtitle">Track your registered hackathons, coding contests, and competitions through every milestone.</p>
       </div>
 
       <div class="kanban-board-grid">
@@ -760,9 +782,9 @@
               <select name="opportunity_type" class="form-select" required>
                 <option value="hackathon">Hackathon</option>
                 <option value="contest">Coding Contest</option>
-                <option value="internship">Internship</option>
-                <option value="fellowship">Fellowship</option>
-                <option value="grant">Grant</option>
+                <option value="competition">Competition</option>
+                <option value="innovation">Design &amp; Innovation</option>
+                <option value="case_study">Case Study / Quiz</option>
               </select>
             </div>
             <div class="form-group">
@@ -782,7 +804,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">Prize Pool / Perks</label>
-              <input type="text" name="prize_pool" class="form-input" placeholder="e.g. ₹5,00,000 + Internship Interview">
+              <input type="text" name="prize_pool" class="form-input" placeholder="e.g. ₹5,00,000 + Tech Swag &amp; Goodies">
             </div>
           </div>
 
@@ -832,51 +854,138 @@
   </div>
   <!-- ══ End of Private Authenticated App Workspace ═════════════════════════ -->
 
-  <!-- ── Dev Test Sign-In Modal (Zero-Friction Local Testing) ─────────────── -->
-  <div id="devLoginModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="devLoginModalTitle">
-    <div class="modal-box" style="max-width: 480px;">
-      <button class="modal-close-btn" id="closeDevLoginBtn" aria-label="Close test login dialog">&times;</button>
-      <div style="text-align: center; margin-bottom: 24px;">
-        <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 1.5rem;">
-          ⚡
-        </div>
-        <h3 id="devLoginModalTitle" style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">
-          Quick-Access Test Sign-in
-        </h3>
-        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5;">
-          Select a test identity below to unlock and explore the private app workspace immediately.
-        </p>
-      </div>
-
-      <!-- Candidate Test Option -->
-      <div class="demo-modal-option" id="btnDevStudentLogin" role="button" tabindex="0">
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <div style="font-size: 1.6rem;">🎓</div>
-          <div>
-            <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Candidate / Student</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Rahul Sharma (student@opportunityos.in)</div>
+  <!-- ── Individual Profile Management Modal ──────────────────────────────── -->
+  <div id="profileModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <div class="modal-box profile-modal-box">
+      <button class="modal-close-btn" id="closeProfileModalBtn" aria-label="Close profile dialog">&times;</button>
+      
+      <div class="profile-header-card">
+        <div class="profile-avatar-large-wrap">
+          <img id="profileModalAvatar" class="profile-avatar-large" src="" alt="Profile Avatar">
+          <div class="profile-avatar-badge" title="Authenticated via Google">
+            <svg viewBox="0 0 24 24" width="14" height="14"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/><path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/></svg>
           </div>
         </div>
-        <span style="font-size: 0.82rem; font-weight: 600; color: var(--brand-primary);">Log in &rarr;</span>
+        <div class="profile-header-info">
+          <h3 id="profileModalTitle" class="profile-header-name">Student Profile</h3>
+          <div class="profile-email-badge">
+            <span id="profileModalEmail">user@example.com</span>
+            <span class="badge-verified">Google Verified</span>
+          </div>
+          <p class="profile-header-sub">Keep your profile updated for event applications, hackathon team matching, and organizer verification.</p>
+        </div>
       </div>
 
-      <!-- Admin Test Option -->
-      <div class="demo-modal-option" id="btnDevAdminLogin" role="button" tabindex="0">
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <div style="font-size: 1.6rem;">🛡️</div>
-          <div>
-            <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Platform Administrator</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">Haries Hussain (shaikharieshussain09@gmail.com)</div>
+      <form id="profileForm" class="profile-form">
+        <!-- Section 1: Academic & Personal Background -->
+        <div class="profile-form-section">
+          <h4 class="profile-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            Personal &amp; Academic Background
+          </h4>
+
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="profileFullName">Full Name <span class="required-star">*</span></label>
+              <input type="text" id="profileFullName" name="full_name" class="form-input" placeholder="e.g. Aryan Deshmukh" required maxlength="200">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="profileCollegeName">College / University Name</label>
+              <input type="text" id="profileCollegeName" name="college_name" class="form-input" placeholder="e.g. IIT Bombay / BITS Pilani" maxlength="300">
+            </div>
+          </div>
+
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="profileDegree">Degree / Major</label>
+              <input type="text" id="profileDegree" name="degree" class="form-input" placeholder="e.g. B.Tech Computer Science" maxlength="150">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="profileGraduationYear">Graduation Year</label>
+              <select id="profileGraduationYear" name="graduation_year" class="form-select">
+                <option value="">Select Graduation Year</option>
+                <option value="2024">2024 (Graduated)</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+                <option value="2029">2029+</option>
+              </select>
+            </div>
           </div>
         </div>
-        <span style="font-size: 0.82rem; font-weight: 600; color: var(--accent-orange);">Admin &rarr;</span>
-      </div>
 
-      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-color); text-align: center;">
-        <span style="font-size: 0.78rem; color: var(--text-muted);">
-          In production, users authenticate via Google Single Sign-On.
-        </span>
-      </div>
+        <!-- Section 2: Bio & Skills -->
+        <div class="profile-form-section">
+          <h4 class="profile-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            Skills &amp; Technical Interests
+          </h4>
+
+          <div class="form-group">
+            <label class="form-label" for="profileBio">Bio / Summary</label>
+            <textarea id="profileBio" name="bio" class="form-textarea" rows="3" placeholder="Tell organizers and teammates about your interests, past hackathons, or project specializations..." maxlength="1000"></textarea>
+            <div class="char-counter"><span id="profileBioCount">0</span> / 1000 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profileSkills">Technical Skills (comma-separated)</label>
+            <input type="text" id="profileSkills" name="skills" class="form-input" placeholder="e.g. Python, React, Next.js, AI/ML, Rust, Tailwind CSS" maxlength="500">
+            
+            <div class="skill-quick-chips" aria-label="Suggested skills">
+              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('Python')">+ Python</span>
+              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('React')">+ React</span>
+              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('AI / ML')">+ AI / ML</span>
+              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('Next.js')">+ Next.js</span>
+              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('Web3 / Solidity')">+ Web3</span>
+              <span class="skill-chip" role="button" tabindex="0" onclick="window.app.addSkillToProfile('UI/UX')">+ UI/UX</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Professional Portfolios & Links -->
+        <div class="profile-form-section">
+          <h4 class="profile-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            Professional Links &amp; Profiles
+          </h4>
+
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label class="form-label" for="profileGithubUrl">GitHub Profile URL</label>
+              <input type="url" id="profileGithubUrl" name="github_url" class="form-input" placeholder="https://github.com/username">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="profileLinkedinUrl">LinkedIn Profile URL</label>
+              <input type="url" id="profileLinkedinUrl" name="linkedin_url" class="form-input" placeholder="https://linkedin.com/in/username">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profilePortfolioUrl">Portfolio / Personal Website</label>
+            <input type="url" id="profilePortfolioUrl" name="portfolio_url" class="form-input" placeholder="https://yourportfolio.dev">
+          </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="profile-actions-bar">
+          <div class="profile-actions-left">
+            <button type="button" class="btn-profile-danger" id="btnProfileDeleteAccount" title="Right to be Forgotten under DPDP Act 2023">
+              Delete Account
+            </button>
+          </div>
+          <div class="profile-actions-right">
+            <button type="button" class="btn-outline-subtle" id="btnCancelProfile">Cancel</button>
+            <button type="submit" class="btn-apply-action" id="btnSaveProfile">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              Save Profile
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 

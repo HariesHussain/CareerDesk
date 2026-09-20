@@ -1,7 +1,8 @@
 /**
  * CareerDesk — Auth Module (Supabase Auth & Google OAuth)
  * ========================================================
- * Implements Google One-Tap/OAuth, demo mode sign-in, and auth listener callbacks.
+ * Production Google OAuth Single Sign-On and session management.
+ * Zero demo/test login harnesses.
  */
 
 class AuthManager {
@@ -17,22 +18,8 @@ class AuthManager {
    * Initialize Supabase client and restore session
    */
   async init() {
-    // Check local demo session first
-    const demoRaw = localStorage.getItem("opp_demo_session");
-    if (demoRaw) {
-      try {
-        const demoData = JSON.parse(demoRaw);
-        this.user = demoData.user;
-        this.profile = demoData.profile || demoData.user;
-        this.session = {
-          access_token: demoData.token || "demo-jwt-token",
-          user: demoData.user
-        };
-        this.notifyListeners();
-      } catch (e) {
-        localStorage.removeItem("opp_demo_session");
-      }
-    }
+    // Clean up any legacy demo keys
+    localStorage.removeItem("opp_demo_session");
 
     if (!window.supabase) {
       console.warn("Supabase SDK not loaded from CDN yet.");
@@ -50,7 +37,6 @@ class AuthManager {
       if (!error && data?.session) {
         this.session = data.session;
         this.user = data.session.user;
-        localStorage.removeItem("opp_demo_session");
         await this.fetchBackendProfile();
       }
 
@@ -59,9 +45,8 @@ class AuthManager {
         if (session) {
           this.session = session;
           this.user = session.user;
-          localStorage.removeItem("opp_demo_session");
           await this.fetchBackendProfile();
-        } else if (!localStorage.getItem("opp_demo_session")) {
+        } else {
           this.session = null;
           this.user = null;
           this.profile = null;
@@ -75,44 +60,7 @@ class AuthManager {
   }
 
   /**
-   * Dev/Demo sign-in for zero-friction local testing
-   */
-  async loginAsDemo(email, name, role = "student") {
-    const demoUser = {
-      id: "demo-" + (role === "admin" ? "admin-999" : "student-101"),
-      email: email,
-      user_metadata: {
-        full_name: name,
-        avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
-      }
-    };
-    const demoProfile = {
-      id: demoUser.id,
-      email: email,
-      full_name: name,
-      avatar_url: demoUser.user_metadata.avatar_url,
-      role: role
-    };
-
-    this.user = demoUser;
-    this.profile = demoProfile;
-    this.session = {
-      access_token: "demo-token-" + Date.now(),
-      user: demoUser
-    };
-
-    localStorage.setItem("opp_demo_session", JSON.stringify({
-      user: demoUser,
-      profile: demoProfile,
-      token: this.session.access_token
-    }));
-
-    this.notifyListeners();
-    return demoProfile;
-  }
-
-  /**
-   * Fetch user's synced profile from OpportunityOS backend
+   * Fetch user's synced profile from CareerDesk backend
    */
   async fetchBackendProfile() {
     if (!this.session?.access_token) return;
@@ -137,7 +85,7 @@ class AuthManager {
    */
   async signInWithGoogle() {
     if (!this.client) {
-      alert("Supabase is not initialized. Check your credentials.");
+      alert("Supabase is initializing. Please try again in a moment.");
       return;
     }
 

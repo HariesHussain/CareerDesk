@@ -17,7 +17,7 @@ from flask import Blueprint, request, jsonify, g
 from api.services.supabase_client import get_service_client
 from api.middleware.auth_middleware import login_required
 from api.middleware.rate_limiter import rate_limit
-from api.middleware.validators import validate_text
+from api.middleware.validators import validate_text, validate_url
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,13 @@ def me():
             "full_name": user.get("full_name"),
             "avatar_url": user.get("avatar_url"),
             "college_name": user.get("college_name"),
+            "degree": user.get("degree"),
+            "graduation_year": user.get("graduation_year"),
+            "bio": user.get("bio"),
+            "skills": user.get("skills"),
+            "github_url": user.get("github_url"),
+            "linkedin_url": user.get("linkedin_url"),
+            "portfolio_url": user.get("portfolio_url"),
             "role": user.get("role", "student"),
         }
     })
@@ -48,8 +55,18 @@ def me():
 @login_required
 def update_profile():
     """
-    Update student profile details (full_name, college_name).
-    Body: { "full_name": "...", "college_name": "..." }
+    Update student profile details.
+    Body: {
+        "full_name": "...",
+        "college_name": "...",
+        "degree": "...",
+        "graduation_year": "...",
+        "bio": "...",
+        "skills": "...",
+        "github_url": "...",
+        "linkedin_url": "...",
+        "portfolio_url": "..."
+    }
     """
     data = request.get_json(silent=True)
     if not data:
@@ -68,6 +85,41 @@ def update_profile():
         if err:
             return jsonify({"error": err}), 400
         updates["college_name"] = college_name
+
+    if "degree" in data:
+        degree, err = validate_text(data["degree"], "Degree", max_length=150)
+        if err:
+            return jsonify({"error": err}), 400
+        updates["degree"] = degree
+
+    if "graduation_year" in data:
+        graduation_year, err = validate_text(data["graduation_year"], "Graduation year", max_length=30)
+        if err:
+            return jsonify({"error": err}), 400
+        updates["graduation_year"] = graduation_year
+
+    if "bio" in data:
+        bio, err = validate_text(data["bio"], "Bio", max_length=1000)
+        if err:
+            return jsonify({"error": err}), 400
+        updates["bio"] = bio
+
+    if "skills" in data:
+        skills, err = validate_text(data["skills"], "Skills", max_length=500)
+        if err:
+            return jsonify({"error": err}), 400
+        updates["skills"] = skills
+
+    for url_field in ("github_url", "linkedin_url", "portfolio_url"):
+        if url_field in data:
+            val = (data[url_field] or "").strip()
+            if val:
+                is_valid, err = validate_url(val)
+                if not is_valid:
+                    return jsonify({"error": f"{url_field.replace('_', ' ').title()}: {err}"}), 400
+                updates[url_field] = val
+            else:
+                updates[url_field] = None
 
     if not updates:
         return jsonify({"error": "No valid fields provided for update."}), 400
@@ -95,6 +147,13 @@ def update_profile():
                 "full_name": updated_profile.get("full_name"),
                 "avatar_url": updated_profile.get("avatar_url"),
                 "college_name": updated_profile.get("college_name"),
+                "degree": updated_profile.get("degree"),
+                "graduation_year": updated_profile.get("graduation_year"),
+                "bio": updated_profile.get("bio"),
+                "skills": updated_profile.get("skills"),
+                "github_url": updated_profile.get("github_url"),
+                "linkedin_url": updated_profile.get("linkedin_url"),
+                "portfolio_url": updated_profile.get("portfolio_url"),
                 "role": updated_profile.get("role", "student"),
             }
         })

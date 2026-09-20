@@ -41,7 +41,7 @@ def list_opportunities():
 
         # ── Parse pagination params ──────────────────────────────────
         try:
-            limit = min(int(request.args.get("limit", 20)), 100)
+            limit = min(max(int(request.args.get("limit", 24)), 1), 100)
             if "offset" in request.args:
                 offset = max(int(request.args.get("offset", 0)), 0)
             elif "page" in request.args:
@@ -50,7 +50,7 @@ def list_opportunities():
             else:
                 offset = 0
         except (ValueError, TypeError):
-            limit = 20
+            limit = 24
             offset = 0
 
         # ── Build query ──────────────────────────────────────────────
@@ -68,18 +68,30 @@ def list_opportunities():
             # Use ilike for case-insensitive substring search
             query = query.or_(f"title.ilike.%{q}%,organiser.ilike.%{q}%")
 
-        category = (request.args.get("category") or request.args.get("type") or "").strip().upper()
-        if category and category != "ALL":
-            if category == "CONTEST":
-                query = query.in_("category", ["CONTEST", "CODING", "COMPETITION"])
-            elif category == "GRANT":
-                query = query.in_("category", ["GRANT", "INNOVATION"])
+        cat_raw = (request.args.get("category") or request.args.get("type") or "").strip().upper()
+        if cat_raw and cat_raw != "ALL":
+            if cat_raw in ("HACKATHON", "HACKATHONS"):
+                query = query.eq("category", "HACKATHON")
+            elif cat_raw in ("CONTEST", "CODING", "CONTESTS"):
+                query = query.in_("category", ["CONTEST", "CODING"])
+            elif cat_raw in ("COMPETITION", "COMPETITIONS"):
+                query = query.eq("category", "COMPETITION")
+            elif cat_raw in ("INNOVATION", "GRANT", "GRANTS", "DESIGN"):
+                query = query.in_("category", ["INNOVATION", "DESIGN"])
+            elif cat_raw in ("CASE_STUDY", "CASESTUDY", "QUIZ", "QUIZZES"):
+                query = query.in_("category", ["CASE_STUDY", "QUIZ"])
+            elif cat_raw in ("FELLOWSHIP", "FELLOWSHIPS"):
+                query = query.or_("title.ilike.%fellowship%,kind.ilike.%fellowship%")
             else:
-                query = query.eq("category", category)
+                query = query.eq("category", cat_raw)
 
-        mode = request.args.get("mode", "").strip().upper()
-        if mode in ("ONLINE", "OFFLINE", "HYBRID"):
-            query = query.eq("mode", mode)
+        raw_mode = (request.args.get("mode") or "").strip().upper()
+        if raw_mode in ("IN_PERSON", "OFFLINE"):
+            query = query.eq("mode", "OFFLINE")
+        elif raw_mode in ("ONLINE", "REMOTE"):
+            query = query.eq("mode", "ONLINE")
+        elif raw_mode == "HYBRID":
+            query = query.eq("mode", "HYBRID")
 
         city = request.args.get("city", "").strip()
         if city:
@@ -94,20 +106,19 @@ def list_opportunities():
             query = query.eq("fee", "Free")
 
         # ── Apply sorting ────────────────────────────────────────────
-        raw_sort = request.args.get("sort", "deadline").strip().lower()
-        if "new" in raw_sort:
-            sort = "newest"
-        elif "alpha" in raw_sort or "title" in raw_sort:
-            sort = "alphabetical"
-        else:
-            sort = "deadline"
-
-        if sort == "deadline":
+        raw_sort = (request.args.get("sort") or "deadline").strip().lower()
+        if "deadline_desc" in raw_sort or "latest" in raw_sort:
+            query = query.order("deadline_utc", desc=True, nullsfirst=False)
+        elif "deadline" in raw_sort:
             query = query.order("deadline_utc", desc=False, nullsfirst=False)
-        elif sort == "newest":
+        elif "prize" in raw_sort:
+            query = query.order("prize_inr", desc=True, nullsfirst=False)
+        elif "new" in raw_sort:
             query = query.order("first_seen_at", desc=True)
-        elif sort == "alphabetical":
+        elif "alpha" in raw_sort or "title" in raw_sort:
             query = query.order("title", desc=False)
+        else:
+            query = query.order("deadline_utc", desc=False, nullsfirst=False)
 
         # ── Apply pagination ─────────────────────────────────────────
         query = query.range(offset, offset + limit - 1)
@@ -115,11 +126,17 @@ def list_opportunities():
         # ── Execute ──────────────────────────────────────────────────
         result = query.execute()
 
+        total = result.count if result.count is not None else len(result.data)
+        count = len(result.data)
+        has_more = (offset + count) < total
+
         return jsonify({
-            "total": result.count if result.count is not None else len(result.data),
-            "count": len(result.data),
+            "total": total,
+            "count": count,
             "offset": offset,
             "limit": limit,
+            "has_more": has_more,
+            "page": (offset // limit) + 1 if limit else 1,
             "opportunities": result.data,
         })
 

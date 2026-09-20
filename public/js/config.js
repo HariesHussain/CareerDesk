@@ -30,9 +30,10 @@ const AppConfig = {
   OPPORTUNITY_TYPES: [
     { id: "all", label: "All Opportunities", icon: "🌐" },
     { id: "hackathon", label: "Hackathons", icon: "⚡" },
-    { id: "contest", label: "Coding Contests", icon: "🏆" },
-    { id: "internship", label: "Internships", icon: "💼" },
-    { id: "grant", label: "Grants & Fellowships", icon: "🚀" }
+    { id: "contest", label: "Coding Contests", icon: "💻" },
+    { id: "competition", label: "Competitions", icon: "🏆" },
+    { id: "innovation", label: "Design & Innovation", icon: "💡" },
+    { id: "case_study", label: "Case Studies & Quizzes", icon: "📊" }
   ],
 
   // Pipeline stages for Student Career OS

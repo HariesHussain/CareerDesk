@@ -58,7 +58,7 @@ def login_required(f):
             # Fetch profile from opp_profiles
             result = (
                 supabase.table("opp_profiles")
-                .select("id, email, full_name, avatar_url, college_name, role")
+                .select("*")
                 .eq("id", user_id)
                 .execute()
             )

@@ -17,8 +17,11 @@ class OpportunityApp {
       mode: "all",
       sort: "deadline_asc",
       page: 1,
-      limit: 30
+      limit: 24
     };
+    this.totalCount = 0;
+    this.hasMore = false;
+    this.isLoadingMore = false;
     this.searchDebounceTimer = null;
   }
 
@@ -104,7 +107,7 @@ class OpportunityApp {
       });
     }
 
-    // Auth Buttons (Header, Hero & CTA)
+    // Auth Buttons (Header & Hero)
     const googleLoginButtons = ["btnGoogleLogin", "btnHeroGoogle", "btnCtaGoogle"];
     googleLoginButtons.forEach(btnId => {
       const btn = document.getElementById(btnId);
@@ -115,40 +118,58 @@ class OpportunityApp {
       }
     });
 
-    // Dev Test Sign-In Modal Triggers
-    const devLoginTriggers = ["btnOpenDevLogin", "btnHeroDevLogin", "btnCtaDevLogin"];
-    devLoginTriggers.forEach(btnId => {
-      const btn = document.getElementById(btnId);
-      if (btn) {
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          this.openModal("devLoginModal");
-        });
-      }
-    });
-
-    const closeDevLoginBtn = document.getElementById("closeDevLoginBtn");
-    if (closeDevLoginBtn) {
-      closeDevLoginBtn.addEventListener("click", () => {
-        this.closeAllModals();
+    // User Profile Modal Trigger (Header dropdown)
+    const btnOpenProfileModal = document.getElementById("btnOpenProfileModal");
+    if (btnOpenProfileModal) {
+      btnOpenProfileModal.addEventListener("click", (e) => {
+        e.preventDefault();
+        const userDropdown = document.getElementById("userDropdown");
+        if (userDropdown) userDropdown.classList.remove("show");
+        this.openProfileModal();
       });
     }
 
-    const btnDevStudentLogin = document.getElementById("btnDevStudentLogin");
-    if (btnDevStudentLogin) {
-      btnDevStudentLogin.addEventListener("click", async () => {
-        await window.authManager.loginAsDemo("student@careerdesk.in", "Rahul Sharma", "student");
-        this.closeAllModals();
-        this.showToast("Logged in as Candidate (Rahul Sharma)", "success");
+    // Load More Opportunities Button
+    const btnLoadMoreOpps = document.getElementById("btnLoadMoreOpps");
+    if (btnLoadMoreOpps) {
+      btnLoadMoreOpps.addEventListener("click", () => {
+        this.loadMoreOpportunities();
       });
     }
 
-    const btnDevAdminLogin = document.getElementById("btnDevAdminLogin");
-    if (btnDevAdminLogin) {
-      btnDevAdminLogin.addEventListener("click", async () => {
-        await window.authManager.loginAsDemo("shaikharieshussain09@gmail.com", "Haries Hussain", "admin");
+    // Profile Form Handlers
+    const profileForm = document.getElementById("profileForm");
+    if (profileForm) {
+      profileForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.saveProfile();
+      });
+    }
+
+    const closeProfileModalBtn = document.getElementById("closeProfileModalBtn");
+    if (closeProfileModalBtn) {
+      closeProfileModalBtn.addEventListener("click", () => this.closeAllModals());
+    }
+
+    const btnCancelProfile = document.getElementById("btnCancelProfile");
+    if (btnCancelProfile) {
+      btnCancelProfile.addEventListener("click", () => this.closeAllModals());
+    }
+
+    const btnProfileDeleteAccount = document.getElementById("btnProfileDeleteAccount");
+    if (btnProfileDeleteAccount) {
+      btnProfileDeleteAccount.addEventListener("click", () => {
         this.closeAllModals();
-        this.showToast("Logged in as Administrator (Haries Hussain)", "success");
+        const btnDeleteAccount = document.getElementById("btnDeleteAccount");
+        if (btnDeleteAccount) btnDeleteAccount.click();
+      });
+    }
+
+    const profileBio = document.getElementById("profileBio");
+    const profileBioCount = document.getElementById("profileBioCount");
+    if (profileBio && profileBioCount) {
+      profileBio.addEventListener("input", (e) => {
+        profileBioCount.textContent = e.target.value.length;
       });
     }
 
@@ -250,10 +271,9 @@ class OpportunityApp {
     if (mobileNavAccountBtn) {
       mobileNavAccountBtn.addEventListener("click", () => {
         if (window.authManager && window.authManager.isAuthenticated()) {
-          const userDropdown = document.getElementById("userDropdown");
-          if (userDropdown) userDropdown.classList.toggle("show");
+          this.openProfileModal();
         } else {
-          this.openModal("devLoginModal");
+          window.authManager.signInWithGoogle();
         }
       });
     }
@@ -462,18 +482,24 @@ class OpportunityApp {
     }
   }
 
-  // ── Explore View ──────────────────────────────────────────────────────────
+  // ── Explore View & Pagination ─────────────────────────────────────────────
   async loadExploreData() {
     const grid = document.getElementById("opportunitiesGrid");
     if (!grid) return;
 
+    this.currentFilters.page = 1;
+    this.currentFilters.limit = 24;
+    this.opportunities = [];
     grid.innerHTML = this.renderSkeletons(6);
 
     try {
       const data = await window.ApiClient.getOpportunities(this.currentFilters);
       if (!data) return; // Request was aborted due to rapid new search query; ignore
       this.opportunities = data.opportunities || [];
+      this.totalCount = data.total || this.opportunities.length;
+      this.hasMore = !!data.has_more;
       this.renderOpportunities(this.opportunities);
+      this.updatePaginationUI();
     } catch (err) {
       grid.innerHTML = `
         <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
@@ -482,6 +508,73 @@ class OpportunityApp {
           <button class="btn-apply-action" onclick="window.app.loadExploreData()">Retry</button>
         </div>
       `;
+    }
+  }
+
+  async loadMoreOpportunities() {
+    if (this.isLoadingMore || !this.hasMore) return;
+    this.isLoadingMore = true;
+
+    const btn = document.getElementById("btnLoadMoreOpps");
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `
+        <div class="spinner" style="width: 16px; height: 16px; border: 2px solid var(--brand-primary); border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px;"></div>
+        <span>Loading more opportunities...</span>
+      `;
+    }
+
+    try {
+      const nextPage = (this.currentFilters.page || 1) + 1;
+      this.currentFilters.page = nextPage;
+      const data = await window.ApiClient.getOpportunities(this.currentFilters);
+      if (data && data.opportunities) {
+        this.opportunities = this.opportunities.concat(data.opportunities);
+        this.totalCount = data.total || this.totalCount;
+        this.hasMore = !!data.has_more;
+
+        const grid = document.getElementById("opportunitiesGrid");
+        if (grid) {
+          const newCardsHtml = data.opportunities.map(opp => this.renderOpportunityCard(opp)).join("");
+          grid.insertAdjacentHTML("beforeend", newCardsHtml);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load more opportunities:", err);
+      this.showToast("Failed to load more opportunities. Please retry.", "error");
+    } finally {
+      this.isLoadingMore = false;
+      this.updatePaginationUI();
+    }
+  }
+
+  updatePaginationUI() {
+    const loadedEl = document.getElementById("oppsLoadedCount");
+    const totalEl = document.getElementById("oppsTotalCount");
+    const btnLoadMore = document.getElementById("btnLoadMoreOpps");
+    const allLoadedIndicator = document.getElementById("allLoadedIndicator");
+
+    const loaded = this.opportunities ? this.opportunities.length : 0;
+    const total = this.totalCount || loaded;
+
+    if (loadedEl) loadedEl.textContent = loaded;
+    if (totalEl) totalEl.textContent = total;
+
+    if (btnLoadMore) {
+      btnLoadMore.disabled = false;
+      const remaining = Math.max(0, total - loaded);
+      const nextBatch = Math.min(24, remaining);
+      btnLoadMore.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+        <span>Load More Opportunities (${nextBatch} more)</span>
+      `;
+      btnLoadMore.style.display = this.hasMore ? "inline-flex" : "none";
+    }
+
+    if (allLoadedIndicator) {
+      allLoadedIndicator.style.display = (!this.hasMore && loaded > 0) ? "flex" : "none";
     }
   }
 
@@ -983,6 +1076,106 @@ class OpportunityApp {
       }
     } catch (e) {
       // Graceful fallback
+    }
+  }
+
+  // ── Profile Management ───────────────────────────────────────────────────
+  addSkillToProfile(skill) {
+    const input = document.getElementById("profileSkills");
+    if (!input) return;
+    const current = (input.value || "").trim();
+    if (!current) {
+      input.value = skill;
+    } else {
+      const skillsArray = current.split(",").map(s => s.trim().toLowerCase());
+      if (!skillsArray.includes(skill.toLowerCase())) {
+        input.value = `${current}, ${skill}`;
+      }
+    }
+    input.focus();
+  }
+
+  openProfileModal() {
+    if (!window.authManager || !window.authManager.isAuthenticated()) {
+      window.authManager.signInWithGoogle();
+      return;
+    }
+
+    const profile = window.authManager.getUserData() || {};
+
+    const avatarEl = document.getElementById("profileModalAvatar");
+    const nameEl = document.getElementById("profileModalTitle");
+    const emailEl = document.getElementById("profileModalEmail");
+
+    const defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23008BDC'/%3E%3Cstop offset='100%25' stop-color='%23006BC7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='40' r='18' fill='%23FFFFFF' opacity='0.9'/%3E%3Cpath d='M20 85 C20 66 35 62 50 62 C65 62 80 66 80 85 Z' fill='%23FFFFFF' opacity='0.9'/%3E%3C/svg%3E";
+    if (avatarEl) {
+      avatarEl.src = profile.avatar_url || defaultAvatarSvg;
+    }
+    if (nameEl) nameEl.textContent = profile.full_name || "Student Profile";
+    if (emailEl) emailEl.textContent = profile.email || "";
+
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val || "";
+    };
+
+    setVal("profileFullName", profile.full_name);
+    setVal("profileCollegeName", profile.college_name);
+    setVal("profileDegree", profile.degree);
+    setVal("profileGraduationYear", profile.graduation_year);
+    setVal("profileBio", profile.bio);
+    setVal("profileSkills", profile.skills);
+    setVal("profileGithubUrl", profile.github_url);
+    setVal("profileLinkedinUrl", profile.linkedin_url);
+    setVal("profilePortfolioUrl", profile.portfolio_url);
+
+    const bioCount = document.getElementById("profileBioCount");
+    if (bioCount) bioCount.textContent = (profile.bio || "").length;
+
+    this.openModal("profileModal");
+  }
+
+  async saveProfile() {
+    const btn = document.getElementById("btnSaveProfile");
+    const origHtml = btn ? btn.innerHTML : "";
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `
+        <div class="spinner" style="width: 14px; height: 14px; border: 2px solid #FFFFFF; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px;"></div>
+        Saving...
+      `;
+    }
+
+    const payload = {
+      full_name: (document.getElementById("profileFullName")?.value || "").trim(),
+      college_name: (document.getElementById("profileCollegeName")?.value || "").trim(),
+      degree: (document.getElementById("profileDegree")?.value || "").trim(),
+      graduation_year: (document.getElementById("profileGraduationYear")?.value || "").trim(),
+      bio: (document.getElementById("profileBio")?.value || "").trim(),
+      skills: (document.getElementById("profileSkills")?.value || "").trim(),
+      github_url: (document.getElementById("profileGithubUrl")?.value || "").trim(),
+      linkedin_url: (document.getElementById("profileLinkedinUrl")?.value || "").trim(),
+      portfolio_url: (document.getElementById("profilePortfolioUrl")?.value || "").trim(),
+    };
+
+    try {
+      const res = await window.ApiClient.updateProfile(payload);
+      if (res && res.user) {
+        window.authManager.profile = res.user;
+        window.authManager.notifyListeners();
+        this.showToast("Profile updated successfully!", "success");
+        this.closeAllModals();
+      } else {
+        throw new Error(res?.error || "Failed to update profile.");
+      }
+    } catch (err) {
+      console.error("Profile update error:", err);
+      this.showToast(err.message || "Failed to save profile. Please verify your inputs.", "error");
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
     }
   }
 
