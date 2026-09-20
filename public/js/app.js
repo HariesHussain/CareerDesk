@@ -82,28 +82,87 @@ class OpportunityApp {
       });
     }
 
-    // Auth Buttons (Header & Hero)
-    const btnGoogleLogin = document.getElementById("btnGoogleLogin");
-    if (btnGoogleLogin) {
-      btnGoogleLogin.addEventListener("click", () => {
-        window.authManager.signInWithGoogle();
+    // Auth Buttons (Header, Hero & CTA)
+    const googleLoginButtons = ["btnGoogleLogin", "btnHeroGoogle", "btnCtaGoogle"];
+    googleLoginButtons.forEach(btnId => {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          window.authManager.signInWithGoogle();
+        });
+      }
+    });
+
+    // Dev Test Sign-In Modal Triggers
+    const devLoginTriggers = ["btnOpenDevLogin", "btnHeroDevLogin", "btnCtaDevLogin"];
+    devLoginTriggers.forEach(btnId => {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          this.openModal("devLoginModal");
+        });
+      }
+    });
+
+    const closeDevLoginBtn = document.getElementById("closeDevLoginBtn");
+    if (closeDevLoginBtn) {
+      closeDevLoginBtn.addEventListener("click", () => {
+        this.closeAllModals();
       });
     }
 
-    const btnHeroGoogle = document.getElementById("btnHeroGoogle");
-    if (btnHeroGoogle) {
-      btnHeroGoogle.addEventListener("click", () => {
-        window.authManager.signInWithGoogle();
+    const btnDevStudentLogin = document.getElementById("btnDevStudentLogin");
+    if (btnDevStudentLogin) {
+      btnDevStudentLogin.addEventListener("click", async () => {
+        await window.authManager.loginAsDemo("student@opportunityos.in", "Rahul Sharma", "student");
+        this.closeAllModals();
+        this.showToast("Logged in as Candidate (Rahul Sharma)", "success");
       });
     }
 
+    const btnDevAdminLogin = document.getElementById("btnDevAdminLogin");
+    if (btnDevAdminLogin) {
+      btnDevAdminLogin.addEventListener("click", async () => {
+        await window.authManager.loginAsDemo("shaikharieshussain09@gmail.com", "Haries Hussain", "admin");
+        this.closeAllModals();
+        this.showToast("Logged in as Administrator (Haries Hussain)", "success");
+      });
+    }
+
+    // Role Switcher Tabs on Landing Page
+    const roleTabCandidate = document.getElementById("roleTabCandidate");
+    const roleTabOrganizer = document.getElementById("roleTabOrganizer");
+    const rolePanelCandidate = document.getElementById("rolePanelCandidate");
+    const rolePanelOrganizer = document.getElementById("rolePanelOrganizer");
+
+    if (roleTabCandidate && roleTabOrganizer && rolePanelCandidate && rolePanelOrganizer) {
+      roleTabCandidate.addEventListener("click", () => {
+        roleTabCandidate.classList.add("active");
+        roleTabCandidate.setAttribute("aria-selected", "true");
+        roleTabOrganizer.classList.remove("active");
+        roleTabOrganizer.setAttribute("aria-selected", "false");
+        rolePanelCandidate.style.display = "grid";
+        rolePanelOrganizer.style.display = "none";
+      });
+
+      roleTabOrganizer.addEventListener("click", () => {
+        roleTabOrganizer.classList.add("active");
+        roleTabOrganizer.setAttribute("aria-selected", "true");
+        roleTabCandidate.classList.remove("active");
+        roleTabCandidate.setAttribute("aria-selected", "false");
+        rolePanelOrganizer.style.display = "grid";
+        rolePanelCandidate.style.display = "none";
+      });
+    }
+
+    // Hero Explore & Submit Buttons
     const btnHeroExplore = document.getElementById("btnHeroExplore");
     if (btnHeroExplore) {
       btnHeroExplore.addEventListener("click", () => {
-        this.switchTab("explore");
-        const controls = document.getElementById("controlsSection");
-        if (controls) {
-          controls.scrollIntoView({ behavior: "smooth" });
+        const overviewSec = document.getElementById("overview");
+        if (overviewSec) {
+          overviewSec.scrollIntoView({ behavior: "smooth" });
         }
       });
     }
@@ -111,8 +170,57 @@ class OpportunityApp {
     const btnHeroSubmit = document.getElementById("btnHeroSubmit");
     if (btnHeroSubmit) {
       btnHeroSubmit.addEventListener("click", (e) => {
-        e.preventDefault();
-        this.switchTab("submit");
+        if (window.authManager && window.authManager.isAuthenticated()) {
+          this.switchTab("submit");
+        } else {
+          const howToUse = document.getElementById("how-to-use");
+          if (howToUse) howToUse.scrollIntoView({ behavior: "smooth" });
+          if (roleTabOrganizer) roleTabOrganizer.click();
+        }
+      });
+    }
+
+    // Product Guide Toggle in Workspace Subbar
+    const btnToggleLandingGuide = document.getElementById("btnToggleLandingGuide");
+    if (btnToggleLandingGuide) {
+      btnToggleLandingGuide.addEventListener("click", () => {
+        const landingView = document.getElementById("landingView");
+        const appWorkspace = document.getElementById("appWorkspace");
+        if (landingView && appWorkspace) {
+          const isLandingVisible = landingView.style.display !== "none";
+          if (isLandingVisible) {
+            landingView.style.display = "none";
+            appWorkspace.style.display = "block";
+            btnToggleLandingGuide.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              Product Guide
+            `;
+          } else {
+            landingView.style.display = "block";
+            landingView.scrollIntoView({ behavior: "smooth" });
+            btnToggleLandingGuide.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              Return to App Terminal
+            `;
+          }
+        }
+      });
+    }
+
+    // Workspace and Mobile Sign Out
+    const btnLogout = document.getElementById("btnLogout");
+    if (btnLogout) {
+      btnLogout.addEventListener("click", async () => {
+        await window.authManager.signOut();
+        this.showToast("Signed out successfully", "info");
+      });
+    }
+
+    const btnWorkspaceLogout = document.getElementById("btnWorkspaceLogout");
+    if (btnWorkspaceLogout) {
+      btnWorkspaceLogout.addEventListener("click", async () => {
+        await window.authManager.signOut();
+        this.showToast("Signed out successfully", "info");
       });
     }
 
@@ -123,16 +231,8 @@ class OpportunityApp {
           const userDropdown = document.getElementById("userDropdown");
           if (userDropdown) userDropdown.classList.toggle("show");
         } else {
-          window.authManager.signInWithGoogle();
+          this.openModal("devLoginModal");
         }
-      });
-    }
-
-    const btnLogout = document.getElementById("btnLogout");
-    if (btnLogout) {
-      btnLogout.addEventListener("click", async () => {
-        await window.authManager.signOut();
-        this.showToast("Signed out successfully", "info");
       });
     }
 
@@ -230,11 +330,18 @@ class OpportunityApp {
 
   setupAuthSync() {
     window.authManager.onAuthChange((user) => {
+      const guestNav = document.getElementById("guestNavLinks");
+      const navTabs = document.getElementById("navTabs");
       const loginWrapper = document.getElementById("guestAuthWrapper");
       const userMenu = document.getElementById("userProfileMenu");
       const adminTab = document.getElementById("adminNavTab");
+      const landingView = document.getElementById("landingView");
+      const appWorkspace = document.getElementById("appWorkspace");
 
       if (user) {
+        // Authenticated: Show App Workspace, Hide Public Landing
+        if (guestNav) guestNav.style.display = "none";
+        if (navTabs) navTabs.style.display = "flex";
         if (loginWrapper) loginWrapper.style.display = "none";
         if (userMenu) {
           userMenu.style.display = "flex";
@@ -249,12 +356,24 @@ class OpportunityApp {
         if (adminTab) {
           adminTab.style.display = (user.role === "admin") ? "inline-flex" : "none";
         }
+
+        if (landingView) landingView.style.display = "none";
+        if (appWorkspace) appWorkspace.style.display = "block";
+
         this.loadBookmarks();
         this.loadApplications();
+        this.switchTab("explore");
       } else {
+        // Guest: Show Public Landing, Hide App Workspace
+        if (guestNav) guestNav.style.display = "flex";
+        if (navTabs) navTabs.style.display = "none";
         if (loginWrapper) loginWrapper.style.display = "flex";
         if (userMenu) userMenu.style.display = "none";
         if (adminTab) adminTab.style.display = "none";
+
+        if (landingView) landingView.style.display = "block";
+        if (appWorkspace) appWorkspace.style.display = "none";
+
         this.bookmarks.clear();
         this.applications = [];
       }
@@ -264,6 +383,34 @@ class OpportunityApp {
   // ── Tab Navigation ────────────────────────────────────────────────────────
   switchTab(tabId) {
     this.currentTab = tabId;
+
+    // Ensure Workspace is active when switching tabs
+    const landingView = document.getElementById("landingView");
+    const appWorkspace = document.getElementById("appWorkspace");
+    if (appWorkspace) appWorkspace.style.display = "block";
+    if (landingView) landingView.style.display = "none";
+
+    // Update Subbar Active Tab Label
+    const activeLabel = document.getElementById("workspaceActiveTabLabel");
+    if (activeLabel) {
+      const labels = {
+        explore: "Explore Opportunities",
+        pipeline: "Application Tracker (Kanban)",
+        bookmarks: "Saved Bookmarks",
+        submit: "Post a Student Opportunity",
+        admin: "Admin Moderation Queue"
+      };
+      activeLabel.textContent = labels[tabId] || "Workspace Terminal";
+    }
+
+    // Reset Guide Button Text if toggled
+    const btnToggleLandingGuide = document.getElementById("btnToggleLandingGuide");
+    if (btnToggleLandingGuide) {
+      btnToggleLandingGuide.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        Product Guide
+      `;
+    }
 
     // Synchronize Desktop Nav Tab UI
     document.querySelectorAll(".nav-tab-item").forEach(tab => {

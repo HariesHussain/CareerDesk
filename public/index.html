@@ -26,8 +26,16 @@
         <span class="brand-title">Opportunity<span>OS</span></span>
       </a>
 
-      <!-- Center: Desktop Navigation Tabs -->
-      <nav class="desktop-nav-links" id="navTabs" role="navigation" aria-label="Primary Navigation">
+      <!-- Center: Guest Navigation Links (Visible when logged out) -->
+      <nav class="guest-nav-links" id="guestNavLinks" role="navigation" aria-label="Product Navigation">
+        <a href="#overview" class="guest-nav-link">Overview</a>
+        <a href="#how-it-works" class="guest-nav-link">How It Works</a>
+        <a href="#how-to-use" class="guest-nav-link">How to Use</a>
+        <a href="#for-whom" class="guest-nav-link">Who It's For</a>
+      </nav>
+
+      <!-- Center: Desktop Navigation Tabs (Visible when logged in) -->
+      <nav class="desktop-nav-links" id="navTabs" style="display: none;" role="navigation" aria-label="Workspace Navigation">
         <div class="nav-tab-item active" data-tab="explore">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
@@ -74,8 +82,12 @@
 
       <!-- Right: Auth State -->
       <div class="nav-actions">
-        <!-- Guest State: Google SSO Button -->
-        <div id="guestAuthWrapper">
+        <!-- Guest State: Google SSO Button & Test Login -->
+        <div id="guestAuthWrapper" style="display: flex; align-items: center; gap: 10px;">
+          <button id="btnOpenDevLogin" class="btn-outline-subtle" aria-label="Quick Dev Test Sign In">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Test Sign-in
+          </button>
           <button id="btnGoogleLogin" class="btn-header-google" aria-label="Sign in with Google">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
@@ -83,7 +95,7 @@
               <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
               <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
             </svg>
-            Sign in
+            Sign in with Google
           </button>
         </div>
 
@@ -144,132 +156,445 @@
     </div>
   </header>
 
-  <!-- ── Hero Banner Section (Internshala Split Layout Reference) ─────────── -->
-  <section class="hero-wrapper" role="region" aria-label="Hero Section">
-    <div class="hero-inner">
-      <!-- Left Column: Title & Conversion Card -->
-      <div class="hero-left-content">
-        <div class="hero-heading">
-          <h1 class="hero-title-main">
-            India's <span class="yellow-highlight">#1 platform</span>
-          </h1>
-          <div class="hero-subheading">
-            For hackathons, coding contests and fellowships
-            <svg class="hero-subheading-underline" viewBox="0 0 320 12" fill="none" preserveAspectRatio="none">
-              <path d="M2 8C50 3 150 1 318 6" stroke="rgba(255, 210, 0, 0.9)" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       1. PUBLIC MARKETING & PRODUCT TOUR (Visible for unauthenticated visitors)
+       ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="landingView">
+    <!-- ── Hero Banner Section (Internshala Split Layout Reference) ─────────── -->
+    <section class="hero-wrapper" role="region" aria-label="Hero Section">
+      <div class="hero-inner">
+        <!-- Left Column: Title & Conversion Card -->
+        <div class="hero-left-content">
+          <div class="hero-heading">
+            <h1 class="hero-title-main">
+              India's <span class="yellow-highlight">#1 platform</span>
+            </h1>
+            <div class="hero-subheading">
+              For hackathons, coding contests and fellowships
+              <svg class="hero-subheading-underline" viewBox="0 0 320 12" fill="none" preserveAspectRatio="none">
+                <path d="M2 8C50 3 150 1 318 6" stroke="rgba(255, 210, 0, 0.9)" stroke-width="3.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Candidate Sign up Card -->
+          <div class="candidate-signup-box">
+            <div class="candidate-tag">
+              <span class="candidate-tag-dot"></span>
+              Candidate sign up
+            </div>
+
+            <div class="signup-buttons-row">
+              <button id="btnHeroGoogle" class="btn-signup-google" aria-label="Continue with Google">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
+                  <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+                  <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
+                  <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
+                </svg>
+                Continue with Google
+              </button>
+
+              <button id="btnHeroExplore" class="btn-signup-secondary" aria-label="Explore Product Guide">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                </svg>
+                How It Works
+              </button>
+            </div>
+
+            <div class="hero-tnc-notice">
+              By continuing as a candidate, you agree to our <a href="/terms.html" target="_blank">T&amp;C</a> &amp; <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+            </div>
+          </div>
+
+          <!-- Secondary Links: Organizer & Fast Dev Test -->
+          <div style="display: flex; gap: 20px; align-items: center; margin-top: 14px; flex-wrap: wrap;">
+            <a href="#how-to-use" id="btnHeroSubmit" class="hero-secondary-link">
+              Organizer / College sign up &gt;
+            </a>
+            <span style="color: rgba(255,255,255,0.4);">&bull;</span>
+            <a href="#" id="btnHeroDevLogin" class="hero-secondary-link" style="color: #FFD200; font-weight: 600;">
+              ⚡ Quick Dev Sign-In &gt;
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Column: Student Photography & Floating Badges -->
+        <div class="hero-right-image-container">
+          <!-- Floating Micro-Badges -->
+          <div class="floating-chip top-left">
+            <div class="chip-icon">🏆</div>
+            <div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Live Prize Pool</div>
+              <div id="heroPrizeBadge">₹1.8 Cr+</div>
+            </div>
+          </div>
+
+          <div class="floating-chip bottom-right">
+            <div class="chip-icon orange">⚡</div>
+            <div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Active Listings</div>
+              <div id="heroActiveBadge">914+ Verified</div>
+            </div>
+          </div>
+
+          <img src="/images/hero_students.jpg" alt="Smiling tech students holding laptop and achievement certificates" class="hero-students-img" width="520" height="340">
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Credibility Stats Strip ─────────────────────────────────────────── -->
+    <section class="credibility-strip" role="region" aria-label="Platform Highlights">
+      <div class="credibility-inner">
+        <div class="cred-item">
+          <div class="cred-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+          <div class="cred-text">
+            <span class="cred-value" id="statActiveCount">914+</span>
+            <span class="cred-label">Active Opportunities</span>
+          </div>
+        </div>
+
+        <div class="cred-item">
+          <div class="cred-icon-box" style="background: var(--accent-green-light); color: var(--accent-green);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <div class="cred-text">
+            <span class="cred-value" id="statPrizeCount">₹1.8 Cr+</span>
+            <span class="cred-label">Prizes &amp; Grants</span>
+          </div>
+        </div>
+
+        <div class="cred-item">
+          <div class="cred-icon-box" style="background: var(--accent-orange-light); color: var(--accent-orange);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div class="cred-text">
+            <span class="cred-value" id="statUrgentCount">0</span>
+            <span class="cred-label">Closing This Week</span>
+          </div>
+        </div>
+
+        <div class="cred-item">
+          <div class="cred-icon-box" style="background: var(--accent-purple-light); color: var(--accent-purple);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div class="cred-text">
+            <span class="cred-value">100% Free</span>
+            <span class="cred-label">Official Direct Links</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 1: What is OpportunityOS? (Platform Vision) ─────────────── -->
+    <section id="overview" class="landing-section">
+      <div class="section-center-head">
+        <span class="section-tag-pill">About The Platform</span>
+        <h2 class="section-main-title">The Student Career Operating System</h2>
+        <p class="section-desc">
+          Built exclusively for Indian engineering students, developers, and collegiate tech builders to discover national opportunities with zero noise, zero spam, and 100% verified official links.
+        </p>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon-box blue">🌐</div>
+          <h3 class="pillar-title">50+ Portals in 1 Live Terminal</h3>
+          <p class="pillar-text">
+            Stop checking scattered Discord channels, Telegram groups, and multiple aggregator websites. OpportunityOS aggregates 900+ active hackathons, coding contests, and fellowships into a single structured index.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-box green">🛡️</div>
+          <h3 class="pillar-title">Zero Spam &amp; ₹0 Scam Filtering</h3>
+          <p class="pillar-text">
+            Every submission is actively screened before listing. We reject paid promotional contests, predatory bootcamps, and unverified organizers. 100% of core discovery is completely free forever.
+          </p>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon-box purple">⚡</div>
+          <h3 class="pillar-title">Centralized Career Kanban</h3>
+          <p class="pillar-text">
+            Say goodbye to messy Google Sheets. Move your applications across Saved, Applied, Under Review, and Selected columns with real-time deadline countdowns and personalized application notes.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 2: How It Works (4-Step Animated Pipeline) ──────────────── -->
+    <section id="how-it-works" class="landing-section-full">
+      <div class="landing-section-inner">
+        <div class="section-center-head">
+          <span class="section-tag-pill orange">Automated Intelligence</span>
+          <h2 class="section-main-title">How OpportunityOS Works Under The Hood</h2>
+          <p class="section-desc">
+            A continuous automated pipeline ensuring you discover every high-stakes national opportunity weeks before registration deadlines close.
+          </p>
+        </div>
+
+        <div class="pipeline-steps-grid">
+          <div class="step-card">
+            <span class="step-number">STEP 01</span>
+            <h3 class="step-title">Multi-Source Scraping</h3>
+            <p class="step-desc">
+              Our automated crawlers aggregate listings from Brabble, Devfolio, Unstop, MLH, GSoC, and collegiate tech fests every 6 hours.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-number">STEP 02</span>
+            <h3 class="step-title">AI Normalization</h3>
+            <p class="step-desc">
+              Dates, eligibility criteria, cash prizes (in ₹ INR), and event modes (Online / In-Person) are parsed and deduplicated with precision.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-number">STEP 03</span>
+            <h3 class="step-title">Direct Official Link</h3>
+            <p class="step-desc">
+              We never collect intermediary registration fees. You are handed off directly to the official organizer registration portal.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <span class="step-number">STEP 04</span>
+            <h3 class="step-title">Kanban Milestone Tracking</h3>
+            <p class="step-desc">
+              Save events to your private wishlist, manage rounds, and track team deadlines through our drag-and-drop Kanban tracker.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 3: How to Use It (Role Switcher Tabs) ───────────────────── -->
+    <section id="how-to-use" class="landing-section">
+      <div class="section-center-head">
+        <span class="section-tag-pill purple">Workflow Blueprint</span>
+        <h2 class="section-main-title">How To Use OpportunityOS</h2>
+        <p class="section-desc">
+          Whether you are a student hungry for your next hackathon win or a college tech club organizing a national coding sprint, we have you covered.
+        </p>
+      </div>
+
+      <!-- Segmented Role Control -->
+      <div class="role-tabs-wrap">
+        <div class="role-segmented-control" role="tablist">
+          <button class="role-tab-btn active" id="roleTabCandidate" role="tab" aria-selected="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            For Candidates &amp; Students
+          </button>
+          <button class="role-tab-btn" id="roleTabOrganizer" role="tab" aria-selected="false">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            For Organizers &amp; College Clubs
+          </button>
+        </div>
+      </div>
+
+      <!-- Candidates Workflow Panel -->
+      <div id="rolePanelCandidate" class="role-workflow-grid">
+        <div class="workflow-card">
+          <div class="workflow-badge-index">1</div>
+          <h4>Search &amp; Filter Opportunities</h4>
+          <p>Filter by event type (Hackathons, Coding Contests, Fellowships), mode (Online / Hybrid), or prize pool to discover matching events instantly.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-badge-index">2</div>
+          <h4>Bookmark &amp; Monitor Deadlines</h4>
+          <p>Save events to your personal shortlist. Live countdown timers highlight urgent deadlines closing within 7 days so you never miss out.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-badge-index">3</div>
+          <h4>Track on Private Kanban Board</h4>
+          <p>Once you register on the official portal, advance your card from "Applied" to "In Review" and "Selected" to build your career track record.</p>
+        </div>
+      </div>
+
+      <!-- Organizers Workflow Panel (Hidden by default) -->
+      <div id="rolePanelOrganizer" class="role-workflow-grid" style="display: none;">
+        <div class="workflow-card">
+          <div class="workflow-badge-index">1</div>
+          <h4>Submit Competition Details</h4>
+          <p>Fill out the free community submission form with your event title, problem statements, registration deadline, and official link.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-badge-index">2</div>
+          <h4>Fast 24h Moderation Check</h4>
+          <p>Our admin moderation desk reviews your listing for authenticity, verified official URLs, and student safety within 24 hours.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-badge-index">3</div>
+          <h4>Reach 50,000+ Active Students</h4>
+          <p>Once approved, your event appears directly on the live OpportunityOS terminal, viewed daily by ambitious engineering students nationwide.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 4: Who Is It For? (Bento Persona Grid) ──────────────────── -->
+    <section id="for-whom" class="landing-section-full">
+      <div class="landing-section-inner">
+        <div class="section-center-head">
+          <span class="section-tag-pill">Target Personas</span>
+          <h2 class="section-main-title">Who Gets The Most Value?</h2>
+          <p class="section-desc">
+            Tailored toolsets built for every ambition across the Indian technology and engineering ecosystem.
+          </p>
+        </div>
+
+        <div class="persona-bento-grid">
+          <!-- Persona 1 -->
+          <div class="persona-card">
+            <div class="persona-header">
+              <div class="persona-avatar-box" style="background: var(--brand-primary-light); color: var(--brand-primary);">🎓</div>
+              <div>
+                <span class="persona-tag">Undergraduates &amp; Freshers</span>
+                <h3 class="persona-title">Engineering Students</h3>
+              </div>
+            </div>
+            <p class="persona-desc">
+              Build resume-worthy proof-of-work beyond college syllabi. Team up, build software prototypes, win cash prizes, and secure high-stipend internships.
+            </p>
+            <ul class="persona-features-list">
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> National student hackathons &amp; campus fests</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 1-Click official registration portals</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 100% Free student discovery access</li>
+            </ul>
+          </div>
+
+          <!-- Persona 2 -->
+          <div class="persona-card accent-orange">
+            <div class="persona-header">
+              <div class="persona-avatar-box" style="background: var(--accent-orange-light); color: var(--accent-orange);">💻</div>
+              <div>
+                <span class="persona-tag" style="color: var(--accent-orange);">Algorithmic Solvers</span>
+                <h3 class="persona-title">Competitive Programmers</h3>
+              </div>
+            </div>
+            <p class="persona-desc">
+              Never miss rated contests or high-prize coding challenges across LeetCode, Codeforces, HackerEarth, and corporate hiring brackets.
+            </p>
+            <ul class="persona-features-list">
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Filter cash prize pools in ₹ INR</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Real-time countdown clocks to contest start</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Zero spam or promotional distractions</li>
+            </ul>
+          </div>
+
+          <!-- Persona 3 -->
+          <div class="persona-card accent-purple">
+            <div class="persona-header">
+              <div class="persona-avatar-box" style="background: var(--accent-purple-light); color: var(--accent-purple);">🚀</div>
+              <div>
+                <span class="persona-tag" style="color: var(--accent-purple);">Global Fellowships</span>
+                <h3 class="persona-title">Open Source Contributors</h3>
+              </div>
+            </div>
+            <p class="persona-desc">
+              Discover and apply for prestigious stipend-backed fellowships like Google Summer of Code (GSoC), MLH Fellowship, and Linux Foundation grants.
+            </p>
+            <ul class="persona-features-list">
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified stipend &amp; research fellowships</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Clear eligibility criteria breakdowns</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> High-impact career trajectory boosters</li>
+            </ul>
+          </div>
+
+          <!-- Persona 4 -->
+          <div class="persona-card accent-green">
+            <div class="persona-header">
+              <div class="persona-avatar-box" style="background: var(--accent-green-light); color: var(--accent-green);">🏛️</div>
+              <div>
+                <span class="persona-tag" style="color: var(--accent-green);">Student Leads</span>
+                <h3 class="persona-title">College Tech Fest Organizers</h3>
+              </div>
+            </div>
+            <p class="persona-desc">
+              Organizing an intra-college tech fest or national coding sprint? Distribute your event with zero ad spend and reach 50,000+ top engineering builders.
+            </p>
+            <ul class="persona-features-list">
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 100% Free event listing submission</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Nationwide student reach &amp; engagement</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Dedicated admin verification within 24h</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Section 5: High-Conversion CTA Banner ────────────────────────────── -->
+    <section id="cta-join" class="landing-section">
+      <div class="landing-cta-banner">
+        <h2 class="cta-title">Ready to Accelerate Your Tech Career?</h2>
+        <p class="cta-sub">
+          Unlock the full private terminal with 900+ verified hackathons, advanced multi-filters, and your personalized Kanban application tracker.
+        </p>
+
+        <div class="cta-actions-row">
+          <button id="btnCtaGoogle" class="btn-cta-google" aria-label="Sign in with Google">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+              <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
+              <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
             </svg>
-          </div>
+            Sign in with Google to Enter App
+          </button>
+
+          <button id="btnCtaDevLogin" class="btn-cta-demo" aria-label="Dev Test Fast Login">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Instant Test Login (Local Dev)
+          </button>
         </div>
 
-        <!-- Candidate Sign up Card -->
-        <div class="candidate-signup-box">
-          <div class="candidate-tag">
-            <span class="candidate-tag-dot"></span>
-            Candidate sign up
-          </div>
-
-          <div class="signup-buttons-row">
-            <button id="btnHeroGoogle" class="btn-signup-google" aria-label="Continue with Google">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/>
-                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
-                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"/>
-                <path fill="#34A853" d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.2 7.5 23.5 12 23.5z"/>
-              </svg>
-              Continue with Google
-            </button>
-
-            <button id="btnHeroExplore" class="btn-signup-secondary" aria-label="Explore Opportunities">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-              </svg>
-              Explore 900+ Events
-            </button>
-          </div>
-
-          <div class="hero-tnc-notice">
-            By continuing as a candidate, you agree to our <a href="/terms.html" target="_blank">T&amp;C</a> &amp; <a href="/privacy.html" target="_blank">Privacy Policy</a>.
-          </div>
-        </div>
-
-        <!-- Secondary Organizer Link -->
-        <a href="#" id="btnHeroSubmit" class="hero-secondary-link">
-          Organizer / College sign up &gt;
-        </a>
-      </div>
-
-      <!-- Right Column: Student Photography & Floating Badges -->
-      <div class="hero-right-image-container">
-        <!-- Floating Micro-Badges -->
-        <div class="floating-chip top-left">
-          <div class="chip-icon">🏆</div>
-          <div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Live Prize Pool</div>
-            <div id="heroPrizeBadge">₹1.8 Cr+</div>
-          </div>
-        </div>
-
-        <div class="floating-chip bottom-right">
-          <div class="chip-icon orange">⚡</div>
-          <div>
-            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Active Listings</div>
-            <div id="heroActiveBadge">914+ Verified</div>
-          </div>
-        </div>
-
-        <img src="/images/hero_students.jpg" alt="Smiling tech students holding laptop and achievement certificates" class="hero-students-img" width="520" height="340">
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Credibility Stats Strip (Internshala Company Strip Style) ─────────── -->
-  <section class="credibility-strip" role="region" aria-label="Platform Highlights">
-    <div class="credibility-inner">
-      <div class="cred-item">
-        <div class="cred-icon-box">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        </div>
-        <div class="cred-text">
-          <span class="cred-value" id="statActiveCount">914+</span>
-          <span class="cred-label">Active Opportunities</span>
+        <div class="cta-guarantee-note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Passwordless Google SSO · Section 79 Intermediary Protection · 100% Free Forever
         </div>
       </div>
+    </section>
+  </div>
+  <!-- ══ End of Public Marketing & Product Tour ═════════════════════════════ -->
 
-      <div class="cred-item">
-        <div class="cred-icon-box" style="background: var(--accent-green-light); color: var(--accent-green);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       2. PRIVATE AUTHENTICATED APP WORKSPACE (Gated: Visible after login)
+       ═══════════════════════════════════════════════════════════════════════════ -->
+  <div id="appWorkspace" style="display: none;">
+    <!-- Workspace Subbar -->
+    <div class="workspace-subbar">
+      <div class="workspace-subbar-inner">
+        <div class="workspace-user-badge">
+          <span style="font-size: 0.84rem; color: var(--text-muted); font-weight: 500;">Private Terminal:</span>
+          <span id="workspaceActiveTabLabel" style="font-family: var(--font-heading); font-size: 0.94rem; font-weight: 700; color: var(--brand-primary);">
+            Explore Opportunities
+          </span>
         </div>
-        <div class="cred-text">
-          <span class="cred-value" id="statPrizeCount">₹1.8 Cr+</span>
-          <span class="cred-label">Prizes &amp; Grants</span>
-        </div>
-      </div>
 
-      <div class="cred-item">
-        <div class="cred-icon-box" style="background: var(--accent-orange-light); color: var(--accent-orange);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        </div>
-        <div class="cred-text">
-          <span class="cred-value" id="statUrgentCount">0</span>
-          <span class="cred-label">Closing This Week</span>
-        </div>
-      </div>
-
-      <div class="cred-item">
-        <div class="cred-icon-box" style="background: var(--accent-purple-light); color: var(--accent-purple);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-        </div>
-        <div class="cred-text">
-          <span class="cred-value">100% Free</span>
-          <span class="cred-label">Official Direct Links</span>
+        <div class="workspace-actions">
+          <button id="btnToggleLandingGuide" class="btn-outline-subtle" aria-label="View Platform Guide">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            Product Guide
+          </button>
+          <button id="btnWorkspaceLogout" class="btn-outline-subtle" style="color: #EF4444;" aria-label="Sign Out">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ── Main Application Content ─────────────────────────────────────────── -->
-  <main id="mainContent" class="main-wrapper" role="main">
+    <!-- ── Main Application Content ─────────────────────────────────────────── -->
+    <main id="mainContent" class="main-wrapper" role="main">
 
     <!-- View 1: Explore / Search / Discover Opportunities -->
     <div id="exploreView" class="view-panel active">
@@ -483,6 +808,56 @@
       </div>
     </div>
   </main>
+  </div>
+  <!-- ══ End of Private Authenticated App Workspace ═════════════════════════ -->
+
+  <!-- ── Dev Test Sign-In Modal (Zero-Friction Local Testing) ─────────────── -->
+  <div id="devLoginModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="devLoginModalTitle">
+    <div class="modal-box" style="max-width: 480px;">
+      <button class="modal-close-btn" id="closeDevLoginBtn" aria-label="Close test login dialog">&times;</button>
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 1.5rem;">
+          ⚡
+        </div>
+        <h3 id="devLoginModalTitle" style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">
+          Quick-Access Test Sign-in
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5;">
+          Select a test identity below to unlock and explore the private app workspace immediately.
+        </p>
+      </div>
+
+      <!-- Candidate Test Option -->
+      <div class="demo-modal-option" id="btnDevStudentLogin" role="button" tabindex="0">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="font-size: 1.6rem;">🎓</div>
+          <div>
+            <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Candidate / Student</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Rahul Sharma (student@opportunityos.in)</div>
+          </div>
+        </div>
+        <span style="font-size: 0.82rem; font-weight: 600; color: var(--brand-primary);">Log in &rarr;</span>
+      </div>
+
+      <!-- Admin Test Option -->
+      <div class="demo-modal-option" id="btnDevAdminLogin" role="button" tabindex="0">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="font-size: 1.6rem;">🛡️</div>
+          <div>
+            <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">Platform Administrator</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Haries Hussain (shaikharieshussain09@gmail.com)</div>
+          </div>
+        </div>
+        <span style="font-size: 0.82rem; font-weight: 600; color: var(--accent-orange);">Admin &rarr;</span>
+      </div>
+
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-color); text-align: center;">
+        <span style="font-size: 0.78rem; color: var(--text-muted);">
+          In production, users authenticate via Google Single Sign-On.
+        </span>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Opportunity Detail Modal ─────────────────────────────────────────── -->
   <div id="detailsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">

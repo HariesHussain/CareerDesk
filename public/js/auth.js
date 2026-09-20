@@ -17,6 +17,23 @@ class AuthManager {
    * Initialize Supabase client and restore session
    */
   async init() {
+    // Check local demo session first
+    const demoRaw = localStorage.getItem("opp_demo_session");
+    if (demoRaw) {
+      try {
+        const demoData = JSON.parse(demoRaw);
+        this.user = demoData.user;
+        this.profile = demoData.profile || demoData.user;
+        this.session = {
+          access_token: demoData.token || "demo-jwt-token",
+          user: demoData.user
+        };
+        this.notifyListeners();
+      } catch (e) {
+        localStorage.removeItem("opp_demo_session");
+      }
+    }
+
     if (!window.supabase) {
       console.warn("Supabase SDK not loaded from CDN yet.");
       return;
@@ -28,21 +45,25 @@ class AuthManager {
         AppConfig.SUPABASE_ANON_KEY
       );
 
-      // Check existing session
+      // Check existing Supabase session
       const { data, error } = await this.client.auth.getSession();
       if (!error && data?.session) {
         this.session = data.session;
         this.user = data.session.user;
+        localStorage.removeItem("opp_demo_session");
         await this.fetchBackendProfile();
       }
 
       // Listen for auth state changes
       this.client.auth.onAuthStateChange(async (event, session) => {
-        this.session = session;
-        this.user = session?.user || null;
         if (session) {
+          this.session = session;
+          this.user = session.user;
+          localStorage.removeItem("opp_demo_session");
           await this.fetchBackendProfile();
-        } else {
+        } else if (!localStorage.getItem("opp_demo_session")) {
+          this.session = null;
+          this.user = null;
           this.profile = null;
         }
         this.notifyListeners();
@@ -51,6 +72,43 @@ class AuthManager {
     } catch (err) {
       console.error("Failed to initialize Supabase Auth:", err);
     }
+  }
+
+  /**
+   * Dev/Demo sign-in for zero-friction local testing
+   */
+  async loginAsDemo(email, name, role = "student") {
+    const demoUser = {
+      id: "demo-" + (role === "admin" ? "admin-999" : "student-101"),
+      email: email,
+      user_metadata: {
+        full_name: name,
+        avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
+      }
+    };
+    const demoProfile = {
+      id: demoUser.id,
+      email: email,
+      full_name: name,
+      avatar_url: demoUser.user_metadata.avatar_url,
+      role: role
+    };
+
+    this.user = demoUser;
+    this.profile = demoProfile;
+    this.session = {
+      access_token: "demo-token-" + Date.now(),
+      user: demoUser
+    };
+
+    localStorage.setItem("opp_demo_session", JSON.stringify({
+      user: demoUser,
+      profile: demoProfile,
+      token: this.session.access_token
+    }));
+
+    this.notifyListeners();
+    return demoProfile;
   }
 
   /**
@@ -100,8 +158,14 @@ class AuthManager {
    * Sign out and clear session
    */
   async signOut() {
-    if (!this.client) return;
-    await this.client.auth.signOut();
+    localStorage.removeItem("opp_demo_session");
+    if (this.client) {
+      try {
+        await this.client.auth.signOut();
+      } catch (e) {
+        console.warn("SignOut error:", e);
+      }
+    }
     this.session = null;
     this.user = null;
     this.profile = null;
