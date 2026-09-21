@@ -410,6 +410,8 @@ class OpportunityApp {
 
       if (user) {
         // Authenticated: Show App Workspace, Hide Public Landing
+        document.body.classList.add("is-authenticated");
+        document.body.classList.remove("is-guest");
         if (guestNav) guestNav.style.display = "none";
         if (navTabs) navTabs.style.display = "flex";
         if (loginWrapper) loginWrapper.style.display = "none";
@@ -448,6 +450,8 @@ class OpportunityApp {
         this.switchTab("explore");
       } else {
         // Guest: Show Public Landing, Hide App Workspace
+        document.body.classList.remove("is-authenticated");
+        document.body.classList.add("is-guest");
         if (guestNav) guestNav.style.display = "flex";
         if (navTabs) navTabs.style.display = "none";
         if (loginWrapper) loginWrapper.style.display = "flex";
