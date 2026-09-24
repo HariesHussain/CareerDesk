@@ -30,6 +30,7 @@ class OpportunityApp {
     this.setupCookieConsent();
     this.setupAuthSync();
     this.setupScrollAnimations();
+    this.initLandingScrollSpy();
     
     if (window.adminConsole) {
       window.adminConsole.init();
@@ -58,6 +59,55 @@ class OpportunityApp {
       { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
     );
     document.querySelectorAll(".reveal-on-scroll").forEach(el => observer.observe(el));
+  }
+
+  // ── Landing Page Header Sticky & Scrollspy ───────────────────────────────
+  initLandingScrollSpy() {
+    const siteHeader = document.querySelector(".site-header");
+    const sections = ["overview", "how-it-works", "how-to-use", "for-whom"];
+    const navLinks = document.querySelectorAll(".guest-nav-link, .mobile-landing-nav-link");
+
+    const onScroll = () => {
+      // 1. Elevated header shadow & backdrop blur enhancement when scrolled
+      if (siteHeader) {
+        if (window.scrollY > 20) {
+          siteHeader.classList.add("is-scrolled");
+        } else {
+          siteHeader.classList.remove("is-scrolled");
+        }
+      }
+
+      // 2. Active Section Spy for guest landing links
+      let currentSectionId = "";
+      const scrollPosition = window.scrollY + 120;
+
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            currentSectionId = id;
+            break;
+          }
+        }
+      }
+
+      if (currentSectionId) {
+        navLinks.forEach(link => {
+          const href = link.getAttribute("href");
+          if (href === `#${currentSectionId}`) {
+            link.classList.add("active");
+          } else if (href && href.startsWith("#")) {
+            link.classList.remove("active");
+          }
+        });
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Trigger on initial load to set state
+    onScroll();
   }
 
   // ── Event Handlers & Routing ──────────────────────────────────────────────

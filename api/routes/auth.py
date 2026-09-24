@@ -229,4 +229,4 @@ def delete_account():
 
     except Exception as e:
         logger.error("Error erasing user account %s: %s", user_id, str(e)[:200])
-        return jsonify({"error": "Failed to complete account erasure request. Please contact grievance@opportunityos.in"}), 500
+        return jsonify({"error": "Failed to complete account erasure request. Please contact shaikhariehussain09@gmail.com"}), 500

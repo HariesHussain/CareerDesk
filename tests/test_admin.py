@@ -45,7 +45,7 @@ class EnterpriseAdminTestCase(unittest.TestCase):
             g.user_id = "test-admin-id"
             g.current_user = {
                 "id": "test-admin-id",
-                "email": "shaikharieshussain09@gmail.com",
+                "email": "shaikhariehussain09@gmail.com",
                 "role": "admin",
             }
             resp = get_admin_metrics.__wrapped__()
