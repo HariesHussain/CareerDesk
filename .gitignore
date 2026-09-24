@@ -43,3 +43,5 @@ Thumbs.db
 .idea/
 docs/
 .agents/
+# Temporary scratch & test artifacts
+scratch/

@@ -42,6 +42,12 @@
   <!-- ── Top Header / Navbar (Internshala Clean White Style) ─────────────── -->
   <header class="site-header" role="banner">
     <div class="nav-container">
+      <!-- Left: Mobile Profile Avatar Trigger (Jakob's Law Mobile Standard) -->
+      <button id="mobileHeaderProfileBtn" class="mobile-header-avatar-btn" aria-label="Open Profile Drawer" style="display: none;">
+        <img id="mobileHeaderAvatarImg" class="mobile-header-avatar-img" src="" alt="Profile">
+        <span class="mobile-header-online-dot"></span>
+      </button>
+
       <!-- Left: Brand Logo -->
       <a href="/" class="brand-wrapper" aria-label="CareerDesk Home">
         <div class="brand-logo-icon" aria-hidden="true">
@@ -613,13 +619,13 @@
         </div>
 
         <div class="workspace-actions">
+          <span class="workspace-stats-chip">
+            <span class="pulse-fire">🔥</span>
+            <span><strong>914+</strong> Contests Live</span>
+          </span>
           <button id="btnToggleLandingGuide" class="btn-outline-subtle" aria-label="View Platform Guide">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
             Product Guide
-          </button>
-          <button id="btnWorkspaceLogout" class="btn-outline-subtle" style="color: #EF4444;" aria-label="Sign Out">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            Sign Out
           </button>
         </div>
       </div>
@@ -1317,6 +1323,7 @@
           </div>
         </div>
       </form>
+    </div>
   </div>
 
   <!-- ── Admin Ban Confirmation Modal ────────────────────────────────────── -->
@@ -1415,7 +1422,149 @@
     </div>
   </div>
 
-  <!-- ── Sticky Mobile Bottom Navigation Bar (Internshala Style) ──────────── -->
+  <!-- ── Mobile Profile Sidebar Drawer Backdrop & Aside (Jakob's Law Standard) ── -->
+  <div id="profileDrawerBackdrop" class="profile-drawer-backdrop" style="display: none;"></div>
+
+  <aside id="profileDrawer" class="profile-drawer" role="dialog" aria-modal="true" aria-label="User Profile & Navigation Drawer">
+    <!-- Drawer Header -->
+    <div class="profile-drawer-header">
+      <div class="drawer-header-top">
+        <button id="btnCloseProfileDrawer" class="drawer-close-btn" aria-label="Close navigation drawer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="drawer-brand-mark">
+          <div class="brand-logo-icon" style="width: 24px; height: 24px;">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <span style="font-family: var(--font-heading); font-weight: 700; font-size: 0.95rem; color: #111827;">Career<span style="color: var(--brand-primary);">Desk</span></span>
+        </div>
+      </div>
+
+      <!-- User Profile Card in Drawer -->
+      <div class="drawer-user-card" id="drawerUserCard">
+        <div class="drawer-avatar-wrap">
+          <img id="drawerUserAvatar" class="drawer-avatar" src="" alt="User avatar">
+          <span class="drawer-online-dot" title="Active Session"></span>
+        </div>
+        <div class="drawer-user-meta">
+          <div class="drawer-user-name-row">
+            <h3 id="drawerUserName" class="drawer-user-name">Student Member</h3>
+            <span class="drawer-verified-icon" title="Verified Account">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="#008BDC"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+          <p id="drawerUserEmail" class="drawer-user-email">student@college.edu</p>
+          <div class="drawer-badges-row">
+            <span id="drawerUserRoleBadge" class="badge-role-tag badge-role-student">Student</span>
+            <span id="drawerCollegeBadge" class="drawer-college-pill">Engineering Scholar</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gamification / Retention / Social Proof Banner (Spend More Time in App!) -->
+      <div class="drawer-engagement-card">
+        <div class="engagement-streak-row">
+          <span class="engagement-fire">🔥 <strong>Streak:</strong> 3 Days Active</span>
+          <span class="engagement-xp">Contender Lv.2</span>
+        </div>
+        <div class="engagement-progress-bar">
+          <div class="engagement-progress-fill" style="width: 75%;"></div>
+        </div>
+        <div class="engagement-stats-grid">
+          <div class="engagement-stat">
+            <span class="stat-num" id="drawerStatLiveCount">914+</span>
+            <span class="stat-lbl">Live Contests</span>
+          </div>
+          <div class="engagement-stat">
+            <span class="stat-num">₹1.8 Cr+</span>
+            <span class="stat-lbl">Prizes</span>
+          </div>
+          <div class="engagement-stat">
+            <span class="stat-num" id="drawerStatSavedCount">0</span>
+            <span class="stat-lbl">Saved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Navigation Links -->
+    <div class="profile-drawer-body">
+      <div class="drawer-nav-group">
+        <div class="drawer-group-title">WORKSPACE NAVIGATION</div>
+        <button class="drawer-nav-link active" data-drawer-tab="explore">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          <span>Explore All Opportunities</span>
+          <span class="drawer-nav-badge">914+</span>
+        </button>
+
+        <button class="drawer-nav-link" data-drawer-tab="pipeline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>Application Tracker (Kanban)</span>
+        </button>
+
+        <button class="drawer-nav-link" data-drawer-tab="bookmarks">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          <span>Saved Bookmarks</span>
+          <span class="drawer-nav-badge" id="drawerBookmarksCount">0</span>
+        </button>
+
+        <button class="drawer-nav-link" data-drawer-tab="submit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          <span>Post an Opportunity</span>
+          <span class="drawer-nav-pill-free">Free</span>
+        </button>
+
+        <button class="drawer-nav-link drawer-admin-link" id="drawerAdminItem" data-drawer-tab="admin" style="display: none;">
+          <span style="font-size: 1.1rem; line-height: 1;">👑</span>
+          <span>Enterprise Admin Console</span>
+          <span class="admin-badge badge-role-admin" style="margin-left: auto;">PRO</span>
+        </button>
+      </div>
+
+      <div class="drawer-nav-group">
+        <div class="drawer-group-title">SETTINGS &amp; RESOURCES</div>
+        <button class="drawer-nav-link" id="drawerBtnOpenProfile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Edit Profile &amp; College</span>
+        </button>
+
+        <button class="drawer-nav-link" id="drawerBtnTour">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span>Product Tour &amp; Guide</span>
+        </button>
+
+        <a href="/privacy.html" class="drawer-nav-link" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Privacy &amp; DPDP Rights</span>
+        </a>
+
+        <a href="/terms.html" class="drawer-nav-link" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Terms &amp; Section 79 Notice</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Drawer Footer: Dedicated Sign Out (Standard Jakob's Law) -->
+    <div class="profile-drawer-footer">
+      <button id="btnDrawerLogout" class="btn-drawer-logout" aria-label="Sign Out of CareerDesk">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Sign Out</span>
+      </button>
+      <div class="drawer-footer-note">
+        CareerDesk v2.4 · Section 79 Intermediary Safe Harbor
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Sticky Mobile Bottom Navigation Bar (Jakob's Law Standard) ──────────── -->
   <nav class="mobile-bottom-nav" role="navigation" aria-label="Mobile Bottom Navigation">
     <button class="mobile-nav-item active" data-tab="explore" aria-label="Explore Opportunities">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1451,12 +1600,15 @@
       <span>Submit</span>
     </button>
 
-    <button class="mobile-nav-item" id="mobileNavAccountBtn" aria-label="Account Settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
-      <span>Account</span>
+    <button class="mobile-nav-item" id="mobileNavProfileBtn" aria-label="Profile and Settings">
+      <div class="mobile-nav-avatar-icon-wrap">
+        <img id="mobileBottomNavAvatar" class="mobile-nav-avatar-img" style="display: none;" src="" alt="Profile">
+        <svg id="mobileBottomNavAvatarDefault" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <span>Profile</span>
     </button>
   </nav>
 

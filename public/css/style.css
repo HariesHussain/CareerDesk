@@ -1422,6 +1422,395 @@ input:focus, select:focus, textarea:focus {
   line-height: 1;
 }
 
+/* ── Mobile Profile Sidebar Drawer (Jakob's Law Standard) ────────────────── */
+.mobile-header-avatar-btn {
+  display: none;
+}
+
+.profile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.profile-drawer-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.profile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 85%;
+  max-width: 320px;
+  background: #FFFFFF;
+  z-index: 10001;
+  box-shadow: 14px 0 40px rgba(0, 0, 0, 0.22);
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: max(10px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+}
+
+.profile-drawer.open {
+  transform: translateX(0);
+}
+
+.profile-drawer-header {
+  padding: 16px 18px 14px 18px;
+  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+  flex-shrink: 0;
+}
+
+.drawer-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.drawer-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: #F1F5F9;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer-close-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.drawer-brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.drawer-avatar-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.drawer-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--brand-primary);
+  object-fit: cover;
+  box-shadow: 0 3px 8px rgba(0, 139, 220, 0.2);
+}
+
+.drawer-online-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10B981;
+  border: 1.5px solid #FFFFFF;
+}
+
+.drawer-user-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-user-name-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.drawer-user-name {
+  font-family: var(--font-heading);
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawer-user-email {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin: 1px 0 5px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawer-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.drawer-college-pill {
+  font-size: 0.7rem;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #DBEAFE;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+/* ── Gamification / Value Metrics Card (Spend More Time in App) ── */
+.drawer-engagement-card {
+  background: linear-gradient(135deg, #0A4E9B 0%, #008BDC 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  box-shadow: 0 4px 12px rgba(0, 139, 220, 0.22);
+}
+
+.engagement-streak-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  margin-bottom: 6px;
+}
+
+.engagement-fire {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.engagement-xp {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.engagement-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 7px;
+}
+
+.engagement-progress-fill {
+  height: 100%;
+  background: #34D399;
+  border-radius: 3px;
+}
+
+.engagement-stats-grid {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  padding-top: 6px;
+}
+
+.engagement-stat {
+  text-align: center;
+}
+
+.engagement-stat .stat-num {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.engagement-stat .stat-lbl {
+  font-size: 0.64rem;
+  opacity: 0.84;
+}
+
+/* ── Drawer Body & Navigation ── */
+.profile-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 10px;
+}
+
+.drawer-nav-group {
+  margin-bottom: 16px;
+}
+
+.drawer-group-title {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #94A3B8;
+  margin: 0 8px 6px 8px;
+}
+
+.drawer-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: #334155;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer-nav-link svg {
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+.drawer-nav-link:hover,
+.drawer-nav-link:active {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.drawer-nav-link.active {
+  background: #EFF6FF;
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+.drawer-nav-link.active svg {
+  color: var(--brand-primary);
+}
+
+.drawer-nav-badge {
+  margin-left: auto;
+  background: #E2E8F0;
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.drawer-nav-pill-free {
+  margin-left: auto;
+  background: #DCFCE7;
+  color: #16A34A;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.drawer-admin-link {
+  background: #FAF5FF !important;
+  color: #7C3AED !important;
+  font-weight: 600 !important;
+  border: 1px solid #F3E8FF;
+}
+
+/* ── Drawer Footer (Dedicated Sign Out) ── */
+.profile-drawer-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border-color);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.btn-drawer-logout {
+  width: 100%;
+  min-height: 44px;
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-drawer-logout:hover,
+.btn-drawer-logout:active {
+  background: #FEE2E2;
+  color: #B91C1C;
+  border-color: #FCA5A5;
+}
+
+.drawer-footer-note {
+  text-align: center;
+  font-size: 0.68rem;
+  color: #94A3B8;
+  margin-top: 8px;
+}
+
+/* ── Bottom Nav Profile Avatar ── */
+.mobile-nav-avatar-icon-wrap {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav-avatar-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--brand-primary);
+  object-fit: cover;
+}
+
 /* ── Site Footer (Clean Light Slate & Grievance Disclosures) ─────────────── */
 .site-footer {
   background-color: var(--bg-subtle);
@@ -2127,6 +2516,24 @@ input:focus, select:focus, textarea:focus {
   gap: 12px;
 }
 
+.workspace-stats-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.workspace-stats-chip .pulse-fire {
+  display: inline-block;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
 .btn-outline-subtle {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -2287,6 +2694,43 @@ input:focus, select:focus, textarea:focus {
   }
   .nav-actions {
     gap: 6px;
+  }
+  .user-profile-menu {
+    display: none !important;
+  }
+  .mobile-header-avatar-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-right: 4px;
+    cursor: pointer;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+  body.is-authenticated .mobile-header-avatar-btn {
+    display: flex !important;
+  }
+  .mobile-header-avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--brand-primary);
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 139, 220, 0.25);
+  }
+  .mobile-header-online-dot {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+    border: 1.5px solid #FFFFFF;
   }
   .btn-signup-google-sm {
     padding: 6px 12px;
@@ -2486,14 +2930,9 @@ input:focus, select:focus, textarea:focus {
     font-size: 0.72rem;
   }
 
-  /* ── Workspace & Feed Mobile ─────────────────────────────────────────── */
+  /* ── Workspace & Feed Mobile (Jakob's Law: Hidden on Mobile) ─────────── */
   .workspace-subbar {
-    padding: 10px 14px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .workspace-actions {
-    gap: 8px;
+    display: none !important;
   }
   .controls-card {
     padding: 14px 12px;

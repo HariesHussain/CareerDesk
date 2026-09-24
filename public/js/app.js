@@ -247,7 +247,7 @@ class OpportunityApp {
       });
     }
 
-    // Workspace and Mobile Sign Out
+    // Desktop Sign Out (from User Dropdown)
     const btnLogout = document.getElementById("btnLogout");
     if (btnLogout) {
       btnLogout.addEventListener("click", async () => {
@@ -256,24 +256,86 @@ class OpportunityApp {
       });
     }
 
-    const btnWorkspaceLogout = document.getElementById("btnWorkspaceLogout");
-    if (btnWorkspaceLogout) {
-      btnWorkspaceLogout.addEventListener("click", async () => {
+    // Mobile Header Profile Trigger (Jakob's Law Standard)
+    const mobileHeaderProfileBtn = document.getElementById("mobileHeaderProfileBtn");
+    if (mobileHeaderProfileBtn) {
+      mobileHeaderProfileBtn.addEventListener("click", () => {
+        this.openProfileDrawer();
+      });
+    }
+
+    // Mobile Bottom Nav Profile Trigger
+    const mobileNavProfileBtn = document.getElementById("mobileNavProfileBtn");
+    if (mobileNavProfileBtn) {
+      mobileNavProfileBtn.addEventListener("click", () => {
+        this.openProfileDrawer();
+      });
+    }
+
+    // Mobile Profile Drawer Controls
+    const btnCloseProfileDrawer = document.getElementById("btnCloseProfileDrawer");
+    if (btnCloseProfileDrawer) {
+      btnCloseProfileDrawer.addEventListener("click", () => {
+        this.closeProfileDrawer();
+      });
+    }
+
+    const profileDrawerBackdrop = document.getElementById("profileDrawerBackdrop");
+    if (profileDrawerBackdrop) {
+      profileDrawerBackdrop.addEventListener("click", () => {
+        this.closeProfileDrawer();
+      });
+    }
+
+    // Mobile Profile Drawer Tab Links
+    document.querySelectorAll("[data-drawer-tab]").forEach(item => {
+      item.addEventListener("click", () => {
+        const targetTab = item.dataset.drawerTab;
+        this.closeProfileDrawer();
+        if (targetTab) this.switchTab(targetTab);
+      });
+    });
+
+    // Drawer Edit Profile Button
+    const drawerBtnOpenProfile = document.getElementById("drawerBtnOpenProfile");
+    if (drawerBtnOpenProfile) {
+      drawerBtnOpenProfile.addEventListener("click", () => {
+        this.closeProfileDrawer();
+        this.openProfileModal();
+      });
+    }
+
+    // Drawer Product Tour Button
+    const drawerBtnTour = document.getElementById("drawerBtnTour");
+    if (drawerBtnTour) {
+      drawerBtnTour.addEventListener("click", () => {
+        this.closeProfileDrawer();
+        const landingView = document.getElementById("landingView");
+        const appWorkspace = document.getElementById("appWorkspace");
+        if (landingView && appWorkspace) {
+          appWorkspace.style.display = "block";
+          landingView.style.display = "block";
+          landingView.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    }
+
+    // Drawer Sign Out Button (Prominent & Dedicated Mobile Logout)
+    const btnDrawerLogout = document.getElementById("btnDrawerLogout");
+    if (btnDrawerLogout) {
+      btnDrawerLogout.addEventListener("click", async () => {
+        this.closeProfileDrawer();
         await window.authManager.signOut();
         this.showToast("Signed out successfully", "info");
       });
     }
 
-    const mobileNavAccountBtn = document.getElementById("mobileNavAccountBtn");
-    if (mobileNavAccountBtn) {
-      mobileNavAccountBtn.addEventListener("click", () => {
-        if (window.authManager && window.authManager.isAuthenticated()) {
-          this.openProfileModal();
-        } else {
-          window.authManager.signInWithGoogle();
-        }
-      });
-    }
+    // Close Drawer on Escape Key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        this.closeProfileDrawer();
+      }
+    });
 
     // User Menu Dropdown Toggle
     const userProfileMenu = document.getElementById("userProfileMenu");
@@ -415,16 +477,37 @@ class OpportunityApp {
         if (guestNav) guestNav.style.display = "none";
         if (navTabs) navTabs.style.display = "flex";
         if (loginWrapper) loginWrapper.style.display = "none";
+
+        const defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23008BDC'/%3E%3Cstop offset='100%25' stop-color='%23006BC7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='40' r='18' fill='%23FFFFFF' opacity='0.9'/%3E%3Cpath d='M20 85 C20 66 35 62 50 62 C65 62 80 66 80 85 Z' fill='%23FFFFFF' opacity='0.9'/%3E%3C/svg%3E";
+        const avatarUrl = user.avatar_url || defaultAvatarSvg;
+        const fullName = user.full_name || "Student Member";
+        const email = user.email || "";
+
         if (userMenu) {
           userMenu.style.display = "flex";
           const nameEl = document.getElementById("navUserName");
           const avatarEl = document.getElementById("navUserAvatar");
           const roleEl = document.getElementById("navUserRole");
-          const defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23008BDC'/%3E%3Cstop offset='100%25' stop-color='%23006BC7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='40' r='18' fill='%23FFFFFF' opacity='0.9'/%3E%3Cpath d='M20 85 C20 66 35 62 50 62 C65 62 80 66 80 85 Z' fill='%23FFFFFF' opacity='0.9'/%3E%3C/svg%3E";
-          if (nameEl) nameEl.textContent = user.full_name || "Student";
-          if (avatarEl) avatarEl.src = user.avatar_url || defaultAvatarSvg;
+          if (nameEl) nameEl.textContent = fullName;
+          if (avatarEl) avatarEl.src = avatarUrl;
           if (roleEl) roleEl.textContent = user.role || "student";
         }
+
+        // Sync Mobile Header Avatar Trigger
+        const mobileHeaderAvatarImg = document.getElementById("mobileHeaderAvatarImg");
+        if (mobileHeaderAvatarImg) mobileHeaderAvatarImg.src = avatarUrl;
+
+        // Sync Mobile Bottom Nav Avatar
+        const mobileBottomNavAvatar = document.getElementById("mobileBottomNavAvatar");
+        const mobileBottomNavAvatarDefault = document.getElementById("mobileBottomNavAvatarDefault");
+        if (mobileBottomNavAvatar) {
+          mobileBottomNavAvatar.src = avatarUrl;
+          mobileBottomNavAvatar.style.display = "block";
+        }
+        if (mobileBottomNavAvatarDefault) {
+          mobileBottomNavAvatarDefault.style.display = "none";
+        }
+
         const isAdmin = user.role === "admin";
         if (adminTab) {
           adminTab.style.display = isAdmin ? "inline-flex" : "none";
@@ -439,7 +522,29 @@ class OpportunityApp {
         }
         const adminEmailEl = document.getElementById("adminCurrentEmail");
         if (adminEmailEl) {
-          adminEmailEl.textContent = user.email || "";
+          adminEmailEl.textContent = email;
+        }
+
+        // Sync Profile Sidebar Drawer Details
+        const drawerAvatar = document.getElementById("drawerUserAvatar");
+        const drawerName = document.getElementById("drawerUserName");
+        const drawerEmail = document.getElementById("drawerUserEmail");
+        const drawerRoleBadge = document.getElementById("drawerUserRoleBadge");
+        const drawerCollege = document.getElementById("drawerCollegeBadge");
+        const drawerAdminItem = document.getElementById("drawerAdminItem");
+
+        if (drawerAvatar) drawerAvatar.src = avatarUrl;
+        if (drawerName) drawerName.textContent = fullName;
+        if (drawerEmail) drawerEmail.textContent = email;
+        if (drawerRoleBadge) {
+          drawerRoleBadge.textContent = isAdmin ? "👑 Enterprise Admin" : "🎓 Verified Student";
+          drawerRoleBadge.className = isAdmin ? "badge-role-tag badge-role-admin" : "badge-role-tag badge-role-student";
+        }
+        if (drawerCollege) {
+          drawerCollege.textContent = user.college_name || "Engineering Scholar";
+        }
+        if (drawerAdminItem) {
+          drawerAdminItem.style.display = isAdmin ? "flex" : "none";
         }
 
         if (landingView) landingView.style.display = "none";
@@ -461,6 +566,25 @@ class OpportunityApp {
         if (btnNavbarAdmin) btnNavbarAdmin.style.display = "none";
         const btnDropdownAdmin = document.getElementById("btnDropdownAdminConsole");
         if (btnDropdownAdmin) btnDropdownAdmin.style.display = "none";
+
+        const mobileBottomNavAvatar = document.getElementById("mobileBottomNavAvatar");
+        const mobileBottomNavAvatarDefault = document.getElementById("mobileBottomNavAvatarDefault");
+        if (mobileBottomNavAvatar) mobileBottomNavAvatar.style.display = "none";
+        if (mobileBottomNavAvatarDefault) mobileBottomNavAvatarDefault.style.display = "block";
+
+        const drawerName = document.getElementById("drawerUserName");
+        const drawerEmail = document.getElementById("drawerUserEmail");
+        const drawerRoleBadge = document.getElementById("drawerUserRoleBadge");
+        const drawerCollege = document.getElementById("drawerCollegeBadge");
+        const drawerAdminItem = document.getElementById("drawerAdminItem");
+        if (drawerName) drawerName.textContent = "Guest Visitor";
+        if (drawerEmail) drawerEmail.textContent = "Sign in with Google";
+        if (drawerRoleBadge) {
+          drawerRoleBadge.textContent = "Guest";
+          drawerRoleBadge.className = "badge-role-tag";
+        }
+        if (drawerCollege) drawerCollege.textContent = "Visitor";
+        if (drawerAdminItem) drawerAdminItem.style.display = "none";
 
         if (landingView) landingView.style.display = "block";
         if (appWorkspace) appWorkspace.style.display = "none";
@@ -511,6 +635,11 @@ class OpportunityApp {
     // Synchronize Mobile Bottom Nav UI
     document.querySelectorAll(".mobile-nav-item").forEach(tab => {
       tab.classList.toggle("active", tab.dataset.tab === tabId);
+    });
+
+    // Synchronize Profile Drawer Nav Items (Jakob's Law)
+    document.querySelectorAll("[data-drawer-tab]").forEach(tab => {
+      tab.classList.toggle("active", tab.dataset.drawerTab === tabId);
     });
 
     // Show/Hide View Panels
@@ -784,6 +913,12 @@ class OpportunityApp {
       mobileBadge.textContent = this.bookmarks.size;
       mobileBadge.style.display = this.bookmarks.size > 0 ? "flex" : "none";
     }
+
+    const drawerBadge = document.getElementById("drawerBookmarksCount");
+    if (drawerBadge) drawerBadge.textContent = this.bookmarks.size;
+
+    const drawerStatSaved = document.getElementById("drawerStatSavedCount");
+    if (drawerStatSaved) drawerStatSaved.textContent = this.bookmarks.size;
   }
 
   async toggleBookmark(oppId, btnEl) {
@@ -1219,6 +1354,33 @@ class OpportunityApp {
     }
   }
 
+  // ── Mobile Profile Sidebar Drawer (Jakob's Law Standard) ───────────────────
+  openProfileDrawer() {
+    const drawer = document.getElementById("profileDrawer");
+    const backdrop = document.getElementById("profileDrawerBackdrop");
+    if (drawer) drawer.classList.add("open");
+    if (backdrop) {
+      backdrop.style.display = "block";
+      requestAnimationFrame(() => backdrop.classList.add("open"));
+    }
+    document.body.style.overflow = "hidden";
+  }
+
+  closeProfileDrawer() {
+    const drawer = document.getElementById("profileDrawer");
+    const backdrop = document.getElementById("profileDrawerBackdrop");
+    if (drawer) drawer.classList.remove("open");
+    if (backdrop) {
+      backdrop.classList.remove("open");
+      setTimeout(() => {
+        if (!drawer || !drawer.classList.contains("open")) {
+          if (backdrop) backdrop.style.display = "none";
+        }
+      }, 250);
+    }
+    document.body.style.overflow = "";
+  }
+
   // ── Modals & Toasts ───────────────────────────────────────────────────────
   openModal(modalId) {
     const el = document.getElementById(modalId);
@@ -1226,6 +1388,7 @@ class OpportunityApp {
   }
 
   closeAllModals() {
+    this.closeProfileDrawer();
     document.querySelectorAll(".modal-backdrop").forEach(m => m.classList.remove("open"));
   }
 
