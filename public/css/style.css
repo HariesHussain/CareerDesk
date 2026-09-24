@@ -2716,12 +2716,20 @@ input:focus, select:focus, textarea:focus {
 }
 
 @media (max-width: 768px) {
-  /* Mobile Bottom Navigation activated with iOS safe-area support */
+  /* Mobile Bottom Navigation strictly hidden on landing page / guest view */
   body {
-    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 0;
   }
   .mobile-bottom-nav {
-    display: flex;
+    display: none !important;
+  }
+
+  /* Only show mobile bottom navigation when user is authenticated inside workspace */
+  body.is-authenticated {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
+  body.is-authenticated .mobile-bottom-nav {
+    display: flex !important;
     height: calc(58px + env(safe-area-inset-bottom, 0px));
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }

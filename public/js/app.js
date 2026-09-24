@@ -10,7 +10,6 @@ class OpportunityApp {
     this.currentTab = "explore";
     this.opportunities = [];
     this.bookmarks = new Set();
-    this.applications = [];
     this.currentFilters = {
       search: "",
       type: "all",
@@ -31,6 +30,7 @@ class OpportunityApp {
     this.setupAuthSync();
     this.setupScrollAnimations();
     this.initLandingScrollSpy();
+    await this.loadBookmarks();
     
     if (window.adminConsole) {
       window.adminConsole.init();
@@ -450,14 +450,7 @@ class OpportunityApp {
       if (e.key === "Escape") this.closeAllModals();
     });
 
-    // Community Submission Form
-    const submitForm = document.getElementById("opportunitySubmitForm");
-    if (submitForm) {
-      submitForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        await this.handleOpportunitySubmission(new FormData(submitForm));
-      });
-    }
+
 
     // Enterprise Admin Console Navigation Triggers
     const btnNavbarAdmin = document.getElementById("btnNavbarAdminConsole");
@@ -601,7 +594,6 @@ class OpportunityApp {
         if (appWorkspace) appWorkspace.style.display = "block";
 
         this.loadBookmarks();
-        this.loadApplications();
         this.switchTab("explore");
       } else {
         // Guest: Show Public Landing, Hide App Workspace
@@ -639,8 +631,7 @@ class OpportunityApp {
         if (landingView) landingView.style.display = "block";
         if (appWorkspace) appWorkspace.style.display = "none";
 
-        this.bookmarks.clear();
-        this.applications = [];
+        this.loadBookmarks();
       }
     });
   }
@@ -660,9 +651,7 @@ class OpportunityApp {
     if (activeLabel) {
       const labels = {
         explore: "Explore Opportunities",
-        pipeline: "Application Tracker (Kanban)",
         bookmarks: "Saved Bookmarks",
-        submit: "Post a Student Opportunity",
         admin: "👑 Enterprise Admin Console"
       };
       activeLabel.textContent = labels[tabId] || "Workspace Terminal";
@@ -699,7 +688,6 @@ class OpportunityApp {
 
     // Refresh tab-specific data
     if (tabId === "explore") this.loadExploreData();
-    if (tabId === "pipeline") this.loadApplications();
     if (tabId === "bookmarks") this.renderBookmarks();
     if (tabId === "admin") {
       if (window.adminConsole) {
@@ -832,7 +820,7 @@ class OpportunityApp {
   }
 
   renderOpportunityCard(opp) {
-    const isBookmarked = this.bookmarks.has(opp.id);
+    const isBookmarked = this.bookmarks.has(Number(opp.id)) || this.bookmarks.has(String(opp.id));
     const deadlineVal = opp.deadline_utc || opp.deadline;
     const deadlineCountdown = this.calculateCountdown(deadlineVal);
     const organizer = opp.organiser || opp.organizer || "Verified Organizer";
@@ -941,75 +929,101 @@ class OpportunityApp {
     `;
   }
 
-  // ── Bookmarking ───────────────────────────────────────────────────────────
+  // ── Bookmarking (Local-first & Cloud-synchronized) ───────────────────────
   async loadBookmarks() {
+    // 1. Immediately restore cached bookmarks from localStorage for instant render
+    try {
+      const cached = localStorage.getItem("cd_saved_bookmarks");
+      if (cached) {
+        const ids = JSON.parse(cached);
+        if (Array.isArray(ids)) {
+          this.bookmarks = new Set(ids.map(Number));
+          this.updateBookmarkBadges();
+        }
+      }
+    } catch (e) {
+      console.warn("Could not read local bookmarks:", e);
+    }
+
     if (!window.authManager.isAuthenticated()) return;
 
+    // 2. Fetch and sync from backend API when authenticated
     try {
       const data = await window.ApiClient.getBookmarks();
-      this.bookmarks = new Set((data.bookmarks || []).map(b => b.opportunity_id));
+      const serverIds = (data.bookmarks || [])
+        .map(b => b.opportunity_id || b.opp_opportunities?.id)
+        .filter(Boolean)
+        .map(Number);
+
+      const merged = new Set([...this.bookmarks, ...serverIds]);
+      this.bookmarks = merged;
+      try {
+        localStorage.setItem("cd_saved_bookmarks", JSON.stringify(Array.from(this.bookmarks)));
+      } catch (e) {}
       this.updateBookmarkBadges();
+
+      // Sync local bookmarks to server if missing
+      for (const id of this.bookmarks) {
+        if (!serverIds.includes(id)) {
+          window.ApiClient.addBookmark(id).catch(() => {});
+        }
+      }
     } catch (err) {
-      console.warn("Could not load bookmarks:", err);
+      console.warn("Could not sync bookmarks from server:", err);
     }
   }
 
   updateBookmarkBadges() {
+    const count = this.bookmarks.size;
     const badge = document.getElementById("savedCountBadge");
-    if (badge) badge.textContent = this.bookmarks.size;
+    if (badge) badge.textContent = count;
 
     const mobileBadge = document.getElementById("mobileSavedBadge");
     if (mobileBadge) {
-      mobileBadge.textContent = this.bookmarks.size;
-      mobileBadge.style.display = this.bookmarks.size > 0 ? "flex" : "none";
+      mobileBadge.textContent = count;
+      mobileBadge.style.display = count > 0 ? "flex" : "none";
     }
 
     const drawerBadge = document.getElementById("drawerBookmarksCount");
-    if (drawerBadge) drawerBadge.textContent = this.bookmarks.size;
+    if (drawerBadge) drawerBadge.textContent = count;
 
     const drawerStatSaved = document.getElementById("drawerStatSavedCount");
-    if (drawerStatSaved) drawerStatSaved.textContent = this.bookmarks.size;
+    if (drawerStatSaved) drawerStatSaved.textContent = count;
   }
 
   async toggleBookmark(oppId, btnEl) {
-    if (!window.authManager.isAuthenticated()) {
-      this.showToast("Please sign in with Google to save bookmarks", "info");
-      window.authManager.signInWithGoogle();
-      return;
-    }
-
+    oppId = Number(oppId);
     const isCurrentlyBookmarked = this.bookmarks.has(oppId);
 
-    // Optimistic UI update
+    // 1. Instant optimistic UI update
     if (isCurrentlyBookmarked) {
       this.bookmarks.delete(oppId);
-      btnEl.classList.remove("bookmarked");
+      if (btnEl) btnEl.classList.remove("bookmarked");
       this.showToast("Removed from bookmarks", "info");
     } else {
       this.bookmarks.add(oppId);
-      btnEl.classList.add("bookmarked");
+      if (btnEl) btnEl.classList.add("bookmarked");
       this.showToast("Saved to bookmarks!", "success");
     }
 
+    // Persist immediately in localStorage
+    try {
+      localStorage.setItem("cd_saved_bookmarks", JSON.stringify(Array.from(this.bookmarks)));
+    } catch (e) {}
+
     this.updateBookmarkBadges();
 
-    try {
-      if (isCurrentlyBookmarked) {
-        await window.ApiClient.removeBookmark(oppId);
-      } else {
-        await window.ApiClient.addBookmark(oppId);
+    // 2. If user is authenticated, sync to cloud API
+    if (window.authManager.isAuthenticated()) {
+      try {
+        if (isCurrentlyBookmarked) {
+          await window.ApiClient.removeBookmark(oppId);
+        } else {
+          await window.ApiClient.addBookmark(oppId);
+        }
+      } catch (err) {
+        console.warn("Cloud sync error for bookmark:", err);
       }
-    } catch (err) {
-      // Rollback on error
-      if (isCurrentlyBookmarked) {
-        this.bookmarks.add(oppId);
-        btnEl.classList.add("bookmarked");
-      } else {
-        this.bookmarks.delete(oppId);
-        btnEl.classList.remove("bookmarked");
-      }
-      this.updateBookmarkBadges();
-      this.showToast("Failed to update bookmark. Please try again.", "error");
     }
   }
 
@@ -1017,112 +1031,62 @@ class OpportunityApp {
     const grid = document.getElementById("bookmarksGrid");
     if (!grid) return;
 
-    if (!window.authManager.isAuthenticated()) {
+    grid.innerHTML = `
+      <div style="text-align: center; padding: 48px; grid-column: 1 / -1;">
+        <p style="color: var(--text-muted);">Loading your saved opportunities...</p>
+      </div>
+    `;
+
+    let bookmarkedOpps = [];
+
+    // If authenticated, fetch from backend
+    if (window.authManager.isAuthenticated()) {
+      try {
+        const data = await window.ApiClient.getBookmarks();
+        bookmarkedOpps = (data.bookmarks || []).map(b => b.opp_opportunities).filter(Boolean);
+        const serverIds = bookmarkedOpps.map(o => Number(o.id));
+        this.bookmarks = new Set([...this.bookmarks, ...serverIds]);
+        try {
+          localStorage.setItem("cd_saved_bookmarks", JSON.stringify(Array.from(this.bookmarks)));
+        } catch (e) {}
+        this.updateBookmarkBadges();
+      } catch (err) {
+        console.warn("Error fetching bookmarks from server:", err);
+      }
+    }
+
+    // Fallback: match from already-loaded opportunities
+    if (bookmarkedOpps.length === 0 && this.bookmarks.size > 0) {
+      bookmarkedOpps = this.opportunities.filter(opp => this.bookmarks.has(Number(opp.id)));
+    }
+
+    // If still empty but we have bookmark IDs and this.opportunities is empty, fetch opportunities
+    if (bookmarkedOpps.length === 0 && this.bookmarks.size > 0 && this.opportunities.length === 0) {
+      try {
+        const data = await window.ApiClient.getOpportunities({ limit: 100 });
+        if (data && data.opportunities) {
+          this.opportunities = data.opportunities;
+          bookmarkedOpps = this.opportunities.filter(opp => this.bookmarks.has(Number(opp.id)));
+        }
+      } catch (e) {}
+    }
+
+    if (bookmarkedOpps.length === 0) {
       grid.innerHTML = `
         <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Sign In Required</h3>
-          <p style="color: var(--text-secondary); margin-bottom: 16px;">Sign in with Google to view and sync your saved bookmarks across devices.</p>
-          <button class="btn-signup-google" style="margin: 0 auto; border: 1px solid #D1D5DB;" onclick="window.authManager.signInWithGoogle()">
-            Continue with Google
-          </button>
+          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">No Bookmarks Saved Yet</h3>
+          <p style="color: var(--text-muted); margin-bottom: 16px;">Explore opportunities, contests &amp; hackathons and click the bookmark button to save them here.</p>
+          <button class="btn-apply-action" onclick="window.app.switchTab('explore')">Explore Opportunities</button>
         </div>
       `;
       return;
     }
 
-    try {
-      const data = await window.ApiClient.getBookmarks();
-      const bookmarkedOpps = (data.bookmarks || []).map(b => b.opp_opportunities).filter(Boolean);
-
-      if (bookmarkedOpps.length === 0) {
-        grid.innerHTML = `
-          <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
-            <h3 style="font-size: 1.2rem; margin-bottom: 8px;">No Bookmarks Saved Yet</h3>
-            <p style="color: var(--text-muted); margin-bottom: 16px;">Explore live hackathons and click the bookmark button to save them here.</p>
-            <button class="btn-apply-action" onclick="window.app.switchTab('explore')">Explore Opportunities</button>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = bookmarkedOpps.map(opp => this.renderOpportunityCard(opp)).join("");
-    } catch (err) {
-      grid.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">Error loading bookmarks.</div>`;
-    }
-  }
-
-  // ── Application Pipeline (Kanban) ─────────────────────────────────────────
-  async loadApplications() {
-    if (!window.authManager.isAuthenticated()) {
-      return;
-    }
-
-    try {
-      const data = await window.ApiClient.getApplications();
-      this.applications = data.applications || [];
-      this.renderKanban();
-    } catch (err) {
-      console.error("Could not load applications:", err);
-    }
-  }
-
-  renderKanban() {
-    const stages = ["saved", "applied", "in_review", "selected"];
-
-    stages.forEach(stage => {
-      const listEl = document.getElementById(`kanbanList_${stage}`);
-      const countEl = document.getElementById(`kanbanCount_${stage}`);
-      if (!listEl) return;
-
-      const items = this.applications.filter(app => app.status === stage);
-      if (countEl) countEl.textContent = items.length;
-
-      if (items.length === 0) {
-        listEl.innerHTML = `<div style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.8rem;">No items in this stage</div>`;
-        return;
-      }
-
-      listEl.innerHTML = items.map(item => {
-        const opp = item.opp_opportunities || {};
-        return `
-          <div class="kanban-card">
-            <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; color: var(--text-primary);">${this.escapeHtml(opp.title || "Opportunity")}</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px;">${this.escapeHtml(opp.organizer || "")}</div>
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-              <span style="font-size: 0.75rem; color: var(--text-secondary);">${this.formatDate(opp.deadline)}</span>
-              <select style="font-size: 0.78rem; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: #FFFFFF;" onchange="window.app.changeApplicationStatus(${opp.id}, this.value)">
-                <option value="saved" ${stage === 'saved' ? 'selected' : ''}>Saved</option>
-                <option value="applied" ${stage === 'applied' ? 'selected' : ''}>Applied</option>
-                <option value="in_review" ${stage === 'in_review' ? 'selected' : ''}>In Review</option>
-                <option value="selected" ${stage === 'selected' ? 'selected' : ''}>Selected</option>
-              </select>
-            </div>
-          </div>
-        `;
-      }).join("");
-    });
-  }
-
-  async changeApplicationStatus(opportunityId, newStatus) {
-    try {
-      await window.ApiClient.updateApplication(opportunityId, newStatus);
-      this.showToast(`Application moved to ${newStatus.replace('_', ' ')}`, "success");
-      await this.loadApplications();
-    } catch (err) {
-      this.showToast("Failed to update status", "error");
-    }
+    grid.innerHTML = bookmarkedOpps.map(opp => this.renderOpportunityCard(opp)).join("");
   }
 
   // ── Apply & Details ───────────────────────────────────────────────────────
   async applyToOpportunity(oppId, applyUrl) {
-    if (window.authManager.isAuthenticated()) {
-      try {
-        await window.ApiClient.updateApplication(oppId, "applied");
-      } catch (e) {
-        // Continue even if recording fails
-      }
-    }
-
     if (applyUrl && applyUrl.startsWith("http")) {
       window.open(applyUrl, "_blank", "noopener,noreferrer");
     } else {
@@ -1185,34 +1149,7 @@ class OpportunityApp {
     }
   }
 
-  // ── Community Submissions ─────────────────────────────────────────────────
-  async handleOpportunitySubmission(formData) {
-    if (!formData.get("consent")) {
-      this.showToast("Please certify event authenticity and accept the Terms & Privacy Policy.", "error");
-      return;
-    }
 
-    const payload = {
-      title: formData.get("title"),
-      organizer: formData.get("organizer"),
-      opportunity_type: formData.get("opportunity_type"),
-      mode: formData.get("mode"),
-      apply_url: formData.get("apply_url"),
-      deadline: formData.get("deadline"),
-      prize_pool: formData.get("prize_pool"),
-      description: formData.get("description"),
-      eligibility: formData.get("eligibility")
-    };
-
-    try {
-      await window.ApiClient.submitOpportunity(payload);
-      this.showToast("Opportunity submitted! It will appear once approved by admin.", "success");
-      document.getElementById("opportunitySubmitForm")?.reset();
-      this.switchTab("explore");
-    } catch (err) {
-      this.showToast(err.message || "Failed to submit opportunity", "error");
-    }
-  }
 
   // ── Admin Queue ───────────────────────────────────────────────────────────
   async loadAdminSubmissions() {

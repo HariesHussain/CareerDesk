@@ -31,12 +31,8 @@ def list_bookmarks():
         result = (
             supabase.table("opp_bookmarks")
             .select(
-                "id, created_at, "
-                "opp_opportunities("
-                "id, title, organiser, category, kind, platform, "
-                "official_url, deadline_utc, mode, city, "
-                "prize_label, prize_inr, team_size, fee, is_expired"
-                ")"
+                "id, opportunity_id, created_at, "
+                "opp_opportunities(*)"
             )
             .eq("user_id", g.user_id)
             .order("created_at", desc=True)
@@ -59,7 +55,7 @@ def create_bookmark():
     """
     Bookmark an opportunity.
     Body: { "opportunity_id": 123 }
-    Idempotent: returns 409 if already bookmarked.
+    Idempotent: returns 200 if already bookmarked.
     """
     data = request.get_json(silent=True)
     if not data:
@@ -77,29 +73,31 @@ def create_bookmark():
     try:
         supabase = get_service_client()
 
-        # Verify opportunity exists and is approved
-        opp = (
-            supabase.table("opp_opportunities")
-            .select("id")
-            .eq("id", opportunity_id)
-            .eq("status", "approved")
-            .execute()
-        )
-
-        if not opp.data:
-            return jsonify({"error": "Opportunity not found."}), 404
-
-        # Check if already bookmarked
+        # Check if already bookmarked (idempotent success)
         existing = (
             supabase.table("opp_bookmarks")
-            .select("id")
+            .select("id, opportunity_id")
             .eq("user_id", g.user_id)
             .eq("opportunity_id", opportunity_id)
             .execute()
         )
 
         if existing.data:
-            return jsonify({"error": "Already bookmarked."}), 409
+            return jsonify({
+                "message": "Already bookmarked.",
+                "bookmark": existing.data[0],
+            }), 200
+
+        # Verify opportunity exists in database
+        opp = (
+            supabase.table("opp_opportunities")
+            .select("id")
+            .eq("id", opportunity_id)
+            .execute()
+        )
+
+        if not opp.data:
+            return jsonify({"error": "Opportunity not found."}), 404
 
         # Create bookmark
         result = (
@@ -113,7 +111,7 @@ def create_bookmark():
 
         return jsonify({
             "message": "Bookmarked successfully.",
-            "bookmark": result.data[0] if result.data else None,
+            "bookmark": result.data[0] if result.data else {"opportunity_id": opportunity_id},
         }), 201
 
     except Exception as e:
@@ -128,18 +126,9 @@ def delete_bookmark(opportunity_id: int):
     try:
         supabase = get_service_client()
 
-        result = (
-            supabase.table("opp_bookmarks")
-            .delete()
-            .eq("user_id", g.user_id)
-            .eq("opportunity_id", opportunity_id)
-            .execute()
-        )
+        supabase.table("opp_bookmarks").delete().eq("user_id", g.user_id).eq("opportunity_id", opportunity_id).execute()
 
-        if not result.data:
-            return jsonify({"error": "Bookmark not found."}), 404
-
-        return jsonify({"message": "Bookmark removed."})
+        return jsonify({"message": "Bookmark removed."}), 200
 
     except Exception as e:
         logger.error("Error deleting bookmark: %s", str(e)[:200])

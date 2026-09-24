@@ -31,7 +31,7 @@
   <!-- Design System & Google Fonts -->
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body class="is-guest">
 
   <!-- ── Global Broadcast Announcement Banner (Managed by Admin) ──────────── -->
   <div id="globalAnnouncementBanner" class="site-announcement-container" style="display: none;"></div>
@@ -74,31 +74,12 @@
           Explore All
         </div>
 
-        <div class="nav-tab-item" data-tab="pipeline">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="20" x2="18" y2="10"></line>
-            <line x1="12" y1="20" x2="12" y2="4"></line>
-            <line x1="6" y1="20" x2="6" y2="14"></line>
-          </svg>
-          My Tracker
-        </div>
-
         <div class="nav-tab-item" data-tab="bookmarks">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
           </svg>
           Saved
           <span class="nav-badge-count" id="savedCountBadge">0</span>
-        </div>
-
-        <div class="nav-tab-item" data-tab="submit">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="16"></line>
-            <line x1="8" y1="12" x2="16" y2="12"></line>
-          </svg>
-          Post Event
-          <span class="nav-badge-pill">Free</span>
         </div>
 
         <div class="nav-tab-item" data-tab="admin" id="adminNavTab" style="display: none;">
@@ -155,14 +136,7 @@
               </svg>
               My Profile &amp; Details
             </a>
-            <a href="#" class="dropdown-item" role="menuitem" onclick="window.app.switchTab('pipeline')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <line x1="18" y1="20" x2="18" y2="10"></line>
-                <line x1="12" y1="20" x2="12" y2="4"></line>
-                <line x1="6" y1="20" x2="6" y2="14"></line>
-              </svg>
-              My Application Tracker
-            </a>
+
             <a href="#" class="dropdown-item" role="menuitem" onclick="window.app.switchTab('bookmarks')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -715,65 +689,7 @@
       </div>
     </div>
 
-    <!-- View 2: Application Tracker (Kanban Board) -->
-    <div id="pipelineView" class="view-panel">
-      <div class="section-header-row">
-        <h2 class="section-title">Application Status Tracker</h2>
-        <p class="section-subtitle">Track your registered hackathons, coding contests, and competitions through every milestone.</p>
-      </div>
-
-      <div class="kanban-board-grid">
-        <!-- Col 1: Saved -->
-        <div class="kanban-column">
-          <div class="kanban-column-header">
-            <span class="kanban-header-title">
-              <span class="kanban-dot saved"></span>
-              Bookmarked
-            </span>
-            <span class="kanban-header-count" id="kanbanCount_saved">0</span>
-          </div>
-          <div class="kanban-cards-container" id="kanbanList_saved"></div>
-        </div>
-
-        <!-- Col 2: Applied -->
-        <div class="kanban-column">
-          <div class="kanban-column-header">
-            <span class="kanban-header-title">
-              <span class="kanban-dot applied"></span>
-              Applied
-            </span>
-            <span class="kanban-header-count" id="kanbanCount_applied">0</span>
-          </div>
-          <div class="kanban-cards-container" id="kanbanList_applied"></div>
-        </div>
-
-        <!-- Col 3: In Review -->
-        <div class="kanban-column">
-          <div class="kanban-column-header">
-            <span class="kanban-header-title">
-              <span class="kanban-dot in_review"></span>
-              In Review
-            </span>
-            <span class="kanban-header-count" id="kanbanCount_in_review">0</span>
-          </div>
-          <div class="kanban-cards-container" id="kanbanList_in_review"></div>
-        </div>
-
-        <!-- Col 4: Selected / Won -->
-        <div class="kanban-column">
-          <div class="kanban-column-header">
-            <span class="kanban-header-title">
-              <span class="kanban-dot selected"></span>
-              Selected / Won
-            </span>
-            <span class="kanban-header-count" id="kanbanCount_selected">0</span>
-          </div>
-          <div class="kanban-cards-container" id="kanbanList_selected"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- View 3: Saved Bookmarks -->
+    <!-- View 2: Saved Bookmarks -->
     <div id="bookmarksView" class="view-panel">
       <div class="section-header-row">
         <h2 class="section-title">Saved Opportunities</h2>
@@ -781,89 +697,6 @@
       </div>
       <div id="bookmarksGrid" class="opportunities-grid">
         <!-- Injected via app.js -->
-      </div>
-    </div>
-
-    <!-- View 4: Community Submission Form -->
-    <div id="submitView" class="view-panel">
-      <div class="form-card-container">
-        <div style="margin-bottom: 24px; text-align: center;">
-          <h2 class="section-title">Post a Student Opportunity</h2>
-          <p class="section-subtitle">Organizing a hackathon, contest, or fellowship? Share it directly with 50,000+ Indian tech students. 100% free.</p>
-        </div>
-
-        <form id="opportunitySubmitForm">
-          <div class="form-group">
-            <label class="form-label" for="submitTitle">Event / Opportunity Title *</label>
-            <input type="text" id="submitTitle" name="title" class="form-input" placeholder="e.g. Smart City Innovation Hackathon 2026" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="submitOrganizer">Organizer / Institution *</label>
-            <input type="text" id="submitOrganizer" name="organizer" class="form-input" placeholder="e.g. IIT Bombay / Google Developer Group" required>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-            <div class="form-group">
-              <label class="form-label">Category *</label>
-              <select name="opportunity_type" class="form-select" required>
-                <option value="hackathon">Hackathon</option>
-                <option value="contest">Coding Contest</option>
-                <option value="competition">Competition</option>
-                <option value="innovation">Design &amp; Innovation</option>
-                <option value="case_study">Case Study / Quiz</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Event Mode *</label>
-              <select name="mode" class="form-select" required>
-                <option value="online">Online / Remote</option>
-                <option value="in_person">In-Person</option>
-                <option value="hybrid">Hybrid</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-            <div class="form-group">
-              <label class="form-label">Registration Deadline *</label>
-              <input type="date" name="deadline" class="form-input" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Prize Pool / Perks</label>
-              <input type="text" name="prize_pool" class="form-input" placeholder="e.g. ₹5,00,000 + Tech Swag &amp; Goodies">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Official Application / Registration URL *</label>
-            <input type="url" name="apply_url" class="form-input" placeholder="https://..." required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Brief Description *</label>
-            <textarea name="description" class="form-textarea" rows="4" placeholder="Overview of themes, problem statements, and key rules..." required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="submitEligibility">Eligibility Criteria</label>
-            <input type="text" id="submitEligibility" name="eligibility" class="form-input" placeholder="e.g. Open to all engineering students across India">
-          </div>
-
-          <!-- Form Consent Checkbox (DPDP & Consumer Protection) -->
-          <div class="form-group" style="margin: 20px 0;">
-            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-              <input type="checkbox" id="submissionConsent" name="consent" required style="margin-top: 4px; accent-color: var(--brand-primary); width: 16px; height: 16px;">
-              <span style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5;">
-                I certify that this event is authentic, non-fraudulent, and free of intellectual property infringement. I accept the <a href="/terms.html" target="_blank" style="color: var(--brand-primary); text-decoration: underline;">Terms &amp; Conditions</a> and <a href="/privacy.html" target="_blank" style="color: var(--brand-primary); text-decoration: underline;">Privacy Policy</a>.
-              </span>
-            </label>
-          </div>
-
-          <button type="submit" class="btn-apply-action" style="width: 100%; justify-content: center; height: 48px; font-size: 1rem;">
-            Submit Opportunity for Review
-          </button>
-        </form>
       </div>
     </div>
 
@@ -1508,21 +1341,10 @@
           <span class="drawer-nav-badge">914+</span>
         </button>
 
-        <button class="drawer-nav-link" data-drawer-tab="pipeline">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-          <span>Application Tracker (Kanban)</span>
-        </button>
-
         <button class="drawer-nav-link" data-drawer-tab="bookmarks">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
           <span>Saved Bookmarks</span>
           <span class="drawer-nav-badge" id="drawerBookmarksCount">0</span>
-        </button>
-
-        <button class="drawer-nav-link" data-drawer-tab="submit">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-          <span>Post an Opportunity</span>
-          <span class="drawer-nav-pill-free">Free</span>
         </button>
 
         <button class="drawer-nav-link drawer-admin-link" id="drawerAdminItem" data-drawer-tab="admin" style="display: none;">
@@ -1582,30 +1404,12 @@
       <span>Explore</span>
     </button>
 
-    <button class="mobile-nav-item" data-tab="pipeline" aria-label="Application Tracker">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <line x1="18" y1="20" x2="18" y2="10"></line>
-        <line x1="12" y1="20" x2="12" y2="4"></line>
-        <line x1="6" y1="20" x2="6" y2="14"></line>
-      </svg>
-      <span>Tracker</span>
-    </button>
-
     <button class="mobile-nav-item" data-tab="bookmarks" aria-label="Saved Bookmarks">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
       </svg>
       <span class="mobile-nav-badge" id="mobileSavedBadge" style="display: none;">0</span>
       <span>Saved</span>
-    </button>
-
-    <button class="mobile-nav-item" data-tab="submit" aria-label="Submit Opportunity">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="16"></line>
-        <line x1="8" y1="12" x2="16" y2="12"></line>
-      </svg>
-      <span>Submit</span>
     </button>
 
     <button class="mobile-nav-item" id="mobileNavProfileBtn" aria-label="Profile and Settings">
