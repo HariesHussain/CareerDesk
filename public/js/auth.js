@@ -40,8 +40,8 @@ class AuthManager {
         await this.fetchBackendProfile();
       }
 
-      // Listen for auth state changes
-      this.client.auth.onAuthStateChange(async (event, session) => {
+      // Listen for auth state changes with subscription reference
+      const { data: subData } = this.client.auth.onAuthStateChange(async (event, session) => {
         if (session) {
           this.session = session;
           this.user = session.user;
@@ -53,12 +53,60 @@ class AuthManager {
         }
         this.notifyListeners();
       });
+      this.authSubscription = subData?.subscription || null;
 
     } catch (err) {
-      // Graceful fallback for offline / disconnected states
+      if (window.AppLogger) {
+        window.AppLogger.error(err, { operation: "auth_init" });
+      }
     } finally {
       this.isReady = true;
     }
+  }
+
+  cleanup() {
+    if (this.authSubscription && typeof this.authSubscription.unsubscribe === "function") {
+      this.authSubscription.unsubscribe();
+      this.authSubscription = null;
+    }
+  }
+
+  /**
+   * Translates Firebase/Supabase auth error codes to friendly user-safe text
+   */
+  translateAuthError(error) {
+    if (!error) return "";
+    const msg = error.message || String(error);
+    if (msg.includes("popup-closed-by-user") || msg.includes("access_denied") || msg.includes("User cancelled")) {
+      return ""; // Silently ignore deliberate user dismissal
+    }
+    if (msg.includes("wrong-password") || msg.includes("invalid_grant")) {
+      return "Incorrect credentials. Please verify your details.";
+    }
+    if (msg.includes("user-not-found")) {
+      return "No account found with this email.";
+    }
+    if (msg.includes("email-already-in-use") || msg.includes("already registered")) {
+      return "An account with this email already exists.";
+    }
+    if (msg.includes("too-many-requests") || msg.includes("rate limit")) {
+      return "Too many sign-in attempts. Please try again in a few minutes.";
+    }
+    if (msg.includes("network-request-failed") || msg.includes("Failed to fetch")) {
+      return "Network error. Please check your internet connection.";
+    }
+    return "Sign in was unsuccessful. Please try again.";
+  }
+
+  /**
+   * Handle expired JWT session mid-flight
+   */
+  async handleSessionExpired() {
+    if (window.AppLogger) {
+      window.AppLogger.warn("Session expired. Wiping session and notifying user.", { operation: "session_expired" });
+    }
+    await this.signOut();
+    window.dispatchEvent(new CustomEvent("session_expired"));
   }
 
   /**
@@ -76,6 +124,8 @@ class AuthManager {
       if (res.ok) {
         const data = await res.json();
         this.profile = data.user;
+      } else if (res.status === 401) {
+        await this.handleSessionExpired();
       } else if (res.status === 403) {
         const data = await res.json().catch(() => ({}));
         if (data.is_banned) {
@@ -83,8 +133,10 @@ class AuthManager {
           await this.signOut();
         }
       }
-    } catch (_) {
-      // Silent error handling for network hiccups
+    } catch (err) {
+      if (window.AppLogger) {
+        window.AppLogger.error(err, { operation: "fetchBackendProfile" });
+      }
     }
   }
 
@@ -102,19 +154,32 @@ class AuthManager {
     }
 
     if (!this.client) {
-      alert("Authentication service is connecting. Please wait a moment and try again.");
+      window.app?.showToast?.("Authentication service is initializing. Please retry in a few seconds.", "info");
       return;
     }
 
-    const { error } = await this.client.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin
-      }
-    });
+    try {
+      const { error } = await this.client.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
 
-    if (error) {
-      alert("Authentication error: " + error.message);
+      if (error) {
+        const safeMsg = this.translateAuthError(error);
+        if (safeMsg) {
+          window.app?.showToast?.(safeMsg, "error");
+        }
+        if (window.AppLogger) {
+          window.AppLogger.error(error, { operation: "oauth_google" });
+        }
+      }
+    } catch (err) {
+      const safeMsg = this.translateAuthError(err);
+      if (safeMsg) {
+        window.app?.showToast?.(safeMsg, "error");
+      }
     }
   }
 
@@ -157,6 +222,13 @@ class AuthManager {
    */
   isAuthenticated() {
     return !!this.session;
+  }
+
+  /**
+   * Get user ID for context tracking without PII
+   */
+  getUserId() {
+    return this.user?.id || this.profile?.id || null;
   }
 
   /**

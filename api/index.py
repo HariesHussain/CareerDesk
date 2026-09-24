@@ -164,4 +164,5 @@ app = create_app()
 
 # For local development: python api/index.py
 if __name__ == "__main__":
-    app.run(debug=True, port=int(os.environ.get("PORT", 3000)))
+    app.run(debug=False, port=int(os.environ.get("PORT", 3000)), use_reloader=False)
+

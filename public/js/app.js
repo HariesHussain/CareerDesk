@@ -22,9 +22,15 @@ class OpportunityApp {
     this.hasMore = false;
     this.isLoadingMore = false;
     this.searchDebounceTimer = null;
+    this.lastDataFetchTime = Date.now();
   }
 
   async init() {
+    this.setupGlobalErrorBoundaries();
+    this.setupNetworkMonitoring();
+    this.setupSessionExpiredHandler();
+    this.setupFormValidations();
+    this.setupRefocusHandler();
     this.setupEventListeners();
     this.setupCookieConsent();
     this.setupAuthSync();
@@ -38,6 +44,243 @@ class OpportunityApp {
       await this.loadExploreData();
     }
     await this.updateHeroStats();
+  }
+
+  // ── Global Error Boundaries (Never Show Blank Screen) ────────────────────
+  setupGlobalErrorBoundaries() {
+    window.addEventListener("error", (event) => {
+      if (window.AppLogger) {
+        window.AppLogger.error(event.error || event.message, {
+          operation: "window_error",
+          filename: event.filename,
+          lineno: event.lineno
+        });
+      }
+      const rootFallback = document.getElementById("rootCrashFallback");
+      const appWorkspace = document.getElementById("appWorkspace");
+      const landingView = document.getElementById("landingView");
+      // If critical rendering failure occurs on root before view render
+      if (rootFallback && (!appWorkspace || appWorkspace.style.display === "none") && (!landingView || landingView.style.display === "none")) {
+        rootFallback.style.display = "flex";
+      }
+    });
+
+    window.addEventListener("unhandledrejection", (event) => {
+      if (window.AppLogger) {
+        window.AppLogger.error(event.reason || "Unhandled Promise Rejection", {
+          operation: "unhandled_promise_rejection"
+        });
+      }
+    });
+  }
+
+  // ── Network Connectivity & Persistent Offline Banner ─────────────────────
+  setupNetworkMonitoring() {
+    const banner = document.getElementById("offlineNoticeBanner");
+    const updateStatus = (isOnline) => {
+      if (!isOnline) {
+        if (banner) banner.style.display = "block";
+        this.showToast("You're offline. Changes may not be saved.", "warning");
+      } else {
+        if (banner) banner.style.display = "none";
+        this.showToast("You're back online. Re-syncing data...", "success");
+        if (this.currentTab === "explore") {
+          this.loadExploreData();
+        } else if (this.currentTab === "bookmarks") {
+          this.renderBookmarks();
+        }
+        this.updateHeroStats();
+      }
+    };
+
+    window.addEventListener("online", () => updateStatus(true));
+    window.addEventListener("offline", () => updateStatus(false));
+
+    if (!navigator.onLine && banner) {
+      banner.style.display = "block";
+    }
+  }
+
+  // ── Session Expired Recovery Modal ───────────────────────────────────────
+  setupSessionExpiredHandler() {
+    window.addEventListener("session_expired", () => {
+      const modal = document.getElementById("sessionExpiredModal");
+      if (modal) modal.style.display = "flex";
+    });
+
+    const btnLogin = document.getElementById("btnSessionExpiredLogin");
+    if (btnLogin) {
+      btnLogin.addEventListener("click", () => {
+        const modal = document.getElementById("sessionExpiredModal");
+        if (modal) modal.style.display = "none";
+        window.authManager?.signInWithGoogle();
+      });
+    }
+  }
+
+  // ── Form Client-Side Inline Validations ──────────────────────────────────
+  setupFormValidations() {
+    const fullNameInput = document.getElementById("profileFullName");
+    const fullNameErr = document.getElementById("profileFullNameError");
+    const collegeInput = document.getElementById("profileCollegeName");
+    const collegeErr = document.getElementById("profileCollegeNameError");
+    const degreeInput = document.getElementById("profileDegree");
+    const degreeErr = document.getElementById("profileDegreeError");
+
+    const validateFullName = () => {
+      const val = (fullNameInput?.value || "").trim();
+      if (!val) {
+        if (fullNameErr) {
+          fullNameErr.textContent = "Full name is required.";
+          fullNameErr.style.display = "block";
+        }
+        fullNameInput?.classList.add("has-error");
+        return false;
+      }
+      if (val.length < 2) {
+        if (fullNameErr) {
+          fullNameErr.textContent = "Full name must be at least 2 characters.";
+          fullNameErr.style.display = "block";
+        }
+        fullNameInput?.classList.add("has-error");
+        return false;
+      }
+      if (val.length > 200) {
+        if (fullNameErr) {
+          fullNameErr.textContent = "Full name cannot exceed 200 characters.";
+          fullNameErr.style.display = "block";
+        }
+        fullNameInput?.classList.add("has-error");
+        return false;
+      }
+      if (fullNameErr) fullNameErr.style.display = "none";
+      fullNameInput?.classList.remove("has-error");
+      return true;
+    };
+
+    const validateCollege = () => {
+      const val = (collegeInput?.value || "").trim();
+      if (val.length > 300) {
+        if (collegeErr) {
+          collegeErr.textContent = "College name cannot exceed 300 characters.";
+          collegeErr.style.display = "block";
+        }
+        collegeInput?.classList.add("has-error");
+        return false;
+      }
+      if (collegeErr) collegeErr.style.display = "none";
+      collegeInput?.classList.remove("has-error");
+      return true;
+    };
+
+    const validateDegree = () => {
+      const val = (degreeInput?.value || "").trim();
+      if (val.length > 150) {
+        if (degreeErr) {
+          degreeErr.textContent = "Degree cannot exceed 150 characters.";
+          degreeErr.style.display = "block";
+        }
+        degreeInput?.classList.add("has-error");
+        return false;
+      }
+      if (degreeErr) degreeErr.style.display = "none";
+      degreeInput?.classList.remove("has-error");
+      return true;
+    };
+
+    if (fullNameInput) {
+      fullNameInput.addEventListener("blur", validateFullName);
+      fullNameInput.addEventListener("input", () => {
+        if (fullNameInput.classList.contains("has-error")) validateFullName();
+      });
+    }
+
+    if (collegeInput) {
+      collegeInput.addEventListener("blur", validateCollege);
+      collegeInput.addEventListener("input", () => {
+        if (collegeInput.classList.contains("has-error")) validateCollege();
+      });
+    }
+
+    if (degreeInput) {
+      degreeInput.addEventListener("blur", validateDegree);
+      degreeInput.addEventListener("input", () => {
+        if (degreeInput.classList.contains("has-error")) validateDegree();
+      });
+    }
+
+    this.validateProfileForm = () => {
+      const v1 = validateFullName();
+      const v2 = validateCollege();
+      const v3 = validateDegree();
+      return v1 && v2 && v3;
+    };
+  }
+
+  // ── Refocus Stale Data Check (visibilitychange) ──────────────────────────
+  setupRefocusHandler() {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        const now = Date.now();
+        // If user was away for > 3 minutes, quietly refresh aggregates
+        if (now - this.lastDataFetchTime > 3 * 60 * 1000) {
+          this.lastDataFetchTime = now;
+          this.updateHeroStats();
+          if (this.currentTab === "explore" && window.authManager?.isAuthenticated()) {
+            this.loadExploreData();
+          }
+        }
+      }
+    });
+  }
+
+  // ── Destructive Action Confirmation Modal ────────────────────────────────
+  showConfirmModal({ title, message, confirmText = "Confirm", isDanger = true, onConfirm }) {
+    const modal = document.getElementById("confirmationModal");
+    const titleEl = document.getElementById("confirmModalTitle");
+    const msgEl = document.getElementById("confirmModalMessage");
+    const btnProceed = document.getElementById("btnProceedConfirm");
+    const btnCancel = document.getElementById("btnCancelConfirm");
+
+    if (!modal || !btnProceed) {
+      if (confirm(message || "Are you sure?")) {
+        onConfirm?.();
+      }
+      return;
+    }
+
+    if (titleEl) titleEl.textContent = title || "Confirm Action";
+    if (msgEl) msgEl.textContent = message || "Are you sure you want to proceed?";
+    btnProceed.textContent = confirmText;
+    btnProceed.className = isDanger ? "btn-apply-action btn-danger" : "btn-apply-action";
+
+    modal.style.display = "flex";
+
+    const cleanup = () => {
+      modal.style.display = "none";
+      btnProceed.onclick = null;
+      btnCancel.onclick = null;
+      btnProceed.disabled = false;
+    };
+
+    btnCancel.onclick = () => cleanup();
+
+    btnProceed.onclick = async () => {
+      btnProceed.disabled = true;
+      btnProceed.innerHTML = `
+        <div class="spinner" style="width: 14px; height: 14px; border: 2px solid #FFFFFF; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px;"></div>
+        Processing...
+      `;
+      try {
+        if (onConfirm) await onConfirm();
+      } catch (err) {
+        if (window.AppLogger) {
+          window.AppLogger.error(err, { operation: "confirm_modal_action" });
+        }
+      } finally {
+        cleanup();
+      }
+    };
   }
 
   // ── Scroll Reveal Animations ──────────────────────────────────────────────
@@ -285,12 +528,20 @@ class OpportunityApp {
       });
     }
 
-    // Desktop Sign Out (from User Dropdown)
+    // Desktop Sign Out (from User Dropdown with Destructive Confirm Guard)
     const btnLogout = document.getElementById("btnLogout");
     if (btnLogout) {
-      btnLogout.addEventListener("click", async () => {
-        await window.authManager.signOut();
-        this.showToast("Signed out successfully", "info");
+      btnLogout.addEventListener("click", () => {
+        this.showConfirmModal({
+          title: "Sign Out of CareerDesk?",
+          message: "Are you sure you want to sign out? Your saved bookmarks will remain safely attached to your Google account.",
+          confirmText: "Sign Out",
+          isDanger: true,
+          onConfirm: async () => {
+            await window.authManager.signOut();
+            this.showToast("Signed out successfully", "info");
+          }
+        });
       });
     }
 
@@ -358,13 +609,21 @@ class OpportunityApp {
       });
     }
 
-    // Drawer Sign Out Button (Prominent & Dedicated Mobile Logout)
+    // Drawer Sign Out Button (Prominent & Dedicated Mobile Logout with Confirm Guard)
     const btnDrawerLogout = document.getElementById("btnDrawerLogout");
     if (btnDrawerLogout) {
-      btnDrawerLogout.addEventListener("click", async () => {
+      btnDrawerLogout.addEventListener("click", () => {
         this.closeProfileDrawer();
-        await window.authManager.signOut();
-        this.showToast("Signed out successfully", "info");
+        this.showConfirmModal({
+          title: "Sign Out of CareerDesk?",
+          message: "Are you sure you want to sign out? Your saved bookmarks will remain safely attached to your Google account.",
+          confirmText: "Sign Out",
+          isDanger: true,
+          onConfirm: async () => {
+            await window.authManager.signOut();
+            this.showToast("Signed out successfully", "info");
+          }
+        });
       });
     }
 
@@ -596,73 +855,115 @@ class OpportunityApp {
   }
 
   // ── Tab Navigation (Protected Routes & Instant Progress) ─────────────────
+  // ── Route-Level Error Boundaries & Tab Navigation ────────────────────────
+  clearRouteErrorBoundary(tabId) {
+    const view = document.getElementById(`${tabId}View`);
+    if (!view) return;
+    const existing = view.querySelector(".scoped-error-boundary");
+    if (existing) existing.remove();
+  }
+
+  renderRouteErrorBoundary(tabId, error) {
+    const view = document.getElementById(`${tabId}View`);
+    if (!view) return;
+    const safeMsg = window.ApiClient?.handleApiError(error, { operation: `route_error_${tabId}` }) ||
+                    "This section failed to load. Please try again.";
+    view.innerHTML = `
+      <div class="scoped-error-boundary">
+        <div class="scoped-error-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3 class="scoped-error-title">This section failed to load</h3>
+        <p class="scoped-error-desc">${safeMsg}</p>
+        <button type="button" class="btn-apply-action" onclick="window.app.switchTab('${tabId}')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          Try Again
+        </button>
+      </div>
+    `;
+  }
+
   switchTab(tabId) {
-    // Protected Tab Gate: Saved Bookmarks requires authentication
-    if (tabId === "bookmarks" && (!window.authManager || !window.authManager.isAuthenticated())) {
-      this.showToast("Please sign in with Google to view and manage your saved bookmarks.", "info");
-      window.authManager?.signInWithGoogle();
-      return;
+    try {
+      this.clearRouteErrorBoundary(tabId);
+
+      // Protected Tab Gate: Saved Bookmarks requires authentication
+      if (tabId === "bookmarks" && (!window.authManager || !window.authManager.isAuthenticated())) {
+        this.showToast("Please sign in with Google to view and manage your saved bookmarks.", "info");
+        window.authManager?.signInWithGoogle();
+        return;
+      }
+
+      this.startProgressBar();
+      this.currentTab = tabId;
+
+      // Ensure Workspace is active when switching tabs
+      const landingView = document.getElementById("landingView");
+      const appWorkspace = document.getElementById("appWorkspace");
+      if (appWorkspace) appWorkspace.style.display = "block";
+      if (landingView) landingView.style.display = "none";
+
+      // Update Subbar Active Tab Label
+      const activeLabel = document.getElementById("workspaceActiveTabLabel");
+      if (activeLabel) {
+        const labels = {
+          explore: "Explore Opportunities",
+          bookmarks: "Saved Bookmarks"
+        };
+        activeLabel.textContent = labels[tabId] || "Workspace Terminal";
+      }
+
+      // Reset Guide Button Text if toggled
+      const btnToggleLandingGuide = document.getElementById("btnToggleLandingGuide");
+      if (btnToggleLandingGuide) {
+        btnToggleLandingGuide.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Product Guide
+        `;
+      }
+
+      // Synchronize Desktop Nav Tab UI
+      document.querySelectorAll(".nav-tab-item").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.tab === tabId);
+      });
+
+      // Synchronize Mobile Bottom Nav UI
+      document.querySelectorAll(".mobile-nav-item").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.tab === tabId);
+      });
+
+      // Synchronize Profile Drawer Nav Items (Jakob's Law)
+      document.querySelectorAll("[data-drawer-tab]").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.drawerTab === tabId);
+      });
+
+      // Show/Hide View Panels
+      document.querySelectorAll(".view-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === `${tabId}View`);
+      });
+
+      // Refresh tab-specific data
+      if (tabId === "explore") this.loadExploreData();
+      if (tabId === "bookmarks") this.renderBookmarks();
+
+      // Scroll to top of main content smoothly
+      const mainEl = document.getElementById("mainContent");
+      if (mainEl && window.scrollY > 300) {
+        mainEl.scrollIntoView({ behavior: "smooth" });
+      }
+
+      this.finishProgressBar();
+    } catch (err) {
+      if (window.AppLogger) {
+        window.AppLogger.error(err, { operation: `switchTab:${tabId}` });
+      }
+      this.renderRouteErrorBoundary(tabId, err);
+      this.finishProgressBar();
     }
-
-    this.startProgressBar();
-    this.currentTab = tabId;
-
-    // Ensure Workspace is active when switching tabs
-    const landingView = document.getElementById("landingView");
-    const appWorkspace = document.getElementById("appWorkspace");
-    if (appWorkspace) appWorkspace.style.display = "block";
-    if (landingView) landingView.style.display = "none";
-
-    // Update Subbar Active Tab Label
-    const activeLabel = document.getElementById("workspaceActiveTabLabel");
-    if (activeLabel) {
-      const labels = {
-        explore: "Explore Opportunities",
-        bookmarks: "Saved Bookmarks"
-      };
-      activeLabel.textContent = labels[tabId] || "Workspace Terminal";
-    }
-
-    // Reset Guide Button Text if toggled
-    const btnToggleLandingGuide = document.getElementById("btnToggleLandingGuide");
-    if (btnToggleLandingGuide) {
-      btnToggleLandingGuide.innerHTML = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-        Product Guide
-      `;
-    }
-
-    // Synchronize Desktop Nav Tab UI
-    document.querySelectorAll(".nav-tab-item").forEach(tab => {
-      tab.classList.toggle("active", tab.dataset.tab === tabId);
-    });
-
-    // Synchronize Mobile Bottom Nav UI
-    document.querySelectorAll(".mobile-nav-item").forEach(tab => {
-      tab.classList.toggle("active", tab.dataset.tab === tabId);
-    });
-
-    // Synchronize Profile Drawer Nav Items (Jakob's Law)
-    document.querySelectorAll("[data-drawer-tab]").forEach(tab => {
-      tab.classList.toggle("active", tab.dataset.drawerTab === tabId);
-    });
-
-    // Show/Hide View Panels
-    document.querySelectorAll(".view-panel").forEach(panel => {
-      panel.classList.toggle("active", panel.id === `${tabId}View`);
-    });
-
-    // Refresh tab-specific data
-    if (tabId === "explore") this.loadExploreData();
-    if (tabId === "bookmarks") this.renderBookmarks();
-
-    // Scroll to top of main content smoothly
-    const mainEl = document.getElementById("mainContent");
-    if (mainEl && window.scrollY > 300) {
-      mainEl.scrollIntoView({ behavior: "smooth" });
-    }
-
-    this.finishProgressBar();
   }
 
   // ── Reset Search & Filters ───────────────────────────────────────────────
@@ -701,30 +1002,35 @@ class OpportunityApp {
 
     try {
       const data = await window.ApiClient.getOpportunities(this.currentFilters);
+      this.lastDataFetchTime = Date.now();
       if (!data) return; // Request was aborted due to rapid new search query; ignore
       this.opportunities = data.opportunities || [];
       this.totalCount = data.total || this.opportunities.length;
       this.hasMore = !!data.has_more;
       this.renderOpportunities(this.opportunities);
-      this.updatePaginationUI();
     } catch (err) {
+      if (err.name === "AbortError" && !err.isTimeout) return;
+      const safeMsg = window.ApiClient?.handleApiError(err, { operation: "loadExploreData" }) ||
+                      "We encountered an issue retrieving verified listings. Please check your connection or retry.";
       grid.innerHTML = `
-        <div class="designed-empty-state">
-          <div class="empty-state-icon-wrap" style="background: #FEF2F2; color: #EF4444;">
+        <div class="scoped-error-boundary">
+          <div class="scoped-error-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
           </div>
-          <h3 class="empty-state-title">Unable to Load Opportunities</h3>
-          <p class="empty-state-desc">We encountered an issue retrieving verified listings. Please verify your connection or click retry below.</p>
+          <h3 class="scoped-error-title">This section failed to load</h3>
+          <p class="scoped-error-desc">${safeMsg}</p>
           <button type="button" class="btn-apply-action" onclick="window.app.loadExploreData()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-            Retry Connection
+            Try Again
           </button>
         </div>
       `;
+    } finally {
+      this.updatePaginationUI();
     }
   }
 
@@ -790,15 +1096,15 @@ class OpportunityApp {
     }
 
     if (allLoadedIndicator) {
-      allLoadedIndicator.style.display = (!this.hasMore && loaded > 0) ? "flex" : "none";
+      allLoadedIndicator.style.display = (!this.hasMore && loaded > 0) ? "block" : "none";
     }
   }
 
-  renderOpportunities(list) {
+  renderOpportunities(opportunities) {
     const grid = document.getElementById("opportunitiesGrid");
     if (!grid) return;
 
-    if (!list || list.length === 0) {
+    if (!opportunities || opportunities.length === 0) {
       grid.innerHTML = `
         <div class="designed-empty-state">
           <div class="empty-state-icon-wrap">
@@ -807,127 +1113,136 @@ class OpportunityApp {
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </div>
-          <h3 class="empty-state-title">No Opportunities Found</h3>
-          <p class="empty-state-desc">We couldn't find any opportunities matching your active criteria. Try broadening your keywords or resetting filters.</p>
-          <button type="button" class="btn-outline-subtle" onclick="window.app.resetFilters()">
-            Clear Filters &amp; Search
+          <h3 class="empty-state-title">No matching opportunities found</h3>
+          <p class="empty-state-desc">Try clearing your search query or selecting a different category filter.</p>
+          <button type="button" class="btn-apply-action" onclick="window.app.resetFilters()">
+            Clear All Filters
           </button>
         </div>
       `;
       return;
     }
 
-    grid.innerHTML = list.map(opp => this.renderOpportunityCard(opp)).join("");
+    grid.innerHTML = opportunities.map(opp => this.renderOpportunityCard(opp)).filter(Boolean).join("");
   }
 
   renderOpportunityCard(opp) {
-    const isBookmarked = this.bookmarks.has(Number(opp.id)) || this.bookmarks.has(String(opp.id));
-    const deadlineVal = opp.deadline_utc || opp.deadline;
-    const deadlineCountdown = this.calculateCountdown(deadlineVal);
-    const organizer = opp.organiser || opp.organizer || "Verified Organizer";
-    const category = opp.category || opp.opportunity_type || "Event";
-    const applyUrl = opp.official_url || opp.apply_url || "#";
-    const mode = (opp.mode || "online").toLowerCase();
-    
-    let prizeFormatted = opp.prize_label || opp.prize_pool;
-    if (!prizeFormatted && opp.prize_inr) {
-      prizeFormatted = `₹${Number(opp.prize_inr).toLocaleString('en-IN')}`;
-    }
-    if (!prizeFormatted) {
-      prizeFormatted = "Prizes & Certificates";
-    }
+    try {
+      if (!opp || typeof opp !== "object") return "";
 
-    const modeDisplay = mode === "in_person" || mode === "offline" ? "In-Person" : mode === "hybrid" ? "Hybrid" : "Online / Remote";
+      const isBookmarked = this.bookmarks.has(Number(opp.id)) || this.bookmarks.has(String(opp.id));
+      const deadlineVal = opp.deadline_utc || opp.deadline;
+      const deadlineCountdown = this.calculateCountdown(deadlineVal);
+      const organizer = opp.organiser || opp.organizer || "Verified Organizer";
+      const category = opp.category || opp.opportunity_type || "Event";
+      const applyUrl = opp.official_url || opp.apply_url || "#";
+      const mode = (opp.mode || "online").toLowerCase();
+      
+      let prizeFormatted = opp.prize_label || opp.prize_pool;
+      if (!prizeFormatted && opp.prize_inr) {
+        prizeFormatted = `₹${Number(opp.prize_inr).toLocaleString('en-IN')}`;
+      }
+      if (!prizeFormatted) {
+        prizeFormatted = "Prizes & Certificates";
+      }
 
-    return `
-      <div class="opportunity-card" data-id="${opp.id}">
-        <div>
-          <!-- Header Row: Category Badge & Urgency / Hiring tags + Bookmark -->
-          <div class="card-header-row">
-            <div class="card-tags-wrapper">
-              <span class="badge-tag badge-type-blue">${this.escapeHtml(category.toUpperCase())}</span>
-              <span class="badge-tag badge-mode">${this.escapeHtml(modeDisplay)}</span>
-              ${deadlineCountdown && deadlineCountdown.isUrgent ? `
-                <span class="badge-tag badge-urgent">
-                  <span class="dot"></span>
-                  ${deadlineCountdown.text}
-                </span>
-              ` : `
-                <span class="badge-tag badge-actively-hiring">
-                  <span class="dot"></span>
-                  Active
-                </span>
-              `}
+      const modeDisplay = mode === "in_person" || mode === "offline" ? "In-Person" : mode === "hybrid" ? "Hybrid" : "Online / Remote";
+
+      return `
+        <div class="opportunity-card" data-id="${opp.id}">
+          <div>
+            <!-- Header Row: Category Badge & Urgency / Hiring tags + Bookmark -->
+            <div class="card-header-row">
+              <div class="card-tags-wrapper">
+                <span class="badge-tag badge-type-blue">${this.escapeHtml(category.toUpperCase())}</span>
+                <span class="badge-tag badge-mode">${this.escapeHtml(modeDisplay)}</span>
+                ${deadlineCountdown && deadlineCountdown.isUrgent ? `
+                  <span class="badge-tag badge-urgent">
+                    <span class="dot"></span>
+                    ${deadlineCountdown.text}
+                  </span>
+                ` : `
+                  <span class="badge-tag badge-actively-hiring">
+                    <span class="dot"></span>
+                    Active
+                  </span>
+                `}
+              </div>
+              <button class="btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" 
+                      title="${isBookmarked ? 'Remove Bookmark' : 'Bookmark Opportunity'}"
+                      aria-label="${isBookmarked ? 'Remove bookmark for ' + this.escapeHtml(opp.title) : 'Bookmark ' + this.escapeHtml(opp.title)}"
+                      onclick="window.app.toggleBookmark(${opp.id}, this)">
+                <svg viewBox="0 0 24 24">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </button>
             </div>
-            <button class="btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" 
-                    title="${isBookmarked ? 'Remove Bookmark' : 'Bookmark Opportunity'}"
-                    aria-label="${isBookmarked ? 'Remove bookmark for ' + this.escapeHtml(opp.title) : 'Bookmark ' + this.escapeHtml(opp.title)}"
-                    onclick="window.app.toggleBookmark(${opp.id}, this)">
-              <svg viewBox="0 0 24 24">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+
+            <h3 class="card-title">${this.escapeHtml(opp.title)}</h3>
+            <div class="card-organizer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              ${this.escapeHtml(organizer)}
+            </div>
+            <p class="card-description">${this.escapeHtml(opp.description || "No description provided.")}</p>
+
+            <!-- Metadata List with Icons (Internshala <ul> Style) -->
+            <ul class="card-metadata-list">
+              <li class="meta-item-row">
+                <div class="meta-item-left">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  <span>Prize / Stipend</span>
+                </div>
+                <span class="meta-item-val prize">${this.escapeHtml(prizeFormatted)}</span>
+              </li>
+              <li class="meta-item-row">
+                <div class="meta-item-left">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  <span>Deadline</span>
+                </div>
+                <span class="meta-item-val">${this.formatDate(deadlineVal)}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Footer Actions Row -->
+          <div class="card-actions-row">
+            <button class="btn-card-details" 
+                    aria-label="View details for ${this.escapeHtml(opp.title)}"
+                    onclick="window.app.showOpportunityDetails(${opp.id})">
+              View details
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+            <button class="btn-apply-action" 
+                    aria-label="Apply to ${this.escapeHtml(opp.title)} on official portal"
+                    onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(applyUrl)}')">
+              Apply Now
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="7" y1="17" x2="17" y2="7"></line>
+                <polyline points="7 7 17 7 17 17"></polyline>
               </svg>
             </button>
           </div>
-
-          <h3 class="card-title">${this.escapeHtml(opp.title)}</h3>
-          <div class="card-organizer">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            ${this.escapeHtml(organizer)}
-          </div>
-          <p class="card-description">${this.escapeHtml(opp.description || "No description provided.")}</p>
-
-          <!-- Metadata List with Icons (Internshala <ul> Style) -->
-          <ul class="card-metadata-list">
-            <li class="meta-item-row">
-              <div class="meta-item-left">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                <span>Prize / Stipend</span>
-              </div>
-              <span class="meta-item-val prize">${this.escapeHtml(prizeFormatted)}</span>
-            </li>
-            <li class="meta-item-row">
-              <div class="meta-item-left">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                <span>Deadline</span>
-              </div>
-              <span class="meta-item-val">${this.formatDate(deadlineVal)}</span>
-            </li>
-          </ul>
         </div>
-
-        <!-- Footer Actions Row -->
-        <div class="card-actions-row">
-          <button class="btn-card-details" 
-                  aria-label="View details for ${this.escapeHtml(opp.title)}"
-                  onclick="window.app.showOpportunityDetails(${opp.id})">
-            View details
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-          <button class="btn-apply-action" 
-                  aria-label="Apply to ${this.escapeHtml(opp.title)} on official portal"
-                  onclick="window.app.applyToOpportunity(${opp.id}, '${this.escapeHtml(applyUrl)}')">
-            Apply Now
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="7" y1="17" x2="17" y2="7"></line>
-              <polyline points="7 7 17 7 17 17"></polyline>
-            </svg>
-          </button>
-        </div>
-      </div>
-    `;
+      `;
+    } catch (cardErr) {
+      if (window.AppLogger) {
+        window.AppLogger.warn(cardErr, { operation: "renderOpportunityCard", oppId: opp?.id });
+      }
+      return "";
+    }
   }
 
   // ── Bookmarking (Local-first & Cloud-synchronized) ───────────────────────
@@ -993,6 +1308,9 @@ class OpportunityApp {
     oppId = Number(oppId);
     const isCurrentlyBookmarked = this.bookmarks.has(oppId);
 
+    // Prevent rapid double-clicks while async sync runs
+    if (btnEl) btnEl.style.pointerEvents = "none";
+
     // 1. Instant optimistic UI update
     if (isCurrentlyBookmarked) {
       this.bookmarks.delete(oppId);
@@ -1020,8 +1338,13 @@ class OpportunityApp {
           await window.ApiClient.addBookmark(oppId);
         }
       } catch (err) {
-        // Optimistic bookmarking preserves local state if sync fails
+        const safeMsg = window.ApiClient?.handleApiError(err, { operation: "toggleBookmark", oppId });
+        this.showToast(safeMsg || "Could not sync bookmark with cloud. Saved locally.", "warning");
+      } finally {
+        if (btnEl) btnEl.style.pointerEvents = "";
       }
+    } else {
+      if (btnEl) btnEl.style.pointerEvents = "";
     }
   }
 
@@ -1029,65 +1352,83 @@ class OpportunityApp {
     const grid = document.getElementById("bookmarksGrid");
     if (!grid) return;
 
-    grid.innerHTML = `
-      <div style="text-align: center; padding: 48px; grid-column: 1 / -1;">
-        <p style="color: var(--text-muted);">Loading your saved opportunities...</p>
-      </div>
-    `;
+    grid.innerHTML = this.renderSkeletons(4);
 
     let bookmarkedOpps = [];
 
-    // If authenticated, fetch from backend
-    if (window.authManager.isAuthenticated()) {
-      try {
-        const data = await window.ApiClient.getBookmarks();
-        bookmarkedOpps = (data.bookmarks || []).map(b => b.opp_opportunities).filter(Boolean);
-        const serverIds = bookmarkedOpps.map(o => Number(o.id));
-        this.bookmarks = new Set([...this.bookmarks, ...serverIds]);
+    try {
+      // If authenticated, fetch from backend
+      if (window.authManager.isAuthenticated()) {
         try {
-          localStorage.setItem("cd_saved_bookmarks", JSON.stringify(Array.from(this.bookmarks)));
-        } catch (e) {}
-        this.updateBookmarkBadges();
-      } catch (err) {
-        // Fallback to local cached bookmarks if server fetch fails
-      }
-    }
-
-    // Fallback: match from already-loaded opportunities
-    if (bookmarkedOpps.length === 0 && this.bookmarks.size > 0) {
-      bookmarkedOpps = this.opportunities.filter(opp => this.bookmarks.has(Number(opp.id)));
-    }
-
-    // If still empty but we have bookmark IDs and this.opportunities is empty, fetch opportunities
-    if (bookmarkedOpps.length === 0 && this.bookmarks.size > 0 && this.opportunities.length === 0) {
-      try {
-        const data = await window.ApiClient.getOpportunities({ limit: 100 });
-        if (data && data.opportunities) {
-          this.opportunities = data.opportunities;
-          bookmarkedOpps = this.opportunities.filter(opp => this.bookmarks.has(Number(opp.id)));
+          const data = await window.ApiClient.getBookmarks();
+          bookmarkedOpps = (data.bookmarks || []).map(b => b.opp_opportunities).filter(Boolean);
+          const serverIds = bookmarkedOpps.map(o => Number(o.id));
+          this.bookmarks = new Set([...this.bookmarks, ...serverIds]);
+          try {
+            localStorage.setItem("cd_saved_bookmarks", JSON.stringify(Array.from(this.bookmarks)));
+          } catch (e) {}
+          this.updateBookmarkBadges();
+        } catch (err) {
+          // Fallback to local cached bookmarks if server fetch fails
         }
-      } catch (e) {}
-    }
+      }
 
-    if (bookmarkedOpps.length === 0) {
+      // Fallback: match from already-loaded opportunities
+      if (bookmarkedOpps.length === 0 && this.bookmarks.size > 0) {
+        bookmarkedOpps = this.opportunities.filter(opp => this.bookmarks.has(Number(opp.id)));
+      }
+
+      // If still empty but we have bookmark IDs and this.opportunities is empty, fetch opportunities
+      if (bookmarkedOpps.length === 0 && this.bookmarks.size > 0 && this.opportunities.length === 0) {
+        try {
+          const data = await window.ApiClient.getOpportunities({ limit: 100 });
+          if (data && data.opportunities) {
+            this.opportunities = data.opportunities;
+            bookmarkedOpps = this.opportunities.filter(opp => this.bookmarks.has(Number(opp.id)));
+          }
+        } catch (e) {}
+      }
+
+      if (bookmarkedOpps.length === 0) {
+        grid.innerHTML = `
+          <div class="designed-empty-state">
+            <div class="empty-state-icon-wrap" style="background: #FAF5FF; color: #7C3AED;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <h3 class="empty-state-title">No Saved Bookmarks Yet</h3>
+            <p class="empty-state-desc">Click the bookmark icon on any hackathon, coding contest, or fellowship to save it here for quick access.</p>
+            <button type="button" class="btn-apply-action" onclick="window.app.switchTab('explore')">
+              Explore Opportunities
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = bookmarkedOpps.map(opp => this.renderOpportunityCard(opp)).filter(Boolean).join("");
+    } catch (err) {
+      const safeMsg = window.ApiClient?.handleApiError(err, { operation: "renderBookmarks" }) ||
+                      "Failed to retrieve saved bookmarks. Please try again.";
       grid.innerHTML = `
-        <div class="designed-empty-state">
-          <div class="empty-state-icon-wrap" style="background: #FAF5FF; color: #7C3AED;">
+        <div class="scoped-error-boundary">
+          <div class="scoped-error-icon-wrap">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
           </div>
-          <h3 class="empty-state-title">No Saved Bookmarks Yet</h3>
-          <p class="empty-state-desc">Click the bookmark icon on any hackathon, coding contest, or fellowship to save it here for quick access.</p>
-          <button type="button" class="btn-apply-action" onclick="window.app.switchTab('explore')">
-            Explore Opportunities
+          <h3 class="scoped-error-title">This section failed to load</h3>
+          <p class="scoped-error-desc">${safeMsg}</p>
+          <button type="button" class="btn-apply-action" onclick="window.app.renderBookmarks()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            Try Again
           </button>
         </div>
       `;
-      return;
     }
-
-    grid.innerHTML = bookmarkedOpps.map(opp => this.renderOpportunityCard(opp)).join("");
   }
 
   // ── Apply & Details ───────────────────────────────────────────────────────
@@ -1219,6 +1560,10 @@ class OpportunityApp {
 
     const profile = window.authManager.getUserData() || {};
 
+    // Clear previous inline errors
+    document.querySelectorAll(".form-error-msg").forEach(el => { el.style.display = "none"; el.textContent = ""; });
+    document.querySelectorAll(".form-input.has-error").forEach(el => el.classList.remove("has-error"));
+
     const avatarEl = document.getElementById("profileModalAvatar");
     const nameEl = document.getElementById("profileModalTitle");
     const emailEl = document.getElementById("profileModalEmail");
@@ -1240,23 +1585,45 @@ class OpportunityApp {
     setVal("profileDegree", profile.degree);
     setVal("profileGraduationYear", profile.graduation_year);
 
+    // Save snapshot of opened profile to detect concurrent edit conflicts
+    this._profileSnapshot = {
+      full_name: profile.full_name || "",
+      college_name: profile.college_name || "",
+      degree: profile.degree || "",
+      graduation_year: profile.graduation_year || "",
+      updated_at: profile.updated_at || Date.now()
+    };
+    this._profileOpenedAt = Date.now();
+
     this.openModal("profileModal");
   }
 
   async saveProfile() {
+    // 1. Offline network check
+    if (!navigator.onLine) {
+      this.showToast("You are offline. Cannot save changes until connection is restored.", "error");
+      return;
+    }
+
+    // 2. Validate all fields client-side before API call
+    if (this.validateProfileForm && !this.validateProfileForm()) {
+      this.showToast("Please correct the errors in the form before submitting.", "error");
+      return;
+    }
+
     const fullNameInput = document.getElementById("profileFullName");
     const fullName = (fullNameInput?.value || "").trim();
 
-    if (!fullName || fullName.length < 2) {
-      this.showToast("Please enter a valid full name (at least 2 characters).", "error");
-      if (fullNameInput) {
-        fullNameInput.focus();
-        fullNameInput.style.borderColor = "#EF4444";
-      }
+    // 3. Concurrent edit conflict detection
+    const currentLiveProfile = window.authManager.getUserData() || {};
+    if (this._profileSnapshot && currentLiveProfile.updated_at &&
+        this._profileSnapshot.updated_at &&
+        new Date(currentLiveProfile.updated_at).getTime() > new Date(this._profileSnapshot.updated_at).getTime()) {
+      this.showToast("This profile was updated in another session. Please refresh to see latest version.", "warning");
       return;
     }
-    if (fullNameInput) fullNameInput.style.borderColor = "";
 
+    // 4. Disable submit button & show spinner to prevent double-submissions
     const btn = document.getElementById("btnSaveProfile");
     const origHtml = btn ? btn.innerHTML : "";
     if (btn) {
@@ -1285,7 +1652,22 @@ class OpportunityApp {
         throw new Error(res?.error || "Failed to update profile.");
       }
     } catch (err) {
-      this.showToast(err.message || "Failed to save profile. Please verify your inputs.", "error");
+      // Form values are preserved in the input elements (we do NOT clear or reset)
+      const safeMsg = window.ApiClient?.handleApiError(err, { operation: "save_profile", userId: window.authManager?.getUserId() }) ||
+                      "Failed to save profile. Please verify your inputs.";
+
+      // Inline field-specific error mapping if API reports a specific field issue
+      const errLower = (err?.message || "").toLowerCase();
+      if (errLower.includes("name") || errLower.includes("full_name")) {
+        const fnErr = document.getElementById("profileFullNameError");
+        if (fnErr) {
+          fnErr.textContent = "Please enter a valid full name.";
+          fnErr.style.display = "block";
+        }
+        fullNameInput?.classList.add("has-error");
+      }
+
+      this.showToast(safeMsg, "error");
     } finally {
       if (btn) {
         btn.disabled = false;

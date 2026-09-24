@@ -3654,3 +3654,167 @@ body.auth-pending #appWorkspace {
   margin-bottom: 20px;
   max-width: 400px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRODUCTION HARDENING: ERROR BOUNDARIES, OFFLINE BANNER, INLINE ERRORS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Full-Page Root Error Boundary Fallback ── */
+.root-crash-fallback {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.root-crash-box {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  max-width: 460px;
+  width: 100%;
+  padding: 36px 28px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.root-crash-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FEE2E2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.root-crash-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.root-crash-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.root-crash-btn {
+  width: 100%;
+  max-width: 260px;
+  height: 46px;
+  justify-content: center;
+  font-size: 0.96rem;
+  gap: 8px;
+}
+
+/* ── Scoped Route/Component Error Boundary Container ── */
+.scoped-error-boundary {
+  padding: 48px 24px;
+  background: #FFFFFF;
+  border: 1px dashed #FCA5A5;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px auto;
+  max-width: 480px;
+  grid-column: 1 / -1;
+}
+
+.scoped-error-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: #FEF2F2;
+  color: #DC2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.scoped-error-title {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.scoped-error-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 380px;
+}
+
+/* ── Persistent Offline Detection Banner ── */
+.offline-notice-banner {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: #FEF3C7;
+  border-bottom: 1px solid #FCD34D;
+  color: #92400E;
+  z-index: 999998;
+  padding: 10px 16px;
+  box-shadow: 0 2px 6px rgba(180, 83, 9, 0.1);
+  animation: slideDownBanner 0.3s ease-out;
+}
+
+.offline-banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+@keyframes slideDownBanner {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Form Inline Validation Errors ── */
+.form-error-msg {
+  color: #DC2626;
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: 5px;
+  display: block;
+}
+
+.form-input.has-error,
+.form-select.has-error {
+  border-color: #DC2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+

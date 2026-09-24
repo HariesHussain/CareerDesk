@@ -15,7 +15,62 @@ const ApiClient = {
     this._cache.clear();
   },
 
+  handleApiError(error, context = {}) {
+    if (window.AppLogger) {
+      window.AppLogger.error(error, context);
+    }
+    return window.AppLogger?.sanitizeUserSafeMessage(error) ||
+           error?.message ||
+           "An unexpected error occurred. Please try again.";
+  },
+
   async request(endpoint, options = {}) {
+    const method = (options.method || "GET").toUpperCase();
+    const isMutating = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+
+    // 1. Offline Network Guard
+    if (!navigator.onLine && isMutating) {
+      const offlineErr = new Error("You're offline. Changes cannot be saved until internet connection is restored.");
+      offlineErr.isOffline = true;
+      this.handleApiError(offlineErr, { operation: `offline_block:${method}:${endpoint}` });
+      throw offlineErr;
+    }
+
+    // 2. Retry Logic: Up to 2 retries for idempotent GET requests with exponential backoff (1s, 2s)
+    const maxRetries = isMutating ? 0 : 2;
+    let attempt = 0;
+
+    while (attempt <= maxRetries) {
+      try {
+        return await this._executeRequest(endpoint, options);
+      } catch (err) {
+        if (err.name === "AbortError" && !err.isTimeout) {
+          // Intentionally cancelled by user/newer query (e.g. search keystroke)
+          return null;
+        }
+
+        const isNetworkOr5xx = err.isTimeout || !navigator.onLine || (err.status >= 500);
+        if (!isMutating && isNetworkOr5xx && attempt < maxRetries) {
+          attempt++;
+          const delayMs = attempt * 1000; // 1000ms (1s), then 2000ms (2s)
+          if (window.AppLogger) {
+            window.AppLogger.warn(`Request ${endpoint} failed. Retrying in ${delayMs}ms (attempt ${attempt}/${maxRetries})...`, {
+              operation: "api_retry",
+              endpoint,
+              attempt
+            });
+          }
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          continue;
+        }
+
+        this.handleApiError(err, { operation: `request:${method}:${endpoint}` });
+        throw err;
+      }
+    }
+  },
+
+  async _executeRequest(endpoint, options = {}) {
     const url = `${AppConfig.API_BASE_URL}${endpoint}`;
     const headers = {
       "Content-Type": "application/json",
@@ -28,9 +83,32 @@ const ApiClient = {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
+    // 10-Second AbortController Timeout Guard
+    const timeoutController = new AbortController();
+    let isTimeout = false;
+
+    const timeoutId = setTimeout(() => {
+      isTimeout = true;
+      timeoutController.abort();
+    }, 10000);
+
+    // Link optional parent cancellation signal (e.g. search query debouncing)
+    let parentAbortHandler = null;
+    if (options.signal) {
+      if (options.signal.aborted) {
+        clearTimeout(timeoutId);
+        const abortErr = new Error("Aborted");
+        abortErr.name = "AbortError";
+        throw abortErr;
+      }
+      parentAbortHandler = () => timeoutController.abort();
+      options.signal.addEventListener("abort", parentAbortHandler);
+    }
+
     const config = {
       ...options,
-      headers
+      headers,
+      signal: timeoutController.signal
     };
 
     window.app?.startProgressBar?.();
@@ -40,20 +118,70 @@ const ApiClient = {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        if (response.status === 403 && data.is_banned) {
-          window.dispatchEvent(new CustomEvent("account_banned", { detail: data }));
+        // 401 Session Expiry
+        if (response.status === 401) {
+          window.authManager?.handleSessionExpired?.();
+          const err = new Error("Your session has expired. Please log in again.");
+          err.status = 401;
+          throw err;
         }
-        throw new Error(data.error || `HTTP ${response.status}: Failed request`);
+
+        // 403 Forbidden / Account Suspended
+        if (response.status === 403) {
+          if (data.is_banned) {
+            window.dispatchEvent(new CustomEvent("account_banned", { detail: data }));
+          }
+          const err = new Error(data.error || "You don't have permission to do this.");
+          err.status = 403;
+          throw err;
+        }
+
+        // 400 Bad Request
+        if (response.status === 400) {
+          const err = new Error(data.error || "Invalid request. Check your input and try again.");
+          err.status = 400;
+          throw err;
+        }
+
+        // 404 Not Found
+        if (response.status === 404) {
+          const err = new Error("This item no longer exists.");
+          err.status = 404;
+          throw err;
+        }
+
+        // 429 Rate Limited
+        if (response.status === 429) {
+          const err = new Error("Too many requests. Please wait a moment.");
+          err.status = 429;
+          throw err;
+        }
+
+        // 500 / 502 / 503 Server Error
+        if (response.status >= 500) {
+          const err = new Error("Server error. We're looking into it.");
+          err.status = response.status;
+          throw err;
+        }
+
+        const err = new Error(data.error || `HTTP ${response.status}: Failed request`);
+        err.status = response.status;
+        throw err;
       }
 
       return data;
     } catch (err) {
-      if (err.name === "AbortError") {
-        // Request was intentionally cancelled for newer query
-        return null;
+      if (isTimeout) {
+        const timeoutErr = new Error("Request timed out. Please try again.");
+        timeoutErr.isTimeout = true;
+        throw timeoutErr;
       }
       throw err;
     } finally {
+      clearTimeout(timeoutId);
+      if (options.signal && parentAbortHandler) {
+        options.signal.removeEventListener("abort", parentAbortHandler);
+      }
       window.app?.finishProgressBar?.();
     }
   },

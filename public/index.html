@@ -58,6 +58,41 @@
   <!-- ── Top Route Navigation Progress Bar (nprogress style) ─────────────── -->
   <div id="topProgressBar" class="top-progress-bar" aria-hidden="true"></div>
 
+  <!-- ── Full-Page Root Error Boundary Fallback UI (Never Blank Screen) ── -->
+  <div id="rootCrashFallback" class="root-crash-fallback" role="alert" aria-live="assertive" style="display: none;">
+    <div class="root-crash-box">
+      <div class="root-crash-icon-wrap">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="root-crash-title">Something went wrong</h2>
+      <p class="root-crash-desc">An unexpected rendering issue occurred. Please refresh the page to restore your session.</p>
+      <button type="button" class="btn-apply-action root-crash-btn" onclick="window.location.reload()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+        Refresh Page
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Persistent Offline Detection Banner ──────────────────────────────── -->
+  <aside id="offlineNoticeBanner" class="offline-notice-banner" role="status" aria-live="polite" style="display: none;">
+    <div class="offline-banner-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+      <span>You're offline. Changes may not be saved until internet connection is restored.</span>
+    </div>
+  </aside>
+
   <!-- ── Fullscreen Auth Splash Screen (Zero-Flicker Session Resolver) ────── -->
   <div id="authSplashScreen" class="auth-splash-screen" role="status" aria-live="polite">
     <div class="auth-splash-box">
@@ -718,11 +753,13 @@
             <div class="form-group">
               <label class="form-label" for="profileFullName">Full Name <span class="required-star">*</span></label>
               <input type="text" id="profileFullName" name="full_name" class="form-input" placeholder="e.g. Aryan Deshmukh" required maxlength="200">
+              <div class="form-error-msg" id="profileFullNameError" style="display: none;"></div>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="profileCollegeName">College / University Name</label>
               <input type="text" id="profileCollegeName" name="college_name" class="form-input" placeholder="e.g. Santhiram Engineering College" maxlength="300">
+              <div class="form-error-msg" id="profileCollegeNameError" style="display: none;"></div>
             </div>
           </div>
 
@@ -730,6 +767,7 @@
             <div class="form-group">
               <label class="form-label" for="profileDegree">Degree / Major</label>
               <input type="text" id="profileDegree" name="degree" class="form-input" placeholder="e.g. B.Tech Computer Science" maxlength="150">
+              <div class="form-error-msg" id="profileDegreeError" style="display: none;"></div>
             </div>
 
             <div class="form-group">
@@ -803,6 +841,52 @@
         <a href="https://accounts.google.com/signin/recovery" target="_blank" rel="noopener noreferrer" class="btn-apply-action" style="flex: 1; justify-content: center; height: 44px;">
           Open Google Account Recovery
         </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Session Expired Notification Modal (Graceful 401 Recovery) ──────── -->
+  <div id="sessionExpiredModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sessionExpiredTitle" style="display: none;">
+    <div class="modal-box" style="max-width: 440px; text-align: center;">
+      <div style="width: 52px; height: 52px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <h3 id="sessionExpiredTitle" style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 8px;">
+        Your Session Has Expired
+      </h3>
+      <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.5; margin-bottom: 22px;">
+        For your security, sessions automatically expire after inactivity. Please sign in again with your Google account to continue.
+      </p>
+      <button type="button" id="btnSessionExpiredLogin" class="btn-apply-action" style="width: 100%; justify-content: center; height: 44px;">
+        Sign In with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Generic Destructive Action Confirmation Modal ────────────────────── -->
+  <div id="confirmationModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" style="display: none;">
+    <div class="modal-box" style="max-width: 420px; text-align: center;">
+      <div id="confirmModalIconWrap" style="width: 50px; height: 50px; border-radius: 50%; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h3 id="confirmModalTitle" style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 8px;">
+        Confirm Action
+      </h3>
+      <p id="confirmModalMessage" style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.5; margin-bottom: 22px;">
+        Are you sure you want to proceed?
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" id="btnCancelConfirm" class="btn-outline-subtle" style="flex: 1; height: 44px; justify-content: center;">Cancel</button>
+        <button type="button" id="btnProceedConfirm" class="btn-apply-action" style="flex: 1; height: 44px; justify-content: center; background: #DC2626; border-color: #DC2626; color: #FFFFFF;">
+          Confirm
+        </button>
       </div>
     </div>
   </div>
@@ -1021,6 +1105,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- OpportunityOS Modules -->
+  <script src="/js/logger.js"></script>
   <script src="/js/config.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/api.js"></script>
