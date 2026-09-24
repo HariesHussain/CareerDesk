@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>CareerDesk — India's #1 Platform for Hackathons, Coding Contests &amp; Competitions</title>
-  <meta name="description" content="Discover 900+ national hackathons, coding contests, and student opportunities with ₹1.8 Cr+ in live prize pools. Official direct links, zero spam.">
+  <meta name="description" content="Discover 914 verified national hackathons, coding contests, and student opportunities with live prize pools over ₹40+ Cr. Official direct links, zero spam.">
   
   <!-- Custom Favicon (CareerDesk Monogram Squircle) -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -15,7 +15,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://careerdesk.in/">
   <meta property="og:title" content="CareerDesk — India's #1 Platform for Hackathons &amp; Contests">
-  <meta property="og:description" content="Discover 900+ national hackathons, coding contests, and competitions with ₹1.8 Cr+ in live prize pools. Verified direct links, zero spam.">
+  <meta property="og:description" content="Discover 914 verified national hackathons, coding contests, and competitions with live prize pools over ₹40+ Cr. Verified direct links, zero spam.">
   <meta property="og:image" content="/images/hero_students.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -25,7 +25,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://careerdesk.in/">
   <meta name="twitter:title" content="CareerDesk — India's #1 Platform for Hackathons &amp; Contests">
-  <meta name="twitter:description" content="Discover 900+ verified hackathons, coding contests, and fellowships with live prize pools. Track applications effortlessly.">
+  <meta name="twitter:description" content="Discover 914 verified hackathons, coding contests, and fellowships with live prize pools. Official direct links.">
   <meta name="twitter:image" content="/images/hero_students.jpg">
 
   <!-- Design System & Google Fonts -->
@@ -33,7 +33,7 @@
 </head>
 <body class="is-guest">
 
-  <!-- ── Global Broadcast Announcement Banner (Managed by Admin) ──────────── -->
+  <!-- ── Global Broadcast Announcement Banner ────────────────────────────── -->
   <div id="globalAnnouncementBanner" class="site-announcement-container" style="display: none;"></div>
 
   <!-- ── Skip to Main Content (WCAG 2.2 AA) ────────────────────────────── -->
@@ -81,14 +81,6 @@
           Saved
           <span class="nav-badge-count" id="savedCountBadge">0</span>
         </div>
-
-        <div class="nav-tab-item" data-tab="admin" id="adminNavTab" style="display: none;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          Admin
-        </div>
       </nav>
 
       <!-- Right: Auth State -->
@@ -106,17 +98,11 @@
           </button>
         </div>
 
-        <!-- Authenticated State: Admin Console Button & User Profile Dropdown -->
-        <button id="btnNavbarAdminConsole" class="btn-navbar-admin" style="display: none;" title="Open Enterprise Admin Console">
-          <span style="font-size: 1rem; line-height: 1;">👑</span>
-          <span class="admin-btn-text">Admin Console</span>
-        </button>
-
         <div id="userProfileMenu" class="user-profile-menu" style="display: none;" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-label="User account menu">
           <img id="navUserAvatar" class="user-avatar" src="" alt="Profile avatar">
           <div class="user-info">
-            <span id="navUserName" class="user-name">Student</span>
-            <span id="navUserRole" class="user-role-tag">Student</span>
+            <span id="navUserName" class="user-name">Member</span>
+            <span id="navUserRole" class="user-role-tag">Active</span>
           </div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--text-muted);" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"></polyline>
@@ -124,11 +110,6 @@
 
           <!-- Dropdown Menu -->
           <div id="userDropdown" class="user-dropdown" role="menu">
-            <a href="#" id="btnDropdownAdminConsole" class="dropdown-item dropdown-item-admin" style="display: none;" role="menuitem">
-              <span style="font-size: 1.1rem; line-height: 1;">👑</span>
-              <strong>Admin Console</strong>
-              <span class="admin-badge badge-role-admin" style="margin-left: auto;">PRO</span>
-            </a>
             <a href="#" id="btnOpenProfileModal" class="dropdown-item" role="menuitem">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -253,7 +234,7 @@
             <div class="chip-icon">🏆</div>
             <div>
               <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Live Prize Pool</div>
-              <div id="heroPrizeBadge">₹1.8 Cr+</div>
+              <div id="heroPrizeBadge">₹40+ Cr</div>
             </div>
           </div>
 
@@ -261,7 +242,7 @@
             <div class="chip-icon orange">⚡</div>
             <div>
               <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Active Listings</div>
-              <div id="heroActiveBadge">914+ Verified</div>
+              <div id="heroActiveBadge">914 Verified</div>
             </div>
           </div>
 
@@ -278,7 +259,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           </div>
           <div class="cred-text">
-            <span class="cred-value" id="statActiveCount">914+</span>
+            <span class="cred-value" id="statActiveCount">914</span>
             <span class="cred-label">Active Opportunities</span>
           </div>
         </div>
@@ -288,7 +269,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
           </div>
           <div class="cred-text">
-            <span class="cred-value" id="statPrizeCount">₹1.8 Cr+</span>
+            <span class="cred-value" id="statPrizeCount">₹40+ Cr</span>
             <span class="cred-label">Prizes &amp; Grants</span>
           </div>
         </div>
@@ -298,8 +279,8 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           </div>
           <div class="cred-text">
-            <span class="cred-value" id="statUrgentCount">0</span>
-            <span class="cred-label">Closing This Week</span>
+            <span class="cred-value" id="statUrgentCount">321</span>
+            <span class="cred-label">Closing Soon</span>
           </div>
         </div>
 
@@ -390,40 +371,26 @@
 
           <div class="step-card reveal-on-scroll">
             <span class="step-number">STEP 04</span>
-            <h3 class="step-title">Kanban Milestone Tracking</h3>
+            <h3 class="step-title">Shortlist &amp; Apply</h3>
             <p class="step-desc">
-              Save events to your private wishlist, manage rounds, and track team deadlines through our drag-and-drop Kanban tracker.
+              Save events to your personal bookmarks, track closing dates with real-time countdowns, and apply directly without middleman friction.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ── Section 3: How to Use It (Role Switcher Tabs) ───────────────────── -->
+    <!-- ── Section 3: How to Use It ───────────────────── -->
     <section id="how-to-use" class="landing-section">
       <div class="section-center-head reveal-on-scroll">
         <span class="section-tag-pill purple">Workflow Blueprint</span>
         <h2 class="section-main-title">How To Use CareerDesk</h2>
         <p class="section-desc">
-          Whether you are a student hungry for your next hackathon win or a college tech club organizing a national coding sprint, we have you covered.
+          A seamless 3-step pathway built for engineering students to discover, shortlist, and compete in premier national challenges.
         </p>
       </div>
 
-      <!-- Segmented Role Control -->
-      <div class="role-tabs-wrap reveal-on-scroll">
-        <div class="role-segmented-control" role="tablist">
-          <button class="role-tab-btn active" id="roleTabCandidate" role="tab" aria-selected="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            For Candidates &amp; Students
-          </button>
-          <button class="role-tab-btn" id="roleTabOrganizer" role="tab" aria-selected="false">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-            For Organizers &amp; College Clubs
-          </button>
-        </div>
-      </div>
-
-      <!-- Candidates Workflow Panel -->
+      <!-- Candidate Workflow Panel -->
       <div id="rolePanelCandidate" class="role-workflow-grid">
         <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">1</div>
@@ -439,29 +406,8 @@
 
         <div class="workflow-card reveal-on-scroll">
           <div class="workflow-badge-index">3</div>
-          <h4>Track on Private Kanban Board</h4>
-          <p>Once you register on the official portal, advance your card from "Applied" to "In Review" and "Selected" to build your career track record.</p>
-        </div>
-      </div>
-
-      <!-- Organizers Workflow Panel (Hidden by default) -->
-      <div id="rolePanelOrganizer" class="role-workflow-grid" style="display: none;">
-        <div class="workflow-card reveal-on-scroll">
-          <div class="workflow-badge-index">1</div>
-          <h4>Submit Competition Details</h4>
-          <p>Fill out the free community submission form with your event title, problem statements, registration deadline, and official link.</p>
-        </div>
-
-        <div class="workflow-card reveal-on-scroll">
-          <div class="workflow-badge-index">2</div>
-          <h4>Fast 24h Moderation Check</h4>
-          <p>Our admin moderation desk reviews your listing for authenticity, verified official URLs, and student safety within 24 hours.</p>
-        </div>
-
-        <div class="workflow-card reveal-on-scroll">
-          <div class="workflow-badge-index">3</div>
-          <h4>Reach 50,000+ Active Students</h4>
-          <p>Once approved, your event appears directly on the live CareerDesk terminal, viewed daily by ambitious engineering students nationwide.</p>
+          <h4>Direct 1-Click Application</h4>
+          <p>Click the official portal button to jump straight to the verified organizer application page with zero middleman or hidden fees.</p>
         </div>
       </div>
     </section>
@@ -540,17 +486,17 @@
             <div class="persona-header">
               <div class="persona-avatar-box" style="background: var(--accent-green-light); color: var(--accent-green);">🏛️</div>
               <div>
-                <span class="persona-tag" style="color: var(--accent-green);">Student Leads</span>
-                <h3 class="persona-title">College Tech Fest Organizers</h3>
+                <span class="persona-tag" style="color: var(--accent-green);">Campus Innovators</span>
+                <h3 class="persona-title">Collegiate Tech Enthusiasts</h3>
               </div>
             </div>
             <p class="persona-desc">
-              Organizing an intra-college tech fest or national coding sprint? Distribute your event with zero ad spend and reach 50,000+ top engineering builders.
+              Discover inter-college technical hackathons, coding hackfests, and innovation showcases across top engineering campuses nationwide.
             </p>
             <ul class="persona-features-list">
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 100% Free event listing submission</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Nationwide student reach &amp; engagement</li>
-              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Dedicated admin verification within 24h</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 100% Free opportunity discovery</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified official organizer links</li>
+              <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Zero spam or predatory bootcamps</li>
             </ul>
           </div>
         </div>
@@ -562,7 +508,7 @@
       <div class="landing-cta-banner reveal-on-scroll">
         <h2 class="cta-title">Ready to Accelerate Your Tech Career?</h2>
         <p class="cta-sub">
-          Unlock the full private terminal with 900+ verified hackathons, advanced multi-filters, and your personalized Kanban application tracker.
+          Unlock the full opportunity explorer with 900+ verified hackathons, real-time closing countdowns, and instant bookmark syncing.
         </p>
 
         <div class="cta-actions-row">
@@ -603,7 +549,7 @@
         <div class="workspace-actions">
           <span class="workspace-stats-chip">
             <span class="pulse-fire">🔥</span>
-            <span><strong>914+</strong> Contests Live</span>
+            <span id="workspaceLiveContestsCount"><strong>914</strong> Contests Live</span>
           </span>
           <button id="btnToggleLandingGuide" class="btn-outline-subtle" aria-label="View Platform Guide">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -627,7 +573,7 @@
       <section class="controls-card" id="controlsSection">
         <!-- Horizontal Scrollable Category Pills -->
         <div class="pill-carousel-wrapper" role="tablist" aria-label="Category Filters">
-          <button class="filter-pill active" data-type="all" role="tab">All Opportunities (914+)</button>
+          <button class="filter-pill active" data-type="all" role="tab">All Opportunities (914)</button>
           <button class="filter-pill" data-type="hackathon" role="tab">Hackathons (397)</button>
           <button class="filter-pill" data-type="contest" role="tab">Coding Contests (56)</button>
           <button class="filter-pill" data-type="competition" role="tab">Competitions (281)</button>
@@ -684,7 +630,7 @@
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
-          <span>All 914+ verified opportunities loaded</span>
+          <span>All 914 verified opportunities loaded</span>
         </div>
       </div>
     </div>
@@ -697,388 +643,6 @@
       </div>
       <div id="bookmarksGrid" class="opportunities-grid">
         <!-- Injected via app.js -->
-      </div>
-    </div>
-
-    <!-- View 5: Enterprise Admin Console -->
-    <div id="adminView" class="view-panel" style="display: none;">
-      <!-- Admin Subheader Bar -->
-      <div class="admin-console-header">
-        <div class="admin-header-left">
-          <div class="admin-brand-badge">
-            <span class="admin-crown-badge">👑</span>
-            <div>
-              <h2 class="admin-header-title">Enterprise Admin Console</h2>
-              <div class="admin-header-subtitle">
-                <span class="admin-status-dot"></span>
-                <span>Active Session: <strong id="adminCurrentEmail">admin</strong> (Platform Super Administrator)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="admin-header-actions">
-          <button id="btnAdminTriggerSyncTop" class="btn-admin-primary" title="Trigger instant Brabble listings ingestion">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            Trigger Live Sync
-          </button>
-          <button id="btnExitAdminConsole" class="btn-outline-subtle btn-admin-exit" title="Return to Student Opportunity Explorer">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Back to Student View
-          </button>
-        </div>
-      </div>
-
-      <!-- Admin Navigation Tabs -->
-      <div class="admin-nav-bar" role="tablist">
-        <button class="admin-nav-tab active" data-tab="overview" role="tab">
-          <span class="tab-icon">📊</span> Overview &amp; KPIs
-        </button>
-        <button class="admin-nav-tab" data-tab="users" role="tab">
-          <span class="tab-icon">👥</span> User Governance
-        </button>
-        <button class="admin-nav-tab" data-tab="blacklist" role="tab">
-          <span class="tab-icon">🚫</span> Blocked Gmails
-        </button>
-        <button class="admin-nav-tab" data-tab="submissions" role="tab">
-          <span class="tab-icon">📝</span> Submissions Queue
-          <span id="adminSubmissionsTabBadge" class="admin-badge-count" style="display: none;">0</span>
-        </button>
-        <button class="admin-nav-tab" data-tab="sync" role="tab">
-          <span class="tab-icon">🔄</span> Ingestion Engine
-        </button>
-        <button class="admin-nav-tab" data-tab="announcement" role="tab">
-          <span class="tab-icon">📢</span> Broadcast Banner
-        </button>
-        <button class="admin-nav-tab" data-tab="audit" role="tab">
-          <span class="tab-icon">🛡️</span> Audit Logs
-        </button>
-      </div>
-
-      <!-- ── Panel 1: Overview & Metrics ── -->
-      <div id="adminPanel_overview" class="admin-tab-panel">
-        <div class="admin-kpi-grid">
-          <!-- Card 1: Total Users -->
-          <div class="admin-kpi-card">
-            <div class="admin-kpi-header">
-              <span class="admin-kpi-title">Total Registered Users</span>
-              <span class="admin-kpi-icon" style="background: rgba(0, 139, 220, 0.1); color: var(--brand-primary);">👥</span>
-            </div>
-            <div class="admin-kpi-val" id="kpiTotalUsers">0</div>
-            <div class="admin-kpi-meta">
-              <span class="badge-growth" id="kpiActive24h">0 active in 24h</span>
-              <span style="color: var(--text-muted); font-size: 0.78rem;">Students: <strong id="kpiStudentsCount">0</strong> · Admins: <strong id="kpiAdminsCount">0</strong></span>
-            </div>
-          </div>
-
-          <!-- Card 2: Colleges -->
-          <div class="admin-kpi-card">
-            <div class="admin-kpi-header">
-              <span class="admin-kpi-title">Colleges &amp; Universities</span>
-              <span class="admin-kpi-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">🏛️</span>
-            </div>
-            <div class="admin-kpi-val" id="kpiUniqueColleges">0</div>
-            <div class="admin-kpi-meta">
-              <span style="color: var(--text-muted); font-size: 0.8rem;">Institutions across India represented</span>
-            </div>
-          </div>
-
-          <!-- Card 3: Catalog Opportunities -->
-          <div class="admin-kpi-card">
-            <div class="admin-kpi-header">
-              <span class="admin-kpi-title">Verified Opportunities</span>
-              <span class="admin-kpi-icon" style="background: rgba(124, 58, 237, 0.1); color: #7C3AED;">🏆</span>
-            </div>
-            <div class="admin-kpi-val" id="kpiTotalOpps">914+</div>
-            <div class="admin-kpi-meta">
-              <span style="color: #10B981; font-weight: 600; font-size: 0.8rem;">100% Live Brabble Ingestion</span>
-            </div>
-          </div>
-
-          <!-- Card 4: Student Engagement -->
-          <div class="admin-kpi-card">
-            <div class="admin-kpi-header">
-              <span class="admin-kpi-title">Student Engagement</span>
-              <span class="admin-kpi-icon" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">⚡</span>
-            </div>
-            <div class="admin-kpi-val"><span id="kpiTotalApps">0</span> <span style="font-size: 1rem; font-weight: 500; color: var(--text-muted);">apps</span></div>
-            <div class="admin-kpi-meta">
-              <span style="color: var(--text-muted); font-size: 0.8rem;"><strong id="kpiTotalBookmarks">0</strong> total student bookmarks</span>
-            </div>
-          </div>
-
-          <!-- Card 5: Moderation & Bans -->
-          <div class="admin-kpi-card">
-            <div class="admin-kpi-header">
-              <span class="admin-kpi-title">Banned / Blocked Gmails</span>
-              <span class="admin-kpi-icon" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">🚫</span>
-            </div>
-            <div class="admin-kpi-val" id="kpiBannedUsers">0</div>
-            <div class="admin-kpi-meta">
-              <span style="color: #EF4444; font-size: 0.8rem;"><strong id="kpiBannedEmails">0</strong> permanently blacklisted emails</span>
-            </div>
-          </div>
-
-          <!-- Card 6: Ingestion Sync Health -->
-          <div class="admin-kpi-card">
-            <div class="admin-kpi-header">
-              <span class="admin-kpi-title">Brabble Engine Status</span>
-              <span class="admin-kpi-icon" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">🔄</span>
-            </div>
-            <div style="margin-bottom: 4px;">
-              <span class="admin-badge badge-success" id="kpiLastSyncStatus">Healthy</span>
-            </div>
-            <div class="admin-kpi-meta">
-              <span id="kpiLastSyncTime" style="color: var(--text-muted); font-size: 0.78rem;">Syncing daily via cron</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions & System Controls -->
-        <div class="admin-quick-shortcuts">
-          <div class="admin-shortcut-card" onclick="window.adminConsole.switchTab('users')">
-            <span class="shortcut-emoji">👥</span>
-            <div>
-              <strong>Manage Users</strong>
-              <p>View registered accounts, ban abusers, and elevate roles.</p>
-            </div>
-          </div>
-          <div class="admin-shortcut-card" onclick="window.adminConsole.switchTab('submissions')">
-            <span class="shortcut-emoji">📝</span>
-            <div>
-              <strong>Moderate Events (<span id="kpiPendingSubmissions">0</span>)</strong>
-              <p>Approve student tech fest and hackathon listings.</p>
-            </div>
-          </div>
-          <div class="admin-shortcut-card" onclick="window.adminConsole.triggerSync()">
-            <span class="shortcut-emoji">⚡</span>
-            <div>
-              <strong>Force Catalog Sync</strong>
-              <p>Pull latest hackathons &amp; contests from Brabble.</p>
-            </div>
-          </div>
-          <div class="admin-shortcut-card" onclick="window.adminConsole.switchTab('announcement')">
-            <span class="shortcut-emoji">📢</span>
-            <div>
-              <strong>Broadcast Announcement</strong>
-              <p>Display emergency maintenance or featured event banner.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Panel 2: User Governance Directory ── -->
-      <div id="adminPanel_users" class="admin-tab-panel" style="display: none;">
-        <div class="admin-table-toolbar">
-          <div class="admin-search-wrap">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="adminUserSearch" class="admin-search-input" placeholder="Search by name, email, or college...">
-          </div>
-
-          <div class="admin-filters-group">
-            <select id="adminUserRoleFilter" class="form-select admin-select-compact">
-              <option value="all">All Roles</option>
-              <option value="student">Students</option>
-              <option value="admin">Administrators</option>
-            </select>
-
-            <select id="adminUserStatusFilter" class="form-select admin-select-compact">
-              <option value="all">All Status</option>
-              <option value="active">Active Only</option>
-              <option value="banned">Banned Only</option>
-            </select>
-
-            <button id="btnRefreshUsers" class="btn-outline-subtle" title="Refresh list">
-              🔄 Refresh
-            </button>
-
-            <span id="adminUsersCountBadge" class="admin-pill-badge">0 users</span>
-          </div>
-        </div>
-
-        <div class="admin-table-responsive">
-          <table class="admin-data-table">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Academic Details</th>
-                <th>Registered</th>
-                <th>Last Active</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminUsersTableBody">
-              <!-- Injected via admin.js -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── Panel 3: Banned Emails Blacklist ── -->
-      <div id="adminPanel_blacklist" class="admin-tab-panel" style="display: none;">
-        <div class="admin-panel-intro">
-          <div>
-            <h3 style="font-weight: 700; margin-bottom: 4px;">Permanent Gmail Blacklist</h3>
-            <p style="color: var(--text-muted); font-size: 0.88rem;">These Google accounts are permanently prohibited from authenticating into CareerDesk. Even upon re-attempting Google OAuth, access is blocked at the gateway.</p>
-          </div>
-          <span id="adminBlacklistCountBadge" class="admin-pill-badge" style="background: #FEE2E2; color: #DC2626;">0 blocked</span>
-        </div>
-
-        <div class="admin-table-responsive">
-          <table class="admin-data-table">
-            <thead>
-              <tr>
-                <th>Blacklisted Gmail</th>
-                <th>Reason</th>
-                <th>Banned By</th>
-                <th>Date Blacklisted</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="adminBlacklistTableBody">
-              <!-- Injected via admin.js -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── Panel 4: Submissions Moderation ── -->
-      <div id="adminPanel_submissions" class="admin-tab-panel" style="display: none;">
-        <div class="admin-panel-intro">
-          <div>
-            <h3 style="font-weight: 700; margin-bottom: 4px;">Community Event Submissions Review</h3>
-            <p style="color: var(--text-muted); font-size: 0.88rem;">Review college tech fests, hackathons, and contests submitted by campus leads. Approved events are instantly published live.</p>
-          </div>
-          <span id="adminSubmissionsCountBadge" class="admin-pill-badge">0 pending</span>
-        </div>
-
-        <div id="adminSubmissionsList" class="admin-submissions-grid">
-          <!-- Injected via admin.js -->
-        </div>
-      </div>
-
-      <!-- ── Panel 5: Ingestion Engine (Brabble) ── -->
-      <div id="adminPanel_sync" class="admin-tab-panel" style="display: none;">
-        <div class="admin-sync-hero-card">
-          <div class="sync-hero-content">
-            <span class="sync-engine-badge">⚡ Automated Ingestion Engine</span>
-            <h3 style="font-weight: 700; margin-bottom: 6px;">Live Brabble Listings Sync</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 600px; line-height: 1.5;">
-              Ingests live hackathons, coding contests, and student competitions directly from Brabble API into CareerDesk. Automatically normalizes deadlines, prize structures, and filters.
-            </p>
-          </div>
-          <button id="btnTriggerBrabbleSync" class="btn-apply-action" style="padding: 12px 24px; font-size: 0.95rem;">
-            Trigger Live Sync Now
-          </button>
-        </div>
-
-        <h4 style="font-weight: 700; margin: 24px 0 12px 0;">Recent Ingestion Run History</h4>
-        <div class="admin-table-responsive">
-          <table class="admin-data-table">
-            <thead>
-              <tr>
-                <th>Execution Time</th>
-                <th>Status</th>
-                <th>Fetched</th>
-                <th>Inserted</th>
-                <th>Updated</th>
-                <th>Duration</th>
-              </tr>
-            </thead>
-            <tbody id="adminSyncLogsTableBody">
-              <!-- Injected via admin.js -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── Panel 6: Broadcast Banner ── -->
-      <div id="adminPanel_announcement" class="admin-tab-panel" style="display: none;">
-        <div class="admin-panel-intro">
-          <div>
-            <h3 style="font-weight: 700; margin-bottom: 4px;">Global Site-Wide Broadcast Banner</h3>
-            <p style="color: var(--text-muted); font-size: 0.88rem;">Publish a high-visibility announcement banner displayed at the very top of CareerDesk for all students and visitors.</p>
-          </div>
-        </div>
-
-        <div class="admin-announcement-grid">
-          <form id="adminAnnouncementForm" class="admin-card-box">
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label class="custom-checkbox-row">
-                <input type="checkbox" id="adminAnnouncementActive">
-                <span class="custom-checkbox-visual"></span>
-                <strong>Enable Site-Wide Broadcast Banner</strong>
-              </label>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label class="form-label" for="adminAnnouncementMsg">Banner Message <span class="required-star">*</span></label>
-              <textarea id="adminAnnouncementMsg" class="form-textarea" rows="2" placeholder="e.g. 🎉 Smart India Hackathon 2026 submissions are live! Register before Oct 31." required maxlength="300"></textarea>
-            </div>
-
-            <div class="form-row-2col" style="margin-bottom: 16px;">
-              <div class="form-group">
-                <label class="form-label" for="adminAnnouncementType">Banner Theme / Style</label>
-                <select id="adminAnnouncementType" class="form-select">
-                  <option value="info">Info (Blue)</option>
-                  <option value="success">Success / Celebration (Green)</option>
-                  <option value="warning">Warning / Notice (Amber)</option>
-                  <option value="danger">Urgent / Alert (Red)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="adminAnnouncementLabel">Action Button Text</label>
-                <input type="text" id="adminAnnouncementLabel" class="form-input" placeholder="e.g. View Hackathon">
-              </div>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 20px;">
-              <label class="form-label" for="adminAnnouncementUrl">Action Button Target URL</label>
-              <input type="url" id="adminAnnouncementUrl" class="form-input" placeholder="https://careerdesk.in/#exploreView">
-            </div>
-
-            <button type="submit" id="btnSaveAnnouncement" class="btn-apply-action" style="padding: 10px 24px;">
-              Save &amp; Update Banner
-            </button>
-          </form>
-
-          <div class="admin-card-box">
-            <h4 style="font-weight: 700; margin-bottom: 12px;">Live Preview</h4>
-            <div id="adminAnnouncementPreviewBox" class="admin-preview-wrapper">
-              <!-- Live preview injected -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Panel 7: Audit Logs ── -->
-      <div id="adminPanel_audit" class="admin-tab-panel" style="display: none;">
-        <div class="admin-panel-intro">
-          <div>
-            <h3 style="font-weight: 700; margin-bottom: 4px;">Administrative Security &amp; Compliance Audit Trail</h3>
-            <p style="color: var(--text-muted); font-size: 0.88rem;">Immutable log of all administrative actions (bans, account purges, role promotions, and sync triggers).</p>
-          </div>
-        </div>
-
-        <div class="admin-table-responsive">
-          <table class="admin-data-table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Admin Email</th>
-                <th>Action</th>
-                <th>Target</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody id="adminAuditLogsTableBody">
-              <!-- Injected via admin.js -->
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   </main>
@@ -1167,57 +731,6 @@
     </div>
   </div>
 
-  <!-- ── Admin Ban Confirmation Modal ────────────────────────────────────── -->
-  <div id="adminBanModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="banModalTitle">
-    <div class="modal-box" style="max-width: 500px; padding: 24px;">
-      <h3 id="banModalTitle" style="font-size: 1.25rem; font-weight: 700; color: #EF4444; margin-bottom: 8px;">
-        🚫 Suspend User &amp; Blacklist Gmail
-      </h3>
-      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.4;">
-        You are suspending <strong id="banModalUserName">User</strong> (<span id="banModalUserEmail" style="color: var(--text-primary); font-weight: 600;"></span>). This will lock their session and permanently block this Gmail from logging in again.
-      </p>
-
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label class="form-label" for="banModalReason">Reason for Suspension</label>
-        <textarea id="banModalReason" class="form-textarea" rows="3" placeholder="Enter reason for moderation records..."></textarea>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button type="button" id="btnCancelBanUser" class="btn-outline-subtle">Cancel</button>
-        <button type="button" id="btnConfirmBanUser" class="btn-profile-danger" style="background: #EF4444; color: #FFFFFF; border-color: #EF4444; padding: 8px 18px;">
-          Confirm Ban &amp; Block
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Admin Hard Delete User Modal ────────────────────────────────────── -->
-  <div id="adminDeleteUserModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
-    <div class="modal-box" style="max-width: 500px; padding: 24px;">
-      <h3 id="deleteModalTitle" style="font-size: 1.25rem; font-weight: 700; color: #EF4444; margin-bottom: 8px;">
-        🗑️ Permanently Delete User Account
-      </h3>
-      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.4;">
-        Are you sure you want to completely purge <strong id="deleteModalUserName">User</strong> (<span id="deleteModalUserEmail" style="color: var(--text-primary); font-weight: 600;"></span>)? All bookmarks, applications, and profile records will be permanently erased.
-      </p>
-
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label class="custom-checkbox-row">
-          <input type="checkbox" id="deleteModalBlacklistCheck" checked>
-          <span class="custom-checkbox-visual"></span>
-          <span style="font-size: 0.88rem; font-weight: 500;">Also permanently blacklist this Gmail from ever signing in again</span>
-        </label>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button type="button" id="btnCancelDeleteUser" class="btn-outline-subtle">Cancel</button>
-        <button type="button" id="btnConfirmDeleteUser" class="btn-profile-danger" style="background: #DC2626; color: #FFFFFF; border-color: #DC2626; padding: 8px 18px;">
-          Permanently Delete
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- ── Opportunity Detail Modal ─────────────────────────────────────────── -->
   <div id="detailsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
     <div class="modal-box">
@@ -1287,7 +800,7 @@
       <!-- User Profile Card in Drawer -->
       <div class="drawer-user-card" id="drawerUserCard">
         <div class="drawer-avatar-wrap">
-          <img id="drawerUserAvatar" class="drawer-avatar" src="" alt="User avatar">
+          <img id="drawerUserAvatar" class="drawer-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394A3B8'%3E%3Crect width='24' height='24' fill='%23F1F5F9'/%3E%3Ccircle cx='12' cy='9' r='4' fill='%2394A3B8'/%3E%3Cpath d='M4 20c0-4 4-6 8-6s8 2 8 6' fill='%2394A3B8'/%3E%3C/svg%3E" alt="User avatar">
           <span class="drawer-online-dot" title="Active Session"></span>
         </div>
         <div class="drawer-user-meta">
@@ -1299,33 +812,8 @@
           </div>
           <p id="drawerUserEmail" class="drawer-user-email">shaikhariehussain09@gmail.com</p>
           <div class="drawer-badges-row">
-            <span id="drawerUserRoleBadge" class="badge-role-tag badge-role-student">Student</span>
-            <span id="drawerCollegeBadge" class="drawer-college-pill">Engineering Scholar</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Gamification / Retention / Social Proof Banner (Spend More Time in App!) -->
-      <div class="drawer-engagement-card">
-        <div class="engagement-streak-row">
-          <span class="engagement-fire">🔥 <strong>Streak:</strong> 3 Days Active</span>
-          <span class="engagement-xp">Contender Lv.2</span>
-        </div>
-        <div class="engagement-progress-bar">
-          <div class="engagement-progress-fill" style="width: 75%;"></div>
-        </div>
-        <div class="engagement-stats-grid">
-          <div class="engagement-stat">
-            <span class="stat-num" id="drawerStatLiveCount">914+</span>
-            <span class="stat-lbl">Live Contests</span>
-          </div>
-          <div class="engagement-stat">
-            <span class="stat-num">₹1.8 Cr+</span>
-            <span class="stat-lbl">Prizes</span>
-          </div>
-          <div class="engagement-stat">
-            <span class="stat-num" id="drawerStatSavedCount">0</span>
-            <span class="stat-lbl">Saved</span>
+            <span id="drawerUserRoleBadge" class="badge-role-tag badge-role-student">Active Member</span>
+            <span id="drawerCollegeBadge" class="drawer-college-pill" style="display: none;"></span>
           </div>
         </div>
       </div>
@@ -1338,19 +826,13 @@
         <button class="drawer-nav-link active" data-drawer-tab="explore">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
           <span>Explore All Opportunities</span>
-          <span class="drawer-nav-badge">914+</span>
+          <span class="drawer-nav-badge" id="drawerExploreBadge">914</span>
         </button>
 
         <button class="drawer-nav-link" data-drawer-tab="bookmarks">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
           <span>Saved Bookmarks</span>
           <span class="drawer-nav-badge" id="drawerBookmarksCount">0</span>
-        </button>
-
-        <button class="drawer-nav-link drawer-admin-link" id="drawerAdminItem" data-drawer-tab="admin" style="display: none;">
-          <span style="font-size: 1.1rem; line-height: 1;">👑</span>
-          <span>Enterprise Admin Console</span>
-          <span class="admin-badge badge-role-admin" style="margin-left: auto;">PRO</span>
         </button>
       </div>
 
@@ -1511,7 +993,6 @@
   <script src="/js/config.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/api.js"></script>
-  <script src="/js/admin.js"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

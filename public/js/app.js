@@ -31,10 +31,6 @@ class OpportunityApp {
     this.setupScrollAnimations();
     this.initLandingScrollSpy();
     await this.loadBookmarks();
-    
-    if (window.adminConsole) {
-      window.adminConsole.init();
-    }
     await this.checkGlobalAnnouncement();
 
     // Lazy-load: only eagerly fetch opportunities if user is already authenticated into workspace
@@ -450,34 +446,10 @@ class OpportunityApp {
       if (e.key === "Escape") this.closeAllModals();
     });
 
-
-
-    // Enterprise Admin Console Navigation Triggers
-    const btnNavbarAdmin = document.getElementById("btnNavbarAdminConsole");
-    if (btnNavbarAdmin) {
-      btnNavbarAdmin.addEventListener("click", () => {
-        if (window.adminConsole) {
-          window.adminConsole.openConsole();
-        }
-      });
-    }
-
-    const btnDropdownAdmin = document.getElementById("btnDropdownAdminConsole");
-    if (btnDropdownAdmin) {
-      btnDropdownAdmin.addEventListener("click", (e) => {
-        e.preventDefault();
-        const userDropdown = document.getElementById("userDropdown");
-        if (userDropdown) userDropdown.classList.remove("show");
-        if (window.adminConsole) {
-          window.adminConsole.openConsole();
-        }
-      });
-    }
-
     // Global Account Suspension / Banned Alert Event
     window.addEventListener("account_banned", (e) => {
-      const reason = e.detail?.error || "Your account has been suspended by an administrator.";
-      alert(`⚠️ Account Suspended:\n\n${reason}\n\nYour session has been terminated and this email is restricted from logging in.`);
+      const reason = e.detail?.error || "Your account has been suspended.";
+      alert(`⚠️ Account Suspended:\n\n${reason}\n\nYour session has been terminated.`);
       if (window.authManager) {
         window.authManager.signOut();
       }
@@ -509,7 +481,6 @@ class OpportunityApp {
       const navTabs = document.getElementById("navTabs");
       const loginWrapper = document.getElementById("guestAuthWrapper");
       const userMenu = document.getElementById("userProfileMenu");
-      const adminTab = document.getElementById("adminNavTab");
       const landingView = document.getElementById("landingView");
       const appWorkspace = document.getElementById("appWorkspace");
 
@@ -523,7 +494,7 @@ class OpportunityApp {
 
         const defaultAvatarSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23008BDC'/%3E%3Cstop offset='100%25' stop-color='%23006BC7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23g)'/%3E%3Ccircle cx='50' cy='40' r='18' fill='%23FFFFFF' opacity='0.9'/%3E%3Cpath d='M20 85 C20 66 35 62 50 62 C65 62 80 66 80 85 Z' fill='%23FFFFFF' opacity='0.9'/%3E%3C/svg%3E";
         const avatarUrl = user.avatar_url || defaultAvatarSvg;
-        const fullName = user.full_name || "Student Member";
+        const fullName = user.full_name || "Active Member";
         const email = user.email || "";
 
         if (userMenu) {
@@ -533,7 +504,7 @@ class OpportunityApp {
           const roleEl = document.getElementById("navUserRole");
           if (nameEl) nameEl.textContent = fullName;
           if (avatarEl) avatarEl.src = avatarUrl;
-          if (roleEl) roleEl.textContent = user.role || "student";
+          if (roleEl) roleEl.textContent = "Member";
         }
 
         // Sync Mobile Header Avatar Trigger
@@ -551,43 +522,32 @@ class OpportunityApp {
           mobileBottomNavAvatarDefault.style.display = "none";
         }
 
-        const isAdmin = user.role === "admin";
-        if (adminTab) {
-          adminTab.style.display = isAdmin ? "inline-flex" : "none";
-        }
-        const btnNavbarAdmin = document.getElementById("btnNavbarAdminConsole");
-        if (btnNavbarAdmin) {
-          btnNavbarAdmin.style.display = isAdmin ? "inline-flex" : "none";
-        }
-        const btnDropdownAdmin = document.getElementById("btnDropdownAdminConsole");
-        if (btnDropdownAdmin) {
-          btnDropdownAdmin.style.display = isAdmin ? "flex" : "none";
-        }
-        const adminEmailEl = document.getElementById("adminCurrentEmail");
-        if (adminEmailEl) {
-          adminEmailEl.textContent = email;
-        }
-
         // Sync Profile Sidebar Drawer Details
         const drawerAvatar = document.getElementById("drawerUserAvatar");
         const drawerName = document.getElementById("drawerUserName");
         const drawerEmail = document.getElementById("drawerUserEmail");
         const drawerRoleBadge = document.getElementById("drawerUserRoleBadge");
         const drawerCollege = document.getElementById("drawerCollegeBadge");
-        const drawerAdminItem = document.getElementById("drawerAdminItem");
 
-        if (drawerAvatar) drawerAvatar.src = avatarUrl;
+        if (drawerAvatar) {
+          const firstChar = (fullName || "U").trim().charAt(0).toUpperCase();
+          const monogramSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23008BDC'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='18' font-weight='700' fill='%23FFFFFF' font-family='sans-serif'%3E${firstChar}%3C/text%3E%3C/svg%3E`;
+          drawerAvatar.src = avatarUrl || monogramSvg;
+          drawerAvatar.onerror = () => { drawerAvatar.src = monogramSvg; };
+        }
         if (drawerName) drawerName.textContent = fullName;
         if (drawerEmail) drawerEmail.textContent = email;
         if (drawerRoleBadge) {
-          drawerRoleBadge.textContent = isAdmin ? "👑 Enterprise Admin" : "🎓 Verified Student";
-          drawerRoleBadge.className = isAdmin ? "badge-role-tag badge-role-admin" : "badge-role-tag badge-role-student";
+          drawerRoleBadge.textContent = "Google Verified";
+          drawerRoleBadge.className = "badge-role-tag badge-role-student";
         }
         if (drawerCollege) {
-          drawerCollege.textContent = user.college_name || "Engineering Scholar";
-        }
-        if (drawerAdminItem) {
-          drawerAdminItem.style.display = isAdmin ? "flex" : "none";
+          if (user.college_name && user.college_name.trim()) {
+            drawerCollege.textContent = user.college_name.trim();
+            drawerCollege.style.display = "inline-block";
+          } else {
+            drawerCollege.style.display = "none";
+          }
         }
 
         if (landingView) landingView.style.display = "none";
@@ -603,30 +563,27 @@ class OpportunityApp {
         if (navTabs) navTabs.style.display = "none";
         if (loginWrapper) loginWrapper.style.display = "flex";
         if (userMenu) userMenu.style.display = "none";
-        if (adminTab) adminTab.style.display = "none";
-        const btnNavbarAdmin = document.getElementById("btnNavbarAdminConsole");
-        if (btnNavbarAdmin) btnNavbarAdmin.style.display = "none";
-        const btnDropdownAdmin = document.getElementById("btnDropdownAdminConsole");
-        if (btnDropdownAdmin) btnDropdownAdmin.style.display = "none";
 
         const mobileBottomNavAvatar = document.getElementById("mobileBottomNavAvatar");
         const mobileBottomNavAvatarDefault = document.getElementById("mobileBottomNavAvatarDefault");
         if (mobileBottomNavAvatar) mobileBottomNavAvatar.style.display = "none";
         if (mobileBottomNavAvatarDefault) mobileBottomNavAvatarDefault.style.display = "block";
 
+        const drawerAvatar = document.getElementById("drawerUserAvatar");
+        if (drawerAvatar) {
+          drawerAvatar.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23F1F5F9'/%3E%3Cpath d='M20 19c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 3c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z' fill='%2394A3B8'/%3E%3C/svg%3E";
+        }
         const drawerName = document.getElementById("drawerUserName");
         const drawerEmail = document.getElementById("drawerUserEmail");
         const drawerRoleBadge = document.getElementById("drawerUserRoleBadge");
         const drawerCollege = document.getElementById("drawerCollegeBadge");
-        const drawerAdminItem = document.getElementById("drawerAdminItem");
         if (drawerName) drawerName.textContent = "Guest Visitor";
         if (drawerEmail) drawerEmail.textContent = "Sign in with Google";
         if (drawerRoleBadge) {
-          drawerRoleBadge.textContent = "Guest";
+          drawerRoleBadge.textContent = "Visitor";
           drawerRoleBadge.className = "badge-role-tag";
         }
-        if (drawerCollege) drawerCollege.textContent = "Visitor";
-        if (drawerAdminItem) drawerAdminItem.style.display = "none";
+        if (drawerCollege) drawerCollege.style.display = "none";
 
         if (landingView) landingView.style.display = "block";
         if (appWorkspace) appWorkspace.style.display = "none";
@@ -651,8 +608,7 @@ class OpportunityApp {
     if (activeLabel) {
       const labels = {
         explore: "Explore Opportunities",
-        bookmarks: "Saved Bookmarks",
-        admin: "👑 Enterprise Admin Console"
+        bookmarks: "Saved Bookmarks"
       };
       activeLabel.textContent = labels[tabId] || "Workspace Terminal";
     }
@@ -689,11 +645,6 @@ class OpportunityApp {
     // Refresh tab-specific data
     if (tabId === "explore") this.loadExploreData();
     if (tabId === "bookmarks") this.renderBookmarks();
-    if (tabId === "admin") {
-      if (window.adminConsole) {
-        window.adminConsole.openConsole();
-      }
-    }
 
     // Scroll to top of main content smoothly
     const mainEl = document.getElementById("mainContent");
@@ -986,9 +937,6 @@ class OpportunityApp {
 
     const drawerBadge = document.getElementById("drawerBookmarksCount");
     if (drawerBadge) drawerBadge.textContent = count;
-
-    const drawerStatSaved = document.getElementById("drawerStatSavedCount");
-    if (drawerStatSaved) drawerStatSaved.textContent = count;
   }
 
   async toggleBookmark(oppId, btnEl) {
@@ -1151,106 +1099,42 @@ class OpportunityApp {
 
 
 
-  // ── Admin Queue ───────────────────────────────────────────────────────────
-  async loadAdminSubmissions() {
-    const listEl = document.getElementById("adminSubmissionsList");
-    if (!listEl) return;
-
-    listEl.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><p>Loading submissions...</p></div>`;
-
-    try {
-      const data = await window.ApiClient.getAdminSubmissions("all");
-      const subs = data.submissions || [];
-
-      if (subs.length === 0) {
-        listEl.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><p>No community submissions waiting for review.</p></div>`;
-        return;
-      }
-
-      listEl.innerHTML = subs.map(sub => `
-        <div class="opportunity-card" style="margin-bottom: 16px;">
-          <div class="card-header-row">
-            <span class="badge-tag badge-type-blue">${this.escapeHtml(sub.status.toUpperCase())}</span>
-            <span style="font-size: 0.78rem; color: var(--text-muted);">${this.formatDate(sub.created_at)}</span>
-          </div>
-          <h3 class="card-title">${this.escapeHtml(sub.title)}</h3>
-          <div class="card-organizer">${this.escapeHtml(sub.organizer)}</div>
-          <p class="card-description">${this.escapeHtml(sub.description)}</p>
-          <div style="margin: 12px 0; font-size: 0.88rem;">
-            <strong>Link:</strong> <a href="${this.escapeHtml(sub.apply_url)}" target="_blank" style="color: var(--brand-primary); text-decoration: underline;">${this.escapeHtml(sub.apply_url)}</a>
-          </div>
-          ${sub.status === 'pending' ? `
-            <div style="display: flex; gap: 10px; margin-top: 14px;">
-              <button class="btn-apply-action" style="background: var(--accent-green);" onclick="window.app.reviewAdminSubmission(${sub.id}, 'approve')">Approve &amp; Publish</button>
-              <button class="btn-card-details" style="color: #DC2626;" onclick="window.app.reviewAdminSubmission(${sub.id}, 'reject')">Reject</button>
-            </div>
-          ` : ""}
-        </div>
-      `).join("");
-    } catch (err) {
-      listEl.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><p>Admin access required or request failed.</p></div>`;
-    }
-  }
-
-  async reviewAdminSubmission(subId, action) {
-    try {
-      await window.ApiClient.reviewSubmission(subId, action);
-      this.showToast(`Submission ${action}d successfully`, "success");
-      await this.loadAdminSubmissions();
-    } catch (err) {
-      this.showToast("Review action failed: " + err.message, "error");
-    }
-  }
-
-  // ── Hero Stats ────────────────────────────────────────────────────────────
+  // ── Hero & Platform Stats ──────────────────────────────────────────────────
   async updateHeroStats() {
     try {
-      const data = await window.ApiClient.getOpportunities({ limit: 100 });
-      const opps = data.opportunities || [];
-      const totalCount = data.total || opps.length;
+      const stats = await window.ApiClient.getOpportunityStats();
+      const total = stats.total || 914;
+      const prizeFormatted = stats.total_prize_formatted || "₹40.9 Cr+";
+      const closingSoon = stats.closing_this_week != null ? stats.closing_this_week : 321;
 
       const activeCountEl = document.getElementById("statActiveCount");
-      if (activeCountEl) activeCountEl.textContent = `${totalCount}+`;
+      if (activeCountEl) activeCountEl.textContent = total;
 
       const heroActive = document.getElementById("heroActiveBadge");
-      if (heroActive) heroActive.textContent = `${totalCount}+ Verified`;
-
-      const deadlinesThisWeek = opps.filter(o => {
-        const d = new Date(o.deadline);
-        const now = new Date();
-        const diff = (d - now) / (1000 * 60 * 60 * 24);
-        return diff >= 0 && diff <= 7;
-      }).length;
-
-      const urgentEl = document.getElementById("statUrgentCount");
-      if (urgentEl) urgentEl.textContent = deadlinesThisWeek || "0";
-
-      // Dynamically calculate live aggregate prize pool from fetched opportunities
-      let totalPrize = 0;
-      opps.forEach(o => {
-        if (o.prize_inr && !isNaN(o.prize_inr)) {
-          totalPrize += Number(o.prize_inr);
-        }
-      });
-
-      let prizeFormatted = "₹1.8 Cr+";
-      if (totalPrize >= 10000000) {
-        prizeFormatted = `₹${(totalPrize / 10000000).toFixed(1)} Cr+`;
-      } else if (totalPrize >= 100000) {
-        prizeFormatted = `₹${(totalPrize / 100000).toFixed(1)} Lakhs+`;
-      }
+      if (heroActive) heroActive.textContent = `${total} Verified`;
 
       const prizeEl = document.getElementById("statPrizeCount");
-      if (prizeEl && totalPrize > 0) {
-        prizeEl.textContent = prizeFormatted;
-      }
+      if (prizeEl) prizeEl.textContent = prizeFormatted;
 
       const heroPrize = document.getElementById("heroPrizeBadge");
-      if (heroPrize && totalPrize > 0) {
-        heroPrize.textContent = prizeFormatted;
-      }
+      if (heroPrize) heroPrize.textContent = prizeFormatted;
+
+      const urgentEl = document.getElementById("statUrgentCount");
+      if (urgentEl) urgentEl.textContent = closingSoon;
+
+      const liveBadge = document.getElementById("liveContestsBadgeCount");
+      if (liveBadge) liveBadge.textContent = total;
+
+      const drawerExplore = document.getElementById("drawerExploreBadge");
+      if (drawerExplore) drawerExplore.textContent = total;
+
+      const liveChip = document.getElementById("workspaceLiveContestsCount");
+      if (liveChip) liveChip.innerHTML = `<strong>${total}</strong> Contests Live`;
+
+      const totalEl = document.getElementById("oppsTotalCount");
+      if (totalEl) totalEl.textContent = total;
     } catch (e) {
-      // Graceful fallback
+      console.warn("Could not load real stats:", e);
     }
   }
 

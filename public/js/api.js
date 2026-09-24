@@ -195,101 +195,13 @@ const ApiClient = {
     });
   },
 
-  // ── Admin Endpoints ───────────────────────────────────────────────────────
-  async getAdminSubmissions(status = "all") {
-    return this.request(`/api/admin/submissions?status=${status}`);
-  },
-
-  async approveSubmission(id) {
-    return this.request(`/api/admin/submissions/${id}/approve`, {
-      method: "POST"
-    });
-  },
-
-  async rejectSubmission(id, reason = "") {
-    return this.request(`/api/admin/submissions/${id}/reject`, {
-      method: "POST",
-      body: JSON.stringify({ reason })
-    });
-  },
-
-  async getAdminMetrics() {
-    return this.request(`/api/admin/metrics`);
-  },
-
-  async getAdminUsers(params = {}) {
-    const query = new URLSearchParams();
-    if (params.q) query.set("q", params.q);
-    if (params.role) query.set("role", params.role);
-    if (params.status) query.set("status", params.status);
-    const qs = query.toString() ? `?${query.toString()}` : "";
-    return this.request(`/api/admin/users${qs}`);
-  },
-
-  async banUser(userId, reason = "") {
-    return this.request(`/api/admin/users/${userId}/ban`, {
-      method: "POST",
-      body: JSON.stringify({ reason })
-    });
-  },
-
-  async unbanUser(userId) {
-    return this.request(`/api/admin/users/${userId}/unban`, {
-      method: "POST"
-    });
-  },
-
-  async deleteUserAccount(userId, blacklistEmail = true) {
-    return this.request(`/api/admin/users/${userId}`, {
-      method: "DELETE",
-      body: JSON.stringify({ blacklist_email: blacklistEmail })
-    });
-  },
-
-  async updateUserRole(userId, role) {
-    return this.request(`/api/admin/users/${userId}/role`, {
-      method: "PATCH",
-      body: JSON.stringify({ role })
-    });
-  },
-
-  async getBannedEmails() {
-    return this.request(`/api/admin/banned-emails`);
-  },
-
-  async removeBannedEmail(email) {
-    return this.request(`/api/admin/banned-emails/${encodeURIComponent(email)}`, {
-      method: "DELETE"
-    });
-  },
-
-  async triggerAdminSync() {
-    return this.request(`/api/admin/sync/trigger`, {
-      method: "POST"
-    });
-  },
-
-  async getAdminSyncHistory() {
-    return this.request(`/api/admin/sync/history`);
-  },
-
-  async getAdminAnnouncement() {
-    return this.request(`/api/admin/announcement`);
-  },
-
-  async saveAdminAnnouncement(data) {
-    return this.request(`/api/admin/announcement`, {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
+  // ── Public Aggregate Stats ────────────────────────────────────────────────
+  async getOpportunityStats() {
+    return this.request(`/api/opportunities/stats`);
   },
 
   async getPublicAnnouncement() {
     return this.request(`/api/announcement`);
-  },
-
-  async getAdminAuditLogs() {
-    return this.request(`/api/admin/audit-logs`);
   },
 
   // ── Password Recovery Guidance ────────────────────────────────────────────
