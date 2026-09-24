@@ -201,32 +201,4 @@ def logout():
     })
 
 
-@auth_bp.route("/api/auth/profile", methods=["DELETE"])
-@login_required
-def delete_account():
-    """
-    Right to Erasure / Right to be Forgotten (DPDP Act 2023 & GDPR).
-    Permanently purges all student records, bookmarks, pipeline applications,
-    and profile data associated with the authenticated user.
-    """
-    user_id = g.user_id
-    try:
-        supabase = get_service_client()
 
-        # Delete associated records
-        supabase.table("opp_bookmarks").delete().eq("user_id", user_id).execute()
-        supabase.table("opp_applications").delete().eq("user_id", user_id).execute()
-        supabase.table("opp_submissions").delete().eq("submitted_by", user_id).execute()
-        
-        # Delete profile record
-        supabase.table("opp_profiles").delete().eq("id", user_id).execute()
-
-        logger.info("Permanently erased account and data for user %s", user_id)
-        return jsonify({
-            "status": "success",
-            "message": "Your account and all associated personal data have been permanently erased from OpportunityOS."
-        }), 200
-
-    except Exception as e:
-        logger.error("Error erasing user account %s: %s", user_id, str(e)[:200])
-        return jsonify({"error": "Failed to complete account erasure request. Please contact shaikhariehussain09@gmail.com"}), 500

@@ -18,11 +18,11 @@ class AuthManager {
    * Initialize Supabase client and restore session
    */
   async init() {
-    // Clean up any legacy demo keys
+    this.isReady = false;
     localStorage.removeItem("opp_demo_session");
 
     if (!window.supabase) {
-      console.warn("Supabase SDK not loaded from CDN yet.");
+      this.isReady = true;
       return;
     }
 
@@ -55,7 +55,9 @@ class AuthManager {
       });
 
     } catch (err) {
-      console.error("Failed to initialize Supabase Auth:", err);
+      // Graceful fallback for offline / disconnected states
+    } finally {
+      this.isReady = true;
     }
   }
 
@@ -81,8 +83,8 @@ class AuthManager {
           await this.signOut();
         }
       }
-    } catch (err) {
-      console.warn("Could not fetch backend profile:", err);
+    } catch (_) {
+      // Silent error handling for network hiccups
     }
   }
 
@@ -112,22 +114,30 @@ class AuthManager {
     });
 
     if (error) {
-      console.error("Google OAuth error:", error);
       alert("Authentication error: " + error.message);
     }
   }
 
   /**
-   * Sign out and clear session
+   * Sign out and clear all cached sessions and tokens
    */
   async signOut() {
     localStorage.removeItem("opp_demo_session");
+    localStorage.removeItem("careerdesk_auth_session");
+    localStorage.removeItem("careerdesk_user_profile");
+    localStorage.removeItem("careerdesk_bookmarks");
+    try {
+      sessionStorage.clear();
+    } catch (_) {}
+
+    if (window.ApiClient && typeof window.ApiClient.clearCache === "function") {
+      window.ApiClient.clearCache();
+    }
+
     if (this.client) {
       try {
         await this.client.auth.signOut();
-      } catch (e) {
-        console.warn("SignOut error:", e);
-      }
+      } catch (_) {}
     }
     this.session = null;
     this.user = null;

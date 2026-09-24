@@ -207,14 +207,6 @@ class OpportunityApp {
       btnCancelProfile.addEventListener("click", () => this.closeAllModals());
     }
 
-    const btnProfileDeleteAccount = document.getElementById("btnProfileDeleteAccount");
-    if (btnProfileDeleteAccount) {
-      btnProfileDeleteAccount.addEventListener("click", () => {
-        this.closeAllModals();
-        const btnDeleteAccount = document.getElementById("btnDeleteAccount");
-        if (btnDeleteAccount) btnDeleteAccount.click();
-      });
-    }
 
     // Role Switcher Tabs on Landing Page
     const roleTabCandidate = document.getElementById("roleTabCandidate");
@@ -406,27 +398,6 @@ class OpportunityApp {
       });
     }
 
-    // Delete Account (Right to Erasure) Trigger
-    const btnDeleteAccount = document.getElementById("btnDeleteAccount");
-    if (btnDeleteAccount) {
-      btnDeleteAccount.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const confirmed = window.confirm(
-          "Permanent Account Deletion (Right to Erasure):\n\nAre you sure you want to permanently delete your profile, saved bookmarks, and application tracking history?\n\nIn accordance with DPDP & GDPR guidelines, this action is irreversible."
-        );
-        if (!confirmed) return;
-
-        try {
-          await window.ApiClient.deleteAccount();
-          this.showToast("Your account and data have been permanently erased.", "info");
-          if (window.authManager) {
-            await window.authManager.signOut();
-          }
-        } catch (err) {
-          this.showToast("Failed to erase account: " + (err.message || "Unknown error"), "error");
-        }
-      });
-    }
 
     // Modal Close Buttons
     document.querySelectorAll(".modal-close-btn, .btn-modal-close").forEach(btn => {
@@ -590,11 +561,50 @@ class OpportunityApp {
 
         this.loadBookmarks();
       }
+
+      // Zero-Flicker: Dismiss Splash Screen smoothly once initial auth state is confirmed
+      const splash = document.getElementById("authSplashScreen");
+      if (splash) {
+        splash.classList.add("splash-hidden");
+        setTimeout(() => {
+          if (splash.parentNode) splash.parentNode.removeChild(splash);
+          document.body.classList.remove("auth-pending");
+        }, 320);
+      } else {
+        document.body.classList.remove("auth-pending");
+      }
     });
   }
 
-  // ── Tab Navigation ────────────────────────────────────────────────────────
+  // ── Top Navigation Progress Bar ───────────────────────────────────────────
+  startProgressBar() {
+    const bar = document.getElementById("topProgressBar");
+    if (bar) {
+      bar.classList.remove("done");
+      bar.classList.add("loading");
+    }
+  }
+
+  finishProgressBar() {
+    const bar = document.getElementById("topProgressBar");
+    if (bar) {
+      bar.classList.add("done");
+      setTimeout(() => {
+        bar.classList.remove("loading", "done");
+      }, 300);
+    }
+  }
+
+  // ── Tab Navigation (Protected Routes & Instant Progress) ─────────────────
   switchTab(tabId) {
+    // Protected Tab Gate: Saved Bookmarks requires authentication
+    if (tabId === "bookmarks" && (!window.authManager || !window.authManager.isAuthenticated())) {
+      this.showToast("Please sign in with Google to view and manage your saved bookmarks.", "info");
+      window.authManager?.signInWithGoogle();
+      return;
+    }
+
+    this.startProgressBar();
     this.currentTab = tabId;
 
     // Ensure Workspace is active when switching tabs
@@ -651,6 +661,32 @@ class OpportunityApp {
     if (mainEl && window.scrollY > 300) {
       mainEl.scrollIntoView({ behavior: "smooth" });
     }
+
+    this.finishProgressBar();
+  }
+
+  // ── Reset Search & Filters ───────────────────────────────────────────────
+  resetFilters() {
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = "";
+    const modeSelect = document.getElementById("modeSelect");
+    if (modeSelect) modeSelect.value = "all";
+    const sortSelect = document.getElementById("sortSelect");
+    if (sortSelect) sortSelect.value = "deadline_asc";
+
+    document.querySelectorAll(".filter-pill").forEach(p => {
+      p.classList.toggle("active", p.dataset.type === "all");
+    });
+
+    this.currentFilters = {
+      search: "",
+      type: "all",
+      mode: "all",
+      sort: "deadline_asc",
+      page: 1,
+      limit: 24
+    };
+    this.loadExploreData();
   }
 
   // ── Explore View & Pagination ─────────────────────────────────────────────
@@ -673,10 +709,20 @@ class OpportunityApp {
       this.updatePaginationUI();
     } catch (err) {
       grid.innerHTML = `
-        <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Failed to load opportunities</h3>
-          <p style="color: var(--text-secondary); margin-bottom: 16px;">Could not connect to the backend server. Please check your connection or retry.</p>
-          <button class="btn-apply-action" onclick="window.app.loadExploreData()">Retry</button>
+        <div class="designed-empty-state">
+          <div class="empty-state-icon-wrap" style="background: #FEF2F2; color: #EF4444;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h3 class="empty-state-title">Unable to Load Opportunities</h3>
+          <p class="empty-state-desc">We encountered an issue retrieving verified listings. Please verify your connection or click retry below.</p>
+          <button type="button" class="btn-apply-action" onclick="window.app.loadExploreData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            Retry Connection
+          </button>
         </div>
       `;
     }
@@ -711,7 +757,6 @@ class OpportunityApp {
         }
       }
     } catch (err) {
-      console.error("Failed to load more opportunities:", err);
       this.showToast("Failed to load more opportunities. Please retry.", "error");
     } finally {
       this.isLoadingMore = false;
@@ -755,13 +800,18 @@ class OpportunityApp {
 
     if (!list || list.length === 0) {
       grid.innerHTML = `
-        <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
-          <svg style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">No opportunities found</h3>
-          <p style="color: var(--text-muted);">Try selecting a different category or clearing search keywords.</p>
+        <div class="designed-empty-state">
+          <div class="empty-state-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <h3 class="empty-state-title">No Opportunities Found</h3>
+          <p class="empty-state-desc">We couldn't find any opportunities matching your active criteria. Try broadening your keywords or resetting filters.</p>
+          <button type="button" class="btn-outline-subtle" onclick="window.app.resetFilters()">
+            Clear Filters &amp; Search
+          </button>
         </div>
       `;
       return;
@@ -893,7 +943,7 @@ class OpportunityApp {
         }
       }
     } catch (e) {
-      console.warn("Could not read local bookmarks:", e);
+      // Ignore local storage read errors silently
     }
 
     if (!window.authManager.isAuthenticated()) return;
@@ -920,7 +970,7 @@ class OpportunityApp {
         }
       }
     } catch (err) {
-      console.warn("Could not sync bookmarks from server:", err);
+      // Backend bookmarks sync silently degrades to cached state
     }
   }
 
@@ -970,7 +1020,7 @@ class OpportunityApp {
           await window.ApiClient.addBookmark(oppId);
         }
       } catch (err) {
-        console.warn("Cloud sync error for bookmark:", err);
+        // Optimistic bookmarking preserves local state if sync fails
       }
     }
   }
@@ -999,7 +1049,7 @@ class OpportunityApp {
         } catch (e) {}
         this.updateBookmarkBadges();
       } catch (err) {
-        console.warn("Error fetching bookmarks from server:", err);
+        // Fallback to local cached bookmarks if server fetch fails
       }
     }
 
@@ -1021,10 +1071,17 @@ class OpportunityApp {
 
     if (bookmarkedOpps.length === 0) {
       grid.innerHTML = `
-        <div style="text-align: center; padding: 48px; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-lg); grid-column: 1 / -1;">
-          <h3 style="font-size: 1.2rem; margin-bottom: 8px;">No Bookmarks Saved Yet</h3>
-          <p style="color: var(--text-muted); margin-bottom: 16px;">Explore opportunities, contests &amp; hackathons and click the bookmark button to save them here.</p>
-          <button class="btn-apply-action" onclick="window.app.switchTab('explore')">Explore Opportunities</button>
+        <div class="designed-empty-state">
+          <div class="empty-state-icon-wrap" style="background: #FAF5FF; color: #7C3AED;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3 class="empty-state-title">No Saved Bookmarks Yet</h3>
+          <p class="empty-state-desc">Click the bookmark icon on any hackathon, coding contest, or fellowship to save it here for quick access.</p>
+          <button type="button" class="btn-apply-action" onclick="window.app.switchTab('explore')">
+            Explore Opportunities
+          </button>
         </div>
       `;
       return;
@@ -1134,7 +1191,7 @@ class OpportunityApp {
       const totalEl = document.getElementById("oppsTotalCount");
       if (totalEl) totalEl.textContent = total;
     } catch (e) {
-      console.warn("Could not load real stats:", e);
+      // Silent fallback if real stats endpoint is temporarily unavailable
     }
   }
 
@@ -1187,6 +1244,19 @@ class OpportunityApp {
   }
 
   async saveProfile() {
+    const fullNameInput = document.getElementById("profileFullName");
+    const fullName = (fullNameInput?.value || "").trim();
+
+    if (!fullName || fullName.length < 2) {
+      this.showToast("Please enter a valid full name (at least 2 characters).", "error");
+      if (fullNameInput) {
+        fullNameInput.focus();
+        fullNameInput.style.borderColor = "#EF4444";
+      }
+      return;
+    }
+    if (fullNameInput) fullNameInput.style.borderColor = "";
+
     const btn = document.getElementById("btnSaveProfile");
     const origHtml = btn ? btn.innerHTML : "";
     if (btn) {
@@ -1198,7 +1268,7 @@ class OpportunityApp {
     }
 
     const payload = {
-      full_name: (document.getElementById("profileFullName")?.value || "").trim(),
+      full_name: fullName,
       college_name: (document.getElementById("profileCollegeName")?.value || "").trim(),
       degree: (document.getElementById("profileDegree")?.value || "").trim(),
       graduation_year: (document.getElementById("profileGraduationYear")?.value || "").trim(),
@@ -1215,7 +1285,6 @@ class OpportunityApp {
         throw new Error(res?.error || "Failed to update profile.");
       }
     } catch (err) {
-      console.error("Profile update error:", err);
       this.showToast(err.message || "Failed to save profile. Please verify your inputs.", "error");
     } finally {
       if (btn) {
@@ -1319,15 +1388,24 @@ class OpportunityApp {
 
   renderSkeletons(count = 6) {
     return Array.from({ length: count }).map(() => `
-      <div class="opportunity-card" style="pointer-events: none;">
+      <div class="opportunity-card skeleton-card" style="pointer-events: none; opacity: 0.85;">
         <div>
-          <div class="skeleton" style="height: 20px; width: 40%; margin-bottom: 12px;"></div>
-          <div class="skeleton" style="height: 24px; width: 85%; margin-bottom: 8px;"></div>
-          <div class="skeleton" style="height: 16px; width: 50%; margin-bottom: 16px;"></div>
-          <div class="skeleton" style="height: 48px; width: 100%; margin-bottom: 16px;"></div>
-          <div class="skeleton" style="height: 44px; width: 100%; margin-bottom: 16px;"></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div style="display: flex; gap: 6px;">
+              <div class="skeleton" style="height: 22px; width: 80px; border-radius: 999px;"></div>
+              <div class="skeleton" style="height: 22px; width: 65px; border-radius: 999px;"></div>
+            </div>
+            <div class="skeleton" style="height: 32px; width: 32px; border-radius: 50%;"></div>
+          </div>
+          <div class="skeleton" style="height: 24px; width: 88%; margin-bottom: 8px; border-radius: 6px;"></div>
+          <div class="skeleton" style="height: 16px; width: 55%; margin-bottom: 16px; border-radius: 4px;"></div>
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <div class="skeleton" style="height: 26px; width: 90px; border-radius: 6px;"></div>
+            <div class="skeleton" style="height: 26px; width: 110px; border-radius: 6px;"></div>
+          </div>
+          <div class="skeleton" style="height: 36px; width: 100%; border-radius: 8px; margin-bottom: 16px;"></div>
         </div>
-        <div class="skeleton" style="height: 40px; width: 100%;"></div>
+        <div class="skeleton" style="height: 42px; width: 100%; border-radius: 8px;"></div>
       </div>
     `).join("");
   }
@@ -1368,7 +1446,6 @@ class OpportunityApp {
         banner.style.display = "none";
       }
     } catch (err) {
-      console.warn("Could not check global announcements:", err);
       banner.style.display = "none";
     }
   }

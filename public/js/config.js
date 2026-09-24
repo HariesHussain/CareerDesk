@@ -21,8 +21,8 @@ const AppConfig = {
         this.SUPABASE_URL = data.supabase_url || "";
         this.SUPABASE_ANON_KEY = data.supabase_anon_key || "";
       }
-    } catch (err) {
-      console.warn("Could not load /api/config:", err);
+    } catch (_) {
+      // Fallback to offline / default state
     }
   },
 

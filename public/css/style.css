@@ -3388,22 +3388,6 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
 }
 
-.btn-profile-danger {
-  background: transparent;
-  color: #EF4444;
-  border: 1px solid #FCA5A5;
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.btn-profile-danger:hover {
-  background: #FEF2F2;
-  border-color: #EF4444;
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    GLOBAL BROADCAST ANNOUNCEMENT BANNER (Top of Site)
@@ -3511,4 +3495,162 @@ input:focus, select:focus, textarea:focus {
 .announcement-dismiss-btn:hover {
   color: #FFFFFF;
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRODUCTION POLISH: SPLASH SCREEN, PROGRESS BAR, SKELETONS & EMPTY STATES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Auth Pending State (Zero-Flicker Workspace Switcher) ── */
+body.auth-pending #landingView,
+body.auth-pending #appWorkspace {
+  display: none !important;
+}
+
+.auth-splash-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #FFFFFF;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s;
+}
+
+.auth-splash-screen.splash-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.auth-splash-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 320px;
+  padding: 24px;
+}
+
+.auth-splash-logo-wrap {
+  margin-bottom: 16px;
+  animation: splashPulse 2s ease-in-out infinite;
+}
+
+.auth-splash-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 139, 220, 0.25);
+}
+
+.auth-splash-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.auth-splash-title span {
+  color: var(--brand-primary);
+}
+
+.auth-splash-spinner-wrap {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 14px;
+}
+
+.auth-splash-spinner {
+  width: 100%;
+  height: 100%;
+  border: 3px solid rgba(0, 139, 220, 0.15);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.auth-splash-status {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: 0;
+}
+
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ── Top Navigation Progress Bar ── */
+.top-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #008BDC 0%, #2563EB 50%, #38BDF8 100%);
+  z-index: 1000000;
+  pointer-events: none;
+  opacity: 0;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 139, 220, 0.6);
+}
+
+.top-progress-bar.loading {
+  opacity: 1;
+  width: 75%;
+}
+
+.top-progress-bar.done {
+  width: 100%;
+  opacity: 0;
+}
+
+/* ── Designed Empty State Cards ── */
+.designed-empty-state {
+  text-align: center;
+  padding: 56px 24px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  grid-column: 1 / -1;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 520px;
+  margin: 20px auto;
+}
+
+.empty-state-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #F0F9FF;
+  color: var(--brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.empty-state-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 400px;
 }

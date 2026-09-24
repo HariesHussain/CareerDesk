@@ -11,6 +11,10 @@ const ApiClient = {
   _activeAbortController: null,
   _CACHE_TTL_MS: 5 * 60 * 1000, // 5 minutes
 
+  clearCache() {
+    this._cache.clear();
+  },
+
   async request(endpoint, options = {}) {
     const url = `${AppConfig.API_BASE_URL}${endpoint}`;
     const headers = {
@@ -29,6 +33,8 @@ const ApiClient = {
       headers
     };
 
+    window.app?.startProgressBar?.();
+
     try {
       const response = await fetch(url, config);
       const data = await response.json().catch(() => ({}));
@@ -46,8 +52,9 @@ const ApiClient = {
         // Request was intentionally cancelled for newer query
         return null;
       }
-      console.error(`API Error [${endpoint}]:`, err);
       throw err;
+    } finally {
+      window.app?.finishProgressBar?.();
     }
   },
 
@@ -221,13 +228,6 @@ const ApiClient = {
     return this.request(`/api/auth/profile`, {
       method: "PUT",
       body: JSON.stringify(profileData)
-    });
-  },
-
-  // ── Account Erasure (DPDP Act 2023 & GDPR Right to be Forgotten) ───────────
-  async deleteAccount() {
-    return this.request(`/api/auth/profile`, {
-      method: "DELETE"
     });
   }
 };

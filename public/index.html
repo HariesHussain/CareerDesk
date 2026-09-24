@@ -28,10 +28,51 @@
   <meta name="twitter:description" content="Discover 914 verified hackathons, coding contests, and fellowships with live prize pools. Official direct links.">
   <meta name="twitter:image" content="/images/hero_students.jpg">
 
+  <!-- Preconnect & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ecubxecjnvslrvhhqfgf.supabase.co">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Structured Data / Schema Markup (WebSite & EducationalOrganization) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "CareerDesk",
+    "url": "https://careerdesk.in/",
+    "description": "India's premier portal for verified national hackathons, coding contests, and student opportunities with live prize pools over ₹40+ Cr.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://careerdesk.in/?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
   <!-- Design System & Google Fonts -->
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="is-guest">
+<body class="auth-pending">
+
+  <!-- ── Top Route Navigation Progress Bar (nprogress style) ─────────────── -->
+  <div id="topProgressBar" class="top-progress-bar" aria-hidden="true"></div>
+
+  <!-- ── Fullscreen Auth Splash Screen (Zero-Flicker Session Resolver) ────── -->
+  <div id="authSplashScreen" class="auth-splash-screen" role="status" aria-live="polite">
+    <div class="auth-splash-box">
+      <div class="auth-splash-logo-wrap">
+        <div class="brand-logo-icon auth-splash-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+      </div>
+      <div class="auth-splash-title">Career<span>Desk</span></div>
+      <div class="auth-splash-spinner-wrap">
+        <div class="auth-splash-spinner"></div>
+      </div>
+      <p class="auth-splash-status" id="authSplashStatus">Connecting to workspace...</p>
+    </div>
+  </div>
 
   <!-- ── Global Broadcast Announcement Banner ────────────────────────────── -->
   <div id="globalAnnouncementBanner" class="site-announcement-container" style="display: none;"></div>
@@ -132,13 +173,7 @@
               </svg>
               Security &amp; Account
             </a>
-            <a href="#" id="btnDeleteAccount" class="dropdown-item danger" role="menuitem">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              </svg>
-              Delete Account (Erasure)
-            </a>
+
             <div class="dropdown-divider"></div>
             <button id="btnLogout" class="dropdown-item" role="menuitem" style="color: var(--text-muted);">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -246,7 +281,7 @@
             </div>
           </div>
 
-          <img src="/images/hero_students.jpg" alt="Indian college students holding laptop and achievement certificates" class="hero-students-img" width="680" height="420">
+          <img src="/images/hero_students.jpg" alt="Indian college students holding laptop and achievement certificates" class="hero-students-img" width="680" height="420" fetchpriority="high" decoding="async">
         </div>
       </div>
     </section>
@@ -714,11 +749,7 @@
 
         <!-- Actions Bar -->
         <div class="profile-actions-bar">
-          <div class="profile-actions-left">
-            <button type="button" class="btn-profile-danger" id="btnProfileDeleteAccount" title="Right to be Forgotten under DPDP Act 2023">
-              Delete Account
-            </button>
-          </div>
+
           <div class="profile-actions-right">
             <button type="button" class="btn-outline-subtle" id="btnCancelProfile">Cancel</button>
             <button type="submit" class="btn-apply-action" id="btnSaveProfile">
