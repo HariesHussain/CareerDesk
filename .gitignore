@@ -42,7 +42,6 @@ build/
 Thumbs.db
 .vscode/
 .idea/
-docs/
 .agents/
 # Temporary scratch & test artifacts
 scratch/
