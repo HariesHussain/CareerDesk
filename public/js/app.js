@@ -1835,6 +1835,20 @@ class OpportunityApp {
 
 // Instantiate on DOM ready
 document.addEventListener("DOMContentLoaded", async () => {
+  // Splash screen safety watchdog: guarantee splash is dismissed even under heavy network latency
+  setTimeout(() => {
+    const splash = document.getElementById("authSplashScreen");
+    if (splash && !splash.classList.contains("splash-hidden")) {
+      splash.classList.add("splash-hidden");
+      setTimeout(() => {
+        if (splash.parentNode) splash.parentNode.removeChild(splash);
+        document.body.classList.remove("auth-pending");
+      }, 300);
+    } else {
+      document.body.classList.remove("auth-pending");
+    }
+  }, 3500);
+
   window.app = new OpportunityApp();
   if (window.AppConfig?.load) {
     await window.AppConfig.load();

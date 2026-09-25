@@ -37,7 +37,10 @@ class AuthManager {
       if (!error && data?.session) {
         this.session = data.session;
         this.user = data.session.user;
-        await this.fetchBackendProfile();
+        this.notifyListeners();
+        this.fetchBackendProfile().then(() => {
+          this.notifyListeners();
+        });
       }
 
       // Listen for auth state changes with subscription reference
@@ -45,15 +48,25 @@ class AuthManager {
         if (session) {
           this.session = session;
           this.user = session.user;
-          await this.fetchBackendProfile();
+          this.notifyListeners();
+          this.fetchBackendProfile().then(() => {
+            this.notifyListeners();
+          });
         } else {
           this.session = null;
           this.user = null;
           this.profile = null;
+          this.notifyListeners();
         }
-        this.notifyListeners();
       });
       this.authSubscription = subData?.subscription || null;
+
+      // Clean up URL hash if returning from OAuth redirect
+      if (window.location.hash && window.location.hash.includes("access_token")) {
+        try {
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+        } catch (_) {}
+      }
 
     } catch (err) {
       if (window.AppLogger) {
@@ -99,11 +112,23 @@ class AuthManager {
   }
 
   /**
-   * Handle expired JWT session mid-flight
+   * Handle expired JWT session mid-flight with refresh attempt
    */
   async handleSessionExpired() {
+    if (!this.client || !this.session) return;
+
+    try {
+      const { data, error } = await this.client.auth.refreshSession();
+      if (!error && data?.session) {
+        this.session = data.session;
+        this.user = data.session.user;
+        this.notifyListeners();
+        return;
+      }
+    } catch (_) {}
+
     if (window.AppLogger) {
-      window.AppLogger.warn("Session expired. Wiping session and notifying user.", { operation: "session_expired" });
+      window.AppLogger.warn("Session expired and refresh failed. Logging out.", { operation: "session_expired" });
     }
     await this.signOut();
     window.dispatchEvent(new CustomEvent("session_expired"));
@@ -123,9 +148,9 @@ class AuthManager {
       });
       if (res.ok) {
         const data = await res.json();
-        this.profile = data.user;
-      } else if (res.status === 401) {
-        await this.handleSessionExpired();
+        if (data && data.user) {
+          this.profile = data.user;
+        }
       } else if (res.status === 403) {
         const data = await res.json().catch(() => ({}));
         if (data.is_banned) {
@@ -137,6 +162,18 @@ class AuthManager {
       if (window.AppLogger) {
         window.AppLogger.error(err, { operation: "fetchBackendProfile" });
       }
+    }
+
+    // Safety fallback: Ensure profile object exists from user metadata so app never breaks
+    if (!this.profile && this.user) {
+      const meta = this.user.user_metadata || {};
+      this.profile = {
+        id: this.user.id,
+        email: this.user.email,
+        full_name: meta.full_name || meta.name || this.user.email?.split("@")[0] || "Member",
+        avatar_url: meta.avatar_url || meta.picture || "",
+        role: "student"
+      };
     }
   }
 

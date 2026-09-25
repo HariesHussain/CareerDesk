@@ -120,8 +120,10 @@ const ApiClient = {
       if (!response.ok) {
         // 401 Session Expiry
         if (response.status === 401) {
-          window.authManager?.handleSessionExpired?.();
-          const err = new Error("Your session has expired. Please log in again.");
+          if (window.authManager && window.authManager.isAuthenticated()) {
+            window.authManager.handleSessionExpired?.();
+          }
+          const err = new Error("Your session has expired or requires re-authentication.");
           err.status = 401;
           throw err;
         }
